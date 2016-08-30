@@ -1,5 +1,5 @@
 """"""
-
+import time
 from utils.page_objects import PageObject, PageElement
 
 class LoginPage(PageObject):
@@ -21,8 +21,9 @@ class LoginPage(PageObject):
         assert self.password, "input password not exist"
         assert self.login_btn, "login btn not exist"
 
+
     def login_with_credential(self):
         self.username.send_keys("root")
         self.password.send_keys("redhat")
         self.login_btn.click()
-
+        time.sleep(5)
