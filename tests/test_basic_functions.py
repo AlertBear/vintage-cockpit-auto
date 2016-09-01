@@ -33,6 +33,9 @@ def test_main_page(firfox):
 def test_subscriptions_page(firfox):
     subscriptions_page = SubscriptionsPage(firfox)
     subscriptions_page.basic_check_elements_exists()
-    subscriptions_page.register_rhsm()
-    # subscriptions_page.register_rhsm_key_org()
-    # subscriptions_page.register_satellite()
+    need_test = ["register_rhsm", "register_rhsm_key_org",
+        "register_satellite"]
+    for item in need_test:
+        eval("subscriptions_page." + item + "()")
+        subscriptions_page.check_subscription_result()
+        subscriptions_page.unregister_subsciption()

@@ -1,4 +1,5 @@
 import time
+import os
 from utils.page_objects import PageObject, PageElement
 
 
@@ -40,7 +41,10 @@ class SubscriptionsPage(PageObject):
     url_custom_item = PageElement(
         xpath=".//*[@id='subscription-register-url']/ul/li[2]/a")
     url_input = PageElement(id_="subscription-register-url-custom")
-
+    product_name = PageElement(
+        xpath=".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[1]/td[2]/span")
+    register_status = PageElement(
+        xpath=".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[5]/td[2]/span")
     # frame name
     frame_right_name = "cockpit1:localhost/subscriptions"
 
@@ -70,7 +74,7 @@ class SubscriptionsPage(PageObject):
             self.login_input.send_keys("qa@redhat.com")
             self.passwd_input.send_keys("NWmfx9m28UWzxuvh")
             self.register_btn.click()
-            time.sleep(20)
+            time.sleep(30)
 
     # function_2: register to rhsm with activation key and organization
     def register_rhsm_key_org(self):
@@ -93,3 +97,16 @@ class SubscriptionsPage(PageObject):
             self.login_input.send_keys("admin")
             self.passwd_input.send_keys("redhat")
             self.register_btn.click()
+
+    # function_4: Check subscription result
+    def check_subscription_result(self):
+        with self.switch_to_frame(self.frame_right_name):
+            assert self.product_name.text == "Red Hat Virtualization Host", \
+                "product name is wrong"
+            assert self.register_status.text == "Subscribed", \
+                "subscription fail"
+
+    # function_5: subscription-manager unregister
+    def unregister_subsciption(self):
+        # wait for Terminal page finished
+        pass
