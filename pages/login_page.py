@@ -26,4 +26,4 @@ class LoginPage(PageObject):
         self.username.send_keys("root")
         self.password.send_keys("redhat")
         self.login_btn.click()
-        time.sleep(5)
+        time.sleep(2)

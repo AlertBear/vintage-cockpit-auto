@@ -3,9 +3,10 @@ import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.main_page import MainPage
+from pages.subscriptions_page import SubscriptionsPage
 
 
-ROOT_URI = "https://192.168.15.112:9090"
+ROOT_URI = "https://10.66.11.209:9090"
 
 @pytest.fixture(scope="module")
 def firfox(request):
@@ -25,3 +26,7 @@ def test_login_page(firfox):
 def test_main_page(firfox):
     main_page = MainPage(firfox)
     main_page.basic_check_elements_exists()
+
+def test_subscriptions_page(firfox):
+    subscriptions_page = SubscriptionsPage(firfox)
+    subscriptions_page.basic_check_elements_exists()
