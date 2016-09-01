@@ -13,6 +13,8 @@ class SubscriptionsPage(PageObject):
     need_registered_msg = PageElement(xpath="//div[@id='subscriptions-unregistered']/span")
     register_btn = PageElement(id_="subscriptions-register")
 
+    frame_right_name = "cockpit1:localhost/subscriptions"
+
 
     def __init__(self, *args, **kwargs):
         super(SubscriptionsPage, self).__init__(*args, **kwargs)
@@ -20,9 +22,11 @@ class SubscriptionsPage(PageObject):
 
 
     def basic_check_elements_exists(self):
-        assert self.need_registered_msg, "system must be registered message not exist"
-        assert self.register_btn, "register system btn not exist"
+        with self.switch_to_frame(self.frame_right_name):
+            assert self.need_registered_msg, "system must be registered message not exist"
+            assert self.register_btn, "register system btn not exist"
 
     def register_to_rhsm(self):
-        self.register_system_btn.click()
+        with self.switch_to_frame(self.frame_right_name):
+            self.register_btn.click()
         time.sleep(1)
