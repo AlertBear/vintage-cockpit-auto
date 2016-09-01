@@ -37,14 +37,14 @@ class PageObject(object):
 
     def basic_check_elements_exists(self):
         raise NotImplementedError
-    
+
     @contextmanager
     def switch_to_frame(self, frame_name):
         self.w.switch_to_frame(frame_name)
         yield
         self.w.switch_to_default_content()
-    
-    
+
+
 class PageElement(object):
     """Page Element descriptor.
 

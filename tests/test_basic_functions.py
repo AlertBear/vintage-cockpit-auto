@@ -8,6 +8,7 @@ from pages.subscriptions_page import SubscriptionsPage
 
 ROOT_URI = "https://10.66.11.209:9090"
 
+
 @pytest.fixture(scope="module")
 def firfox(request):
     driver = webdriver.Firefox()
@@ -23,10 +24,15 @@ def test_login_page(firfox):
     login_page.basic_check_elements_exists()
     login_page.login_with_credential()
 
+
 def test_main_page(firfox):
     main_page = MainPage(firfox)
     main_page.basic_check_elements_exists()
 
+
 def test_subscriptions_page(firfox):
     subscriptions_page = SubscriptionsPage(firfox)
     subscriptions_page.basic_check_elements_exists()
+    subscriptions_page.register_rhsm()
+    # subscriptions_page.register_rhsm_key_org()
+    # subscriptions_page.register_satellite()
