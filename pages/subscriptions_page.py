@@ -1,6 +1,7 @@
 import time
 import os
 from utils.page_objects import PageObject, PageElement
+from terminal_page import TerminalPage
 
 
 class SubscriptionsPage(PageObject):
