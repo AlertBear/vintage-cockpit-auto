@@ -28,6 +28,7 @@ def test_rhsm_page(firfox):
     subscriptions_page.basic_check_elements_exists()
     subscriptions_page.register_rhsm()
     subscriptions_page.check_subscription_result()
+    # TODO: need to verify RHN sit
     # subscriptions_page.unregister_subsciption()
 
 
