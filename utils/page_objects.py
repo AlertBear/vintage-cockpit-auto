@@ -1,6 +1,9 @@
+import time
 from contextlib import contextmanager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 # Map PageElement constructor arguments to webdriver locator enums
@@ -24,8 +27,9 @@ class PageObject(object):
         Root URI to base any calls to the ``PageObject.get`` method. If not defined
         in the constructor it will try and look it from the webdriver object.
     """
-    def __init__(self, webdriver, root_uri=None):
+    def __init__(self, webdriver, root_uri=None, wait_timeout=10):
         self.w = webdriver
+        self.wait_timeout = wait_timeout
         self.root_uri = root_uri if root_uri else getattr(self.w, 'root_uri', None)
 
     def get(self, uri):
@@ -34,6 +38,15 @@ class PageObject(object):
         """
         root_uri = self.root_uri or ''
         self.w.get(root_uri + uri)
+
+    def wait(self, period=2):
+        """wait for a specific period"""
+        time.sleep(period)
+
+    def wait_until_element_visible(self, element):
+        WebDriverWait(self.w, self.wait_timeout).until(
+            EC.visibility_of(element)
+        )
 
     def basic_check_elements_exists(self):
         raise NotImplementedError

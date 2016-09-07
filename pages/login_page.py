@@ -1,5 +1,4 @@
 """"""
-import time
 from utils.page_objects import PageObject, PageElement
 
 
@@ -15,16 +14,16 @@ class LoginPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(LoginPage, self).__init__(*args, **kwargs)
         self.get("/")
-        time.sleep(2)
+        self.wait_until_element_visible(self.username)
 
     def basic_check_elements_exists(self):
         assert self.username, "input username not exist"
         assert self.password, "input password not exist"
         assert self.login_btn, "login btn not exist"
-        time.sleep(2)
+        self.wait()
 
     def login_with_credential(self):
         self.username.send_keys("root")
         self.password.send_keys("redhat")
         self.login_btn.click()
-        time.sleep(2)
+        self.wait()

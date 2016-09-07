@@ -33,6 +33,7 @@ def test_main_page(firefox):
 def test_subscriptions_page(firefox):
     subscriptions_page = SubscriptionsPage(firefox)
     subscriptions_page.basic_check_elements_exists()
+    subscriptions_page.register_to_rhsm()
 
 
 def test_node_status_page(firefox):

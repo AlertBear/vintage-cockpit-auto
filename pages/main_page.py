@@ -11,7 +11,7 @@ class MainPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(MainPage, self).__init__(*args, **kwargs)
         self.get("/system")
-        time.sleep(2)
+        self.wait_until_element_visible(self.brand_log)
 
     def basic_check_elements_exists(self):
         assert self.brand_log, "brand-log not exist"

@@ -1,4 +1,3 @@
-import time
 from utils.page_objects import PageObject, PageElement
 
 
@@ -15,6 +14,7 @@ class SubscriptionsPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(SubscriptionsPage, self).__init__(*args, **kwargs)
         self.get("/subscriptions")
+        self.wait(period=10)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -24,4 +24,4 @@ class SubscriptionsPage(PageObject):
     def register_to_rhsm(self):
         with self.switch_to_frame(self.frame_right_name):
             self.register_btn.click()
-        time.sleep(1)
+        self.wait()
