@@ -59,3 +59,7 @@ docs/_build/
 target/
 
 .vscode
+.env
+
+cockpitauto.sublime-project
+cockpitauto.sublime-workspace

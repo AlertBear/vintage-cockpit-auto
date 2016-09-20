@@ -41,7 +41,7 @@ class NodeStatusPage(PageObject):
             for i in accordion_header_btn_list[0:3]:
                 i.click()
             time.sleep(2)
-            ok_number = len(self.MultiPageElement(class_name="pficon-ok"))
+            ok_number = len(MultiPageElement(class_name="pficon-ok"))
             if ok_number == 13:
                 print ("Node health status is ok")
             elif ok_number == 11:
