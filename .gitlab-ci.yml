@@ -8,4 +8,4 @@ before_script:
 
 test:
   script:
-    - pylint -E pages
+    - pylint -E pages utils tests
