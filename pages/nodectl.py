@@ -1,6 +1,6 @@
 import re
 import simplejson
-from fabric.api import run
+from fabric.api import run, settings
 
 
 class Nodectl():
@@ -16,7 +16,8 @@ class Nodectl():
         cmd2 = "nodectl --help"
         output2 = run(cmd2)
         cmd3 = "nodectl"
-        output3 = run(cmd3)
+        with settings(warn_only=True):
+            output3 = run(cmd3)
 
         # All the output should be same
         assert output1 == output2, "nodectl help output not equal"
@@ -110,7 +111,8 @@ class Nodectl():
         check_info_dict = simplejson.loads(check_info)
 
         # Get the check status
-        nodectl_check_status = check_info_dict['dict']
+        nodectl_check_status = check_info_dict['status']
+        print nodectl_check_status
 
         # Get the mounts status
         mount_points_status = check_info_dict['mount_points']['status']
@@ -128,10 +130,58 @@ class Nodectl():
 
         # If vdsmd running, vdsmd check should be 'OK'
         if sys_vdsmd_status == "active":
-            assert nodectl_check_status == 'OK', "nodectl check status: bad"
-            assert vdsmd_status == 'OK', "nodectl check vdsmd: bad"
+            assert nodectl_check_status == 'ok', "nodectl check status: bad"
+            assert vdsmd_status == 'ok', "nodectl check vdsmd: bad"
         else:
-            assert mount_points_status == 'OK', \
+            assert mount_points_status == 'ok', \
                 "nodectl check mount points: bad"
-            assert basic_storage_status == 'OK', \
+            assert basic_storage_status == 'ok', \
                 "nodectl check basci storage: bad"
+
+    def check_nodectl_debug(self):
+        """
+        Purpose:
+            RHEVM-16605
+            Test the nodectl sub-command --debug
+        """
+        # nodectl info debug
+        cmd_info = "nodectl info --debug"
+        run(cmd_info)
+
+        # nodectl update --debug
+        # cmd_update = "nodectl update --debug"
+        # run(cmd_update)
+
+        # nodectl rollback --debug
+        # cmd_rollback = "nodectl rollback --debug"
+        # run(cmd_rollback)
+
+        # nodectl check --debug
+        cmd_check = "nodectl check --debug"
+        run(cmd_check)
+
+        # nodectl init --debug
+        cmd = "imgbase layout|sed -n '/+-.*/p'"
+        output1 = run(cmd)
+        layouts = re.findall(r'rhvh-.*', output1)
+        for layout in layouts:
+            cmd = "nodectl init --source %s --debug" % layout
+            run(cmd)
+
+    def check_nodectl_json(self):
+        """
+        Purpose:
+            RHEVM-16606
+            Test the nodectl sub-command --machine-readable
+        """
+        # nodectl info --machine-readable
+        cmd_nodectl_info = "nodectl info --machine-readable"
+        output_nodectl_info = run(cmd_nodectl_info)
+        nodectl_info_dict = simplejson.loads(output_nodectl_info)
+        assert nodectl_info_dict, "nodectl json output failed"
+
+        # nodectl info --machine-readable
+        cmd_nodectl_check = "nodectl check --machine-readable"
+        output_nodectl_check = run(cmd_nodectl_check)
+        nodectl_check_dict = simplejson.loads(output_nodectl_check)
+        assert nodectl_check_dict, "nodectl json output failed"
