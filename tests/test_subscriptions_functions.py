@@ -14,7 +14,10 @@ def firfox(request):
     root_uri = getattr(request.module, "ROOT_URI", None)
     driver.root_uri = root_uri
     yield driver
-    driver.close()
+    def close_driver():
+        driver.close()
+    request.addfinalizer(close_driver)
+    # driver.close()
 
 
 def test_login_page(firfox):
