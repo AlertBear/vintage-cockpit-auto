@@ -2,7 +2,10 @@ import time
 import os
 from utils.page_objects import PageObject, PageElement
 from terminal_page import TerminalPage
+from fabric.api import settings, run, env
 
+env.host_string = 'root@10.66.8.149'
+env.password = 'redhat'
 
 class SubscriptionsPage(PageObject):
     """Subscription-manager for host to register to RHSM/Satellite server"""
@@ -75,7 +78,7 @@ class SubscriptionsPage(PageObject):
             self.login_input.send_keys("qa@redhat.com")
             self.passwd_input.send_keys("NWmfx9m28UWzxuvh")
             self.register_btn.click()
-            time.sleep(30)
+            time.sleep(50)
 
     # function_2: register to rhsm with activation key and organization
     def register_rhsm_key_org(self):
@@ -109,5 +112,10 @@ class SubscriptionsPage(PageObject):
 
     # function_5: subscription-manager unregister
     def unregister_subsciption(self):
-        # wait for Terminal page finished
+        cmd = 'subscription-manager unregister'
+        # cmd = "ll"
+        output1 = run(cmd)
+        time.sleep(10)
+
+    def ca_install(self):
         pass
