@@ -37,18 +37,19 @@ def test_rhsm_page(firfox):
     subscriptions_page.unregister_subsciption()
 
 
-# def test_rhsm_keyOrg_page(firfox):
-#     subscriptions_page = SubscriptionsPage(firfox)
-#     subscriptions_page.basic_check_elements_exists()
-#     subscriptions_page.register_rhsm_key_org()
-#     subscriptions_page.check_subscription_result()
-#     subscriptions_page.unregister_subsciption()
+def test_rhsm_keyOrg_page(firfox):
+    subscriptions_page = SubscriptionsPage(firfox)
+    subscriptions_page.basic_check_elements_exists()
+    subscriptions_page.register_rhsm_key_org()
+    subscriptions_page.check_subscription_result()
+    # TODO: need to verify RHN sit
+    subscriptions_page.unregister_subsciption()
 
 # def test_rhsm_satelliate(firfox):
 #     subscriptions_page = SubscriptionsPage(firfox)
 #     subscriptions_page.basic_check_elements_exists()
 #     #install CA
-
+#     subscriptions_page.ca_install()
 #     subscriptions_page.register_satellite()
 #     subscriptions_page.check_subscription_result()
 #     subscriptions_page.unregister_subsciption()

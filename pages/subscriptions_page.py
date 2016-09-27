@@ -85,9 +85,9 @@ class SubscriptionsPage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
             self.key_input.send_keys("rhevh")
-            self.org_input.send_keys("Quality Assurance")
+            self.org_input.send_keys("711497")
             self.register_btn.click()
-            time.sleep(20)
+            time.sleep(40)
 
     # function_3: register to satellite with custom url.
     # need to modify
