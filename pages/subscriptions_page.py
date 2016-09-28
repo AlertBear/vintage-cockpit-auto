@@ -6,26 +6,11 @@ from fabric.api import settings, run, env
 
 env.host_string = 'root@10.66.8.149'
 env.password = 'redhat'
+ca_path = "https://10.73.75.134/pub/katello-ca-consumer-satellite61.redhat.com-1.0-1.noarch.rpm"
 
 class SubscriptionsPage(PageObject):
     """Subscription-manager for host to register to RHSM/Satellite server"""
 
-    ######################
-    # Elements on subscriptions page
-    #
-    # need_registered_msg: ...
-    # register_btn: "Register system" button
-    # login_input: username text editor
-    # passwd_input: password text editor
-    # key_input: activation key text editor
-    # org_input: organization text editor
-    # register_btn: "Register" button
-    # cancel_btn: "Cancel" button
-    # url_select_btn: URL select list button
-    # url_default_item: URL select list item "Default"
-    # url_custom_item: URL select list item "Custom URL"
-    # url_input: URL text editor
-    #
     ######################
 
     need_registered_msg = PageElement(
@@ -73,8 +58,17 @@ class SubscriptionsPage(PageObject):
 
     # function_1: register to rhsm with username and password
     def register_rhsm(self):
+        """
+        Purpose:
+            RHEVM-16598
+            Test subscription to RHSM
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
+            self.__clean_all()
+            self.url_select_btn.click()
+            self.url_custom_item.click()
+            self.url_input.send_keys("subscription.rhn.redhat.com")
             self.login_input.send_keys("qa@redhat.com")
             self.passwd_input.send_keys("NWmfx9m28UWzxuvh")
             self.register_btn.click()
@@ -82,18 +76,32 @@ class SubscriptionsPage(PageObject):
 
     # function_2: register to rhsm with activation key and organization
     def register_rhsm_key_org(self):
+        """
+        Purpose:
+            RHEVM-17034
+            Test subscription to RHSM with key and organization
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
+            self.__clean_all()
+            self.url_select_btn.click()
+            self.url_custom_item.click()
+            self.url_input.send_keys("subscription.rhn.redhat.com")
             self.key_input.send_keys("rhevh")
             self.org_input.send_keys("711497")
             self.register_btn.click()
             time.sleep(40)
 
     # function_3: register to satellite with custom url.
-    # need to modify
     def register_satellite(self):
+        """
+        Purpose:
+            RHEVM-16752
+            Test subscription to Satellite server
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
+            self.__clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
             self.url_input.send_keys("satellite61.redhat.com/rhsm")
@@ -101,6 +109,7 @@ class SubscriptionsPage(PageObject):
             self.login_input.send_keys("admin")
             self.passwd_input.send_keys("redhat")
             self.register_btn.click()
+            time.sleep(40)
 
     # function_4: Check subscription result
     def check_subscription_result(self):
@@ -113,9 +122,29 @@ class SubscriptionsPage(PageObject):
     # function_5: subscription-manager unregister
     def unregister_subsciption(self):
         cmd = 'subscription-manager unregister'
-        # cmd = "ll"
-        output1 = run(cmd)
-        time.sleep(10)
+        subscripted = run(cmd)
+        time.sleep(5)
+        if subscripted != "System has been unregistered":
+            time.sleep(5)
 
     def ca_install(self):
-        pass
+        cmd_download_ca = "curl -O -k " + ca_path
+        downloaded = run(cmd_download_ca)
+        time.sleep(5)
+        cmd_install_ca = "rpm -Uvh " + os.path.basename(ca_path)
+        run(cmd_install_ca)
+        time.sleep(7)
+    
+    def __clean_all(self):
+        self.login_input.clear()
+        self.passwd_input.clear()
+        self.key_input.clear()
+        self.org_input.clear()
+
+    def reset(self):
+        cmd_rpm_qa = "rpm -qa|grep katello"
+        result = run(cmd_rpm_qa)
+        if result:
+            cmd = "rpm -e " + os.path.splitext(os.path.basename(ca_path))[0]
+            run(cmd)
+            time.sleep(2)

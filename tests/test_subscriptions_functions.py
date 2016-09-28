@@ -5,9 +5,6 @@ from pages.subscriptions_page import SubscriptionsPage
 
 
 ROOT_URI = "https://10.66.8.149:9090"
-# env.host_string = 'root@10.66.11.209'
-# env.password = 'redhat'
-
 
 @pytest.fixture(scope="module")
 def firfox(request):
@@ -45,11 +42,12 @@ def test_rhsm_keyOrg_page(firfox):
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
 
-# def test_rhsm_satelliate(firfox):
-#     subscriptions_page = SubscriptionsPage(firfox)
-#     subscriptions_page.basic_check_elements_exists()
-#     #install CA
-#     subscriptions_page.ca_install()
-#     subscriptions_page.register_satellite()
-#     subscriptions_page.check_subscription_result()
-#     subscriptions_page.unregister_subsciption()
+def test_rhsm_satelliate(firfox):
+    subscriptions_page = SubscriptionsPage(firfox)
+    subscriptions_page.basic_check_elements_exists()
+    #install CA
+    subscriptions_page.ca_install()
+    subscriptions_page.register_satellite()
+    subscriptions_page.check_subscription_result()
+    subscriptions_page.unregister_subsciption()
+    subscriptions_page.reset()
