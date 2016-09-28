@@ -1,8 +1,9 @@
 import time
-import os
+import os,re
 from utils.page_objects import PageObject, PageElement
 from terminal_page import TerminalPage
-from fabric.api import settings, run, env
+from fabric.api import settings, run, env, get
+from StringIO import StringIO
 
 env.host_string = 'root@10.66.8.149'
 env.password = 'redhat'
@@ -110,6 +111,18 @@ class SubscriptionsPage(PageObject):
             self.passwd_input.send_keys("redhat")
             self.register_btn.click()
             time.sleep(40)
+    
+    def check_password_encrypted(self):
+        """
+        Purpose:
+            RHEVM-16750
+            Test check password is encrypted in rhsm.log
+        """
+        remote_path = "/var/log/rhsm/rhsm.log"
+        fd = StringIO()
+        get(remote_path, fd)
+        content=fd.getvalue()
+        assert not re.search("NWmfx9m28UWzxuvh", content), "There is plain password in rhsm.log file"
 
     # function_4: Check subscription result
     def check_subscription_result(self):
@@ -126,7 +139,8 @@ class SubscriptionsPage(PageObject):
         time.sleep(5)
         if subscripted != "System has been unregistered":
             time.sleep(5)
-
+    
+    # function_6: Install ca for host
     def ca_install(self):
         cmd_download_ca = "curl -O -k " + ca_path
         downloaded = run(cmd_download_ca)
@@ -135,12 +149,14 @@ class SubscriptionsPage(PageObject):
         run(cmd_install_ca)
         time.sleep(7)
     
+    # function_6: Clean all textarea's input.
     def __clean_all(self):
         self.login_input.clear()
         self.passwd_input.clear()
         self.key_input.clear()
         self.org_input.clear()
 
+    # function_7: Reset environment for register RHSM.
     def reset(self):
         cmd_rpm_qa = "rpm -qa|grep katello"
         result = run(cmd_rpm_qa)

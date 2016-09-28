@@ -51,3 +51,10 @@ def test_rhsm_satelliate(firfox):
     subscriptions_page.check_subscription_result()
     subscriptions_page.unregister_subsciption()
     subscriptions_page.reset()
+
+def test_rhsm_password_encrypted_log(firfox):
+    subscriptions_page = SubscriptionsPage(firfox)
+    subscriptions_page.basic_check_elements_exists()
+    subscriptions_page.register_rhsm()
+    subscriptions_page.check_password_encrypted()
+    subscriptions_page.unregister_subsciption()
