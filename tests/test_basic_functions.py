@@ -39,3 +39,7 @@ def test_subscriptions_page(firefox):
 def test_node_status_page(firefox):
     node_status_page = NodeStatusPage(firefox)
     node_status_page.basic_check_elements_exists()
+
+def test_main_page(firfox):
+    main_page = MainPage(firfox)
+    main_page.basic_check_elements_exists()
