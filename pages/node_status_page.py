@@ -1,4 +1,3 @@
-""""""
 import time
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 
@@ -22,7 +21,10 @@ class NodeStatusPage(PageObject):
     accordion_header_btn = MultiPageElement(class_name="accordion-header")
     close_btn = MultiPageElement(class_name="close")
 
-    # elements under Node information dialg
+    # elements under Node health dialog
+    ok_icons = MultiPageElement(class_name="pficon-ok")
+
+    # elements under Node information dialog
     entry_txts = MultiPageElement(class_name="col-md-6")
 
     # elements under rollback dialog
@@ -35,6 +37,13 @@ class NodeStatusPage(PageObject):
         super(NodeStatusPage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard")
         self.wait(period=5)
+
+    def basic_check_elements_exists(self):
+        with self.switch_to_frame(self.frame_right_name):
+            assert self.health_status_btn, "Health status btn not exist"
+            assert self.currentlayer_status_btn, \
+                "Currentlayer status button not exist"
+        self.wait()
 
     def check_virtual_machine(self):
         """
@@ -64,13 +73,12 @@ class NodeStatusPage(PageObject):
         """
         self.wait()
         with self.switch_to_frame(self.frame_right_name):
-            time.sleep(10)
             self.health_status_btn.click()
             accordion_header_btn_list = list(self.accordion_header_btn)
             for i in accordion_header_btn_list[0:3]:
                 i.click()
             time.sleep(3)
-            ok_number = len(self.MultiPageElement(class_name="pficon-ok"))
+            ok_number = len(list(self.ok_icons))
             if ok_number == 13:
                 print ("Node health status is ok")
             elif ok_number == 11:
