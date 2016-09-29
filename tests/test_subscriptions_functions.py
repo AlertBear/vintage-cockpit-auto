@@ -6,6 +6,7 @@ from pages.subscriptions_page import SubscriptionsPage
 
 ROOT_URI = "https://10.66.8.149:9090"
 
+
 @pytest.fixture(scope="module")
 def firfox(request):
     driver = webdriver.Firefox()
@@ -13,9 +14,7 @@ def firfox(request):
     root_uri = getattr(request.module, "ROOT_URI", None)
     driver.root_uri = root_uri
     yield driver
-    def close_driver():
-        driver.close()
-    request.addfinalizer(close_driver)
+    driver.close()
 
 
 def test_login_page(firfox):
@@ -41,15 +40,17 @@ def test_rhsm_keyOrg_page(firfox):
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
 
+
 def test_rhsm_satelliate(firfox):
     subscriptions_page = SubscriptionsPage(firfox)
     subscriptions_page.basic_check_elements_exists()
-    #install CA
+    # install CA
     subscriptions_page.ca_install()
     subscriptions_page.register_satellite()
     subscriptions_page.check_subscription_result()
     subscriptions_page.unregister_subsciption()
     subscriptions_page.reset()
+
 
 def test_rhsm_password_encrypted_log(firfox):
     subscriptions_page = SubscriptionsPage(firfox)

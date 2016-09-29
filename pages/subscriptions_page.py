@@ -1,8 +1,8 @@
-import time
-import os,re
+import os
+import re
 from utils.page_objects import PageObject, PageElement
-from terminal_page import TerminalPage
-from fabric.api import settings, run, env, get
+# from terminal_page import TerminalPage
+from fabric.api import run, env, get
 from StringIO import StringIO
 
 env.host_string = 'root@10.66.8.149'
@@ -68,7 +68,7 @@ class SubscriptionsPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
-            self.__clean_all()
+            self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
             self.url_input.send_keys("subscription.rhn.redhat.com")
@@ -86,7 +86,7 @@ class SubscriptionsPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
-            self.__clean_all()
+            self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
             self.url_input.send_keys("subscription.rhn.redhat.com")
@@ -104,7 +104,7 @@ class SubscriptionsPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.register_sys_btn.click()
-            self.__clean_all()
+            self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
             self.url_input.send_keys("satellite61.redhat.com/rhsm")
@@ -113,7 +113,7 @@ class SubscriptionsPage(PageObject):
             self.passwd_input.send_keys("redhat")
             self.register_btn.click()
             self.wait(period=40)
-    
+
     def check_password_encrypted(self):
         """
         Purpose:
@@ -123,7 +123,7 @@ class SubscriptionsPage(PageObject):
         remote_path = "/var/log/rhsm/rhsm.log"
         fd = StringIO()
         get(remote_path, fd)
-        content=fd.getvalue()
+        content = fd.getvalue()
         assert not re.search("NWmfx9m28UWzxuvh", content), "There is plain password in rhsm.log file"
 
     # function_4: Check subscription result
@@ -141,18 +141,18 @@ class SubscriptionsPage(PageObject):
         self.wait(period=5)
         if subscripted != "System has been unregistered":
             self.wait(period=5)
-    
+
     # function_6: Install ca for host
     def ca_install(self):
         cmd_download_ca = "curl -O -k " + ca_path
-        downloaded = run(cmd_download_ca)
+        run(cmd_download_ca)
         self.wait(period=5)
         cmd_install_ca = "rpm -Uvh " + os.path.basename(ca_path)
         run(cmd_install_ca)
         self.wait(period=7)
-    
+
     # function_6: Clean all textarea's input.
-    def __clean_all(self):
+    def _clean_all(self):
         self.login_input.clear()
         self.passwd_input.clear()
         self.key_input.clear()

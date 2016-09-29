@@ -1,4 +1,5 @@
-from utils.page_objects import PageObject, PageElement
+from utils.page_objects import PageObject
+
 
 class TerminalPage(PageObject):
     """Execute shell command in the terminal"""
