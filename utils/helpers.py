@@ -66,10 +66,13 @@ class RhevmAction:
             raise RuntimeError("Can not list hosts from %s" % self.rhevm_fqdn)
 
         hosts = r.json()
-        for host in hosts['host']:
-            if host['name'] == host_name:
-                return host['id']
-        return False
+        
+        if hosts:
+            for host in hosts['host']:
+                if host['name'] == host_name:
+                    return host['id']
+        else:
+            return False
 
     def _deactive_host(self, host_id):
         api_url_base = self.api_url.format(rhevm_fqdn=self.rhevm_fqdn, item='hosts')
@@ -116,4 +119,4 @@ class RhevmAction:
 
 
 if __name__ == '__main__':
-    pass
+    print RhevmAction("rhevm-40-1.englab.nay.redhat.com").query_host_id_by_name("ccfg")
