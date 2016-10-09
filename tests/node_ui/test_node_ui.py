@@ -7,9 +7,15 @@ from fabric.api import env
 
 
 ROOT_URI = "https://10.66.8.217:9090"
-env.host_string = 'root@10.66.8.217'
-env.password = 'redhat'
-test_build = 'rhvh-4.0-0.20160919.0'
+host_ip = "10.66.8.217"
+host_name = "cockpit-auto"
+host_password = 'redhat'
+test_build = 'rhvh-4.0-0.20160928.0'
+
+env.host_string = 'root@' + host_ip
+env.password = host_password
+
+rhvm_fqdn = "rhevm-40-1.englab.nay.redhat.com"
 
 @pytest.fixture(scope="module")
 def firefox(request):
@@ -42,7 +48,10 @@ def test_node_status(firefox):
 def test_node_health(firefox):
     """RHEVM-16580"""
     node_status_page = NodeStatusPage(firefox)
-    node_status_page.check_node_health()
+    node_status_page.check_node_health(is_registerd=False)
+    if not node_status_page.query_host_is_registerd(rhvm_fqdn, host_name):
+        node_status_page.add_host_to_rhvm(rhvm_fqdn, host_ip, host_name, host_password)
+    node_status_page.check_node_health(is_registerd=True)
 
 
 def test_node_info(firefox):
@@ -68,14 +77,18 @@ def test_node_rollback(firefox):
 
 def _test_node_status_fc(firefox):
     """RHEVM-16584"""
+    # This will be tested on a rhvh with FC
     node_status_page = NodeStatusPage(firefox)
-    node_status_page.check_node_status_fc()
+    test_layer = test_build + '+1'
+    node_status_page.check_node_status_fc(test_layer)
 
 
 def _test_node_status_efi(firefox):
     """RHEVM-16585"""
+    # This will be tested on a rhvh with EFI
     node_status_page = NodeStatusPage(firefox)
-    node_status_page.check_node_status_efi()
+    test_layer = test_build + '+1'
+    node_status_page.check_node_status_efi(test_layer)
 
 
 def _test_rollback_func(firefox):
@@ -108,10 +121,10 @@ def test_ssh_key(firefox):
     node_status_page.check_ssh_key()
 
 
-def _test_list_vms(firefox):
+def test_list_vms(firefox):
     """RHEVM-16600"""
     node_status_page = NodeStatusPage(firefox)
-    node_status_page.check_vms()
+    node_status_page.check_list_vms()
 
 
 def test_ovirt_dashboard(firefox):

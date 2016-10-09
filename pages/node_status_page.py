@@ -1,24 +1,32 @@
 import time
+from utils.helpers import RhevmAction
 from utils.page_objects import PageObject, PageElement, MultiPageElement
+from fabric.api import run
 
 
 class NodeStatusPage(PageObject):
-    """ To check Node status and System info on Virtualization panel."""
-
+    """To check Node status and System info on Virtualization panel."""
     # health_status_btn: click health_status_text link_text
-    # currentlayer_status_btn: click currentlayer_status_text link_text
-    # accordion_header_btn: like "Thin storage","basic storage","Mount points" button
-    # close_btn : close button,like "X"
-
     health_status_btn = PageElement(
         xpath=".//*[@id='content']/div/div/div[1]/table/tbody[2]/tr[1]/td[2]/div[1]/a/div")
+
+    # currentlayer_status_btn: click currentlayer_status_text link_text
     currentlayer_status_btn = PageElement(
         xpath=".//*[@id='content']/div/div/div[1]/table/tbody[2]/tr[2]/td[2]/div[1]/a")
+
+    # rollback_btn: click rollback button
     rollback_btn = PageElement(
         xpath=".//*[@id='content']/div/div/div[1]/table/tbody[2]/tr[2]/td[2]/div[1]/span/button")
 
+    # strong text shown after Virtual Machines
+    strong_txt = MultiPageElement(tag_name="strong")
+
+    # page_links: link text after Network info, System log, storage, SSH host key
     page_links = MultiPageElement(link_text="View")
+
+    # accordion_header_btn: like "Thin storage","basic storage","Mount points" button    
     accordion_header_btn = MultiPageElement(class_name="accordion-header")
+    # close_btn : close button,like "X"
     close_btn = MultiPageElement(class_name="close")
 
     # elements under Node health dialog
@@ -43,7 +51,23 @@ class NodeStatusPage(PageObject):
             assert self.health_status_btn, "Health status btn not exist"
             assert self.currentlayer_status_btn, \
                 "Currentlayer status button not exist"
+            assert self.rollback_btn, "Rollback btn not exist"
         self.wait()
+
+    def query_host_is_registerd(self, rhvm_fqdn, host_name):
+        rhvm_action = RhevmAction(rhvm_fqdn)
+        result = rhvm_action.query_host_id_by_name(host_name)
+        return result
+
+    def add_host_to_rhvm(self, rhvm_fqdn, host_ip, host_name, host_password):
+        rhvm_action = RhevmAction(rhvm_fqdn)
+        rhvm_action.add_new_host(host_ip, host_name, host_password)
+        time.sleep(120)
+
+    def remove_host_from_rhvm(self, rhvm_fqdn, host_name):
+        rhvm_action = RhevmAction(rhvm_fqdn)
+        rhvm_action.remove_host(host_name)
+        time.sleep(10)
 
     def check_virtual_machine(self):
         """
@@ -51,7 +75,8 @@ class NodeStatusPage(PageObject):
             RHEVM-16578
             Check the virtual Machines in oVirt page
         """
-        pass
+        raise NotImplementedError
+
 
     def check_node_status(self):
         """
@@ -63,9 +88,16 @@ class NodeStatusPage(PageObject):
             assert self.health_status_btn, "Health status btn not exist"
             assert self.currentlayer_status_btn, \
                 "Currentlayer status button not exist"
+            assert self.rollback_btn, "Rollback btn not exist"
         self.wait()
 
-    def check_node_health(self):
+    def _check_vdsmd_active(self):
+        cmd = "systemctl status vdsmd|grep Active"
+        output_status = run(cmd)
+        status = output_status.split()[1]
+        return status
+
+    def check_node_health(self, is_registerd=True):
         """
         Purpose:
             RHEVM-16580
@@ -79,14 +111,15 @@ class NodeStatusPage(PageObject):
                 i.click()
             time.sleep(3)
             ok_number = len(list(self.ok_icons))
-            if ok_number == 13:
-                print ("Node health status is ok")
-            elif ok_number == 11:
-                print ("The node need to register,and node health status is bad")
+            if is_registerd:
+                assert ok_number == 14, "Node health status is error"
             else:
-                print ("The node health status is error")
+                if self._check_vdsmd_active() == "active":
+                    assert ok_number == 14, "Node health status is error"
+                else:
+                    assert ok_number == 11, "Node health status is error"
             close_btn_list = list(self.close_btn)
-            for j in close_btn_list[0:]:
+            for j in close_btn_list[0:]:    
                 j.click()
 
     def check_node_info(self, test_layer):
@@ -123,7 +156,27 @@ class NodeStatusPage(PageObject):
             RHEVM-16582
             Check node layers in virtualization dashboard
         """
-        pass
+        self.wait()
+        with self.switch_to_frame(self.frame_right_name):
+            self.currentlayer_status_btn.click()
+            accordion_header_btn_list = list(self.accordion_header_btn)
+            for i in accordion_header_btn_list:
+                i.click()
+            time.sleep(3)
+
+            # Current layer should be identical with the argument
+            entry_txt_list = list(self.entry_txts)
+            assert entry_txt_list[1].text == test_layer, \
+                "Test layer fail"
+
+            # Since no update action on the new fresh installed
+            # system, default layer is current layer
+            assert entry_txt_list[0].text == entry_txt_list[1].text, \
+                "Default is not current layer"
+
+            close_btn_list = list(self.close_btn)
+            for j in close_btn_list[0:]:
+                j.click()
 
     def check_node_rollback(self, test_layer):
         """
@@ -141,33 +194,29 @@ class NodeStatusPage(PageObject):
                 "available layer not correct"
 
             # Check rollback button
+            # Just assume it is a new freshed rhvh, will implement later
             pass
 
-    def check_node_status_fc(self):
+    def check_node_status_fc(self, test_layer, is_registerd=True):
         """
         Purpose:
             RHEVM-16584
             Check node status with FC multipath
         """
-        with self.switch_to_frame(self.frame_right_name):
-            assert self.health_status_btn, "Health status btn not exist"
-            assert self.currentlayer_status_btn, \
-                "Currentlayer status button not exist"
-        self.wait()
-        pass
+        # This will be tested on a rhvh with fc storage
+        self.check_node_status()
+        self.check_node_health()
+        self.check_node_info()
 
-    def check_node_status_efi(self):
+    def check_node_status_efi(self, test_layer, is_registerd=True):
         """
         Purpose:
             RHEVM-16585
             Check node status with EFI
         """
-        with self.switch_to_frame(self.frame_right_name):
-            assert self.health_status_btn, "Health status btn not exist"
-            assert self.currentlayer_status_btn, \
-                "Currentlayer status button not exist"
-        self.wait()
-        pass
+        self.check_node_status()
+        self.check_node_health(is_registerd)
+        self.check_node_info(test_layer)
 
     def check_rollabck_func(self):
         """
@@ -175,7 +224,7 @@ class NodeStatusPage(PageObject):
             RHEVM-16586
             Rollback funciton in virtualization dashboard
         """
-        pass
+        raise NotImplementedError
 
     def check_network_func(self):
         """
@@ -184,7 +233,7 @@ class NodeStatusPage(PageObject):
             Check the Networking Information in virtualization dashboard
         """
         # Since no network info on cockpit, just drop this case currently
-        pass
+        raise NotImplementedError
 
     def check_system_log(self):
         """
@@ -219,17 +268,22 @@ class NodeStatusPage(PageObject):
             Check the ssh host key in virtualization dashboard
         """
         self.wait()
-        with self.switch_to_frame(self.frame_right_name):
+        with self.switch_to_frame(sleepf.frame_right_name):
             page_links_list = list(self.page_links)
             storage_link = page_links_list[3]
             storage_link.click()
             time.sleep(3)
 
-    def check_vms(self):
+    def check_list_vms(self):
         """
         Purpose:
             RHEVM-16660
             List of vms in dashboard
         """
-        # Since it requires to create vms on RHVM, just skip this case
-        pass
+        with self.switch_to_frame(self.frame_right_name):
+            cmd = "ps -ef|grep qemu-kvm|grep -v grep|wc -l"
+            output = run(cmd)
+            vm_count = int(output)
+            assert int(list(self.strong_txt)[0].text) == vm_count, \
+                "VM count not correct"
+        self.wait()

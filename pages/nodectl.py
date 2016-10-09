@@ -43,7 +43,7 @@ class Nodectl():
         run(cmd)
 
         # Skip this case since no version were output
-        pass
+        raise NotImplementedError
 
     def check_nodectl_init(self):
         """
@@ -52,7 +52,7 @@ class Nodectl():
             Test the nodectl init subcommand
         """
         # Skip this case currently since bug 1361055
-        pass
+        raise NotImplementedError
 
     def check_nodectl_info(self, layer):
         """
@@ -89,7 +89,7 @@ class Nodectl():
             Test the nodectl update subcommand
         """
         # Drop this case currently since bug 1366955
-        pass
+        raise NotImplementedError
 
     def check_nodectl_rollback(self):
         """
@@ -98,7 +98,7 @@ class Nodectl():
             Test the nodectl rollback subcommand
         """
         # Skip this case currently since bug 1366549
-        pass
+        raise NotImplementedError
 
     def check_nodectl_check(self):
         """
