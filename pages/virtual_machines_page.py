@@ -101,11 +101,11 @@ class VirtualMachinesPage(PageObject):
 
     # function_4: Check vdsm textarea is editable
     def check_vdsm_conf_edit(self):
-    """
+        """
         Purpose:
             RHEVM-16610
             Check VDSM info in virtual machines page
-    """
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vdsm_btn.click()
@@ -192,4 +192,4 @@ class VirtualMachinesPage(PageObject):
         fd = StringIO()
         get(remote_path, fd)
         content = fd.getvalue()
-        assert re.search(str_input, content), "Edit & Save vdsm.conf failed"
+        assert not re.search(str_input, content), "Edit & Save vdsm.conf failed"
