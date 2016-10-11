@@ -4,18 +4,19 @@ from pages.login_page import LoginPage
 from pages.node_status_page import NodeStatusPage
 from pages.dashboard_page import DashboardPage
 from fabric.api import env
+from conf import *
 
 
-ROOT_URI = "https://10.66.8.217:9090"
-host_ip = "10.66.8.217"
-host_name = "cockpit-auto"
-host_password = 'redhat'
-test_build = 'rhvh-4.0-0.20160928.0'
+host_ip = HOST_IP
+add_hostname = dguo.ADD_HOSTNAME
+host_password = HOST_CREDENTIAL[1]
+test_build = BUILD_VERSION
+ROOT_URI = "https://" + host_ip + ":9090"
 
 env.host_string = 'root@' + host_ip
 env.password = host_password
 
-rhvm_fqdn = "rhevm-40-1.englab.nay.redhat.com"
+rhvm_fqdn = dguo.RHVM_FQDN
 
 @pytest.fixture(scope="module")
 def firefox(request):
@@ -49,8 +50,8 @@ def test_node_health(firefox):
     """RHEVM-16580"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_node_health(is_registerd=False)
-    if not node_status_page.query_host_is_registerd(rhvm_fqdn, host_name):
-        node_status_page.add_host_to_rhvm(rhvm_fqdn, host_ip, host_name, host_password)
+    if not node_status_page.query_host_is_registerd(rhvm_fqdn, add_hostname):
+        node_status_page.add_host_to_rhvm(rhvm_fqdn, host_ip, add_hostname, host_password)
     node_status_page.check_node_health(is_registerd=True)
 
 

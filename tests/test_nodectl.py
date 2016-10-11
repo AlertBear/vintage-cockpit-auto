@@ -1,10 +1,15 @@
 from fabric.api import env
 import pytest
 from pages.nodectl import Nodectl
+from conf import *
 
-env.host_string = 'root@10.66.8.217'
-env.password = 'redhat'
-test_layer = 'rhvh-4.0-0.20160919.0'
+
+host_ip = HOST_IP
+host_username = HOST_CREDENTIAL[0]
+host_password = HOST_CREDENTIAL[1]
+env.host_string = host_username + '@' + host_ip
+env.password = host_password
+test_build = BUILD_VERSION
 
 
 @pytest.fixture(scope="module")
@@ -29,7 +34,7 @@ def test_nodectl_info(firefox):
         Test teh nodectl info subcommand
     """
     nodectl = Nodectl()
-    nodectl.check_nodectl_info(test_layer)
+    nodectl.check_nodectl_info(test_build)
 
 
 def test_nodectl_check(firefox):
