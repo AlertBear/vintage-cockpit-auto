@@ -17,7 +17,7 @@ def firefox(request):
     pass
 
 
-def test_nodectl_help(firefox):
+def test_16591(firefox):
     """
     Purpose:
         RHEVM-16591
@@ -27,7 +27,7 @@ def test_nodectl_help(firefox):
     nodectl.check_nodectl_help()
 
 
-def test_nodectl_info(firefox):
+def test_16594(firefox):
     """
     Purpose:
         RHEVM-16594
@@ -37,7 +37,7 @@ def test_nodectl_info(firefox):
     nodectl.check_nodectl_info(test_build)
 
 
-def test_nodectl_check(firefox):
+def test_16604(firefox):
     """
     Purpose:
         RHEVM-16604
@@ -47,7 +47,7 @@ def test_nodectl_check(firefox):
     nodectl.check_nodectl_check()
 
 
-def test_nodectl_debug(firefox):
+def test_16605(firefox):
     """
     Purpose:
         RHEVM-16605
@@ -57,7 +57,7 @@ def test_nodectl_debug(firefox):
     nodectl.check_nodectl_debug()
 
 
-def test_nodectl_json(firefox):
+def test_16606(firefox):
     """
     Purpose:
         RHEVM-16606

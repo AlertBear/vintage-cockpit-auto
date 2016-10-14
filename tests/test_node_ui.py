@@ -28,7 +28,7 @@ def firefox(request):
     driver.close()
 
 
-def test_login_page(firefox):
+def test_login(firefox):
     login_page = LoginPage(firefox)
     login_page.basic_check_elements_exists()
     login_page.login_with_credential()
@@ -40,13 +40,13 @@ def _test_virtual_machines(firefox):
     node_status_page.check_virtual_machine()
 
 
-def test_node_status(firefox):
+def test_16579(firefox):
     """RHEVM-16579"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_node_status()
 
 
-def test_node_health(firefox):
+def test_16580(firefox):
     """RHEVM-16580"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_node_health(is_registerd=False)
@@ -55,28 +55,28 @@ def test_node_health(firefox):
     node_status_page.check_node_health(is_registerd=True)
 
 
-def test_node_info(firefox):
+def test_16581(firefox):
     """RHEVM-16581"""
     node_status_page = NodeStatusPage(firefox)
     test_layer = test_build + '+1'
     node_status_page.check_node_info(test_layer)
 
 
-def test_node_layers(firefox):
+def test_16582(firefox):
     """RHEVM-16582"""
     node_status_page = NodeStatusPage(firefox)
     test_layer = test_build + "+1"
     node_status_page.check_node_layer(test_layer)
 
 
-def test_node_rollback(firefox):
+def test_16583(firefox):
     """RHEVM-16583"""
     node_status_page = NodeStatusPage(firefox)
     test_layer = test_build + '+1'
     node_status_page.check_node_rollback(test_layer)
 
 
-def _test_node_status_fc(firefox):
+def _test_16584(firefox):
     """RHEVM-16584"""
     # This will be tested on a rhvh with FC
     node_status_page = NodeStatusPage(firefox)
@@ -84,7 +84,7 @@ def _test_node_status_fc(firefox):
     node_status_page.check_node_status_fc(test_layer)
 
 
-def _test_node_status_efi(firefox):
+def _test_16585(firefox):
     """RHEVM-16585"""
     # This will be tested on a rhvh with EFI
     node_status_page = NodeStatusPage(firefox)
@@ -92,43 +92,43 @@ def _test_node_status_efi(firefox):
     node_status_page.check_node_status_efi(test_layer)
 
 
-def _test_rollback_func(firefox):
+def _test_16586(firefox):
     """RHEVM-16586"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_rollabck_func()
 
 
-def _test_network_func(firefox):
+def _test_16587(firefox):
     """RHEVM-16587"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_network_func()
 
 
-def test_system_log(firefox):
+def test_16588(firefox):
     """RHEVM-16588"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_system_log()
 
 
-def test_storage(firefox):
+def test_16589(firefox):
     """RHEVM-16589"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_storage()
 
 
-def test_ssh_key(firefox):
+def test_16590(firefox):
     """RHEVM-16590"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_ssh_key()
 
 
-def test_list_vms(firefox):
+def test_16600(firefox):
     """RHEVM-16600"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_list_vms()
 
 
-def test_ovirt_dashboard(firefox):
+def test_16601(firefox):
     """RHEVM-16601"""
     dashboard_page = DashboardPage(firefox)
     dashboard_page.basic_check_elements_exists()
