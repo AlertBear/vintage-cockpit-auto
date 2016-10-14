@@ -1,5 +1,7 @@
 import re
+import time
 from utils.page_objects import PageObject, PageElement
+from utils.helpers import RhevmAction
 from selenium.common.exceptions import NoAlertPresentException
 from fabric.api import run, env, get
 from StringIO import StringIO
@@ -7,6 +9,9 @@ from StringIO import StringIO
 env.host_string = 'root@10.66.8.149'
 env.password = 'redhat'
 str_input = "#some_text"
+rhevm_fqdn = "rhevm-40-1.englab.nay.redhat.com"
+rhvh_credentials = ["10.66.8.149", "dhcp-8-149.nay.redhat.com", "redhat"]
+rhvh_nfs = ['10.66.65.30','/home/wangwei/nfs','dhcp-8-149.nay.redhat.com']
 
 class VirtualMachinesPage(PageObject):
     """
@@ -47,6 +52,8 @@ class VirtualMachinesPage(PageObject):
         self.get("/ovirt-dashboard#/management")
         self.wait(period=10)
 
+        self.rhevm_action_obj = RhevmAction(rhevm_fqdn)
+
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
@@ -57,7 +64,7 @@ class VirtualMachinesPage(PageObject):
             assert self.maintenance_host_link, "Host to maintenance link is missing"
             assert self.refresh_link, "Refresh link is missing"
 
-    # function_1: Check vms when unregister to RHEVM
+    # function_1: Check vms when host unregister to RHEVM
     def check_running_vms_unregister(self):
         """
         Purpose:
@@ -73,7 +80,7 @@ class VirtualMachinesPage(PageObject):
             assert re.search(target_textblock, self.vdsm_unactived_textblock.text), \
             "The VDSM service is responding on this host"
 
-    # function_2: Check vms in cluster when unregister to RHEVM
+    # function_2: Check vms in cluster when host unregister to RHEVM
     def check_vms_in_cluster_unregister(self):
         """
         Purpose:
@@ -89,6 +96,29 @@ class VirtualMachinesPage(PageObject):
             except NoAlertPresentException as e: 
                 raise e
     
+    # function_3: Check vms when host register to RHEVM
+    def check_running_vms_register(self):
+        """
+        Purpose:
+            RHEVM-16607
+            Check running VMs(local storage disk image) status in virtual machines page
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            # if self.rhevm_action_obj:
+            #     if self.rhevm_action_obj.add_new_host(*rhvh_credentials):
+            #         print 'Host regitst to RHEVM successfully'
+            #         if self.rhevm_action_obj.add_nfs_data_storage(*rhvh_nfs):
+            #             print "ok"
+            #         else:
+            #             print "Add nfs data storage failed"
+            #     else:
+            #         print "Add new host failed"
+            # else:
+            #     print "Create rhevm_action object failed"
+            self.rhevm_action_obj.create_vm("vm_1")
+
+
     # function_3: Check vdsm page elements are exist
     def check_vdsm_elements(self):
         with self.switch_to_frame(self.frame_right_name):

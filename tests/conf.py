@@ -2,6 +2,8 @@
 # user conf should import like
 # import conf_xxx
 
-HOST_IP = "0.0.0.0"
+import conf_weiwang as weiwang
+
+HOST_IP = "10.66.8.149"
 HOST_CREDENTIAL = ("root", "redhat")
 BUILD_VERSION = ""

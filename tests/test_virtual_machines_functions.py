@@ -21,18 +21,22 @@ def test_login_page(firfox):
     login_page.basic_check_elements_exists()
     login_page.login_with_credential()
 
-def test_running_virtual_machines_unregister(firfox):
-    virtual_machines_page = VirtualMachinesPage(firfox)
-    virtual_machines_page.basic_check_elements_exists()
-    virtual_machines_page.check_running_vms_unregister()
+# def test_running_virtual_machines_unregister(firfox):
+#     virtual_machines_page = VirtualMachinesPage(firfox)
+#     virtual_machines_page.basic_check_elements_exists()
+#     virtual_machines_page.check_running_vms_unregister()
 
-def test_virtual_machines_in_cluster_unregister(firfox):
-    virtual_machines_page = VirtualMachinesPage(firfox)
-    virtual_machines_page.basic_check_elements_exists()
-    virtual_machines_page.check_vms_in_cluster_unregister()
+# def test_virtual_machines_in_cluster_unregister(firfox):
+#     virtual_machines_page = VirtualMachinesPage(firfox)
+#     virtual_machines_page.basic_check_elements_exists()
+#     virtual_machines_page.check_vms_in_cluster_unregister()
 
-def test_virtual_machines_vdsm(firfox):
+# def test_virtual_machines_vdsm(firfox):
+#     virtual_machines_page = VirtualMachinesPage(firfox)
+#     virtual_machines_page.basic_check_elements_exists()
+#     virtual_machines_page.check_vdsm_elements()
+#     virtual_machines_page.check_vdsm_conf_edit()
+
+def test_running_virtual_machines_register(firfox):
     virtual_machines_page = VirtualMachinesPage(firfox)
-    virtual_machines_page.basic_check_elements_exists()
-    virtual_machines_page.check_vdsm_elements()
-    virtual_machines_page.check_vdsm_conf_edit()
+    virtual_machines_page.check_running_vms_register()
