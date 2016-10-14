@@ -34,7 +34,7 @@ def test_login(firefox):
     login_page.login_with_credential()
 
 
-def _test_virtual_machines(firefox):
+def _test_16578(firefox):
     """RHEVM-16578"""
     node_status_page = NodeStatusPage(firefox)
     node_status_page.check_virtual_machine()
