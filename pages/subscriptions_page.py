@@ -1,12 +1,8 @@
 import os
 import re
 from utils.page_objects import PageObject, PageElement
-from tests.conf import *
 from fabric.api import run, get, env
 from StringIO import StringIO
-
-env.host_string = 'root@' + HOST_IP
-env.password = HOST_CREDENTIAL[-1]
 
 class SubscriptionsPage(PageObject):
     """Subscription-manager for host to register to RHSM/Satellite server"""
@@ -57,7 +53,7 @@ class SubscriptionsPage(PageObject):
             assert self.url_custom_item, "custom item in url list not exist"
             assert self.url_input, "url text editor not exist"
 
-    def register_rhsm(self):
+    def check_register_rhsm(self):
         """
         Purpose:
             RHEVM-16598
@@ -78,7 +74,7 @@ class SubscriptionsPage(PageObject):
             self.register_btn.click()
             self.wait(period=50)
 
-    def register_rhsm_key_org(self):
+    def check_register_rhsm_key_org(self):
         """
         Purpose:
             RHEVM-17034
@@ -99,7 +95,7 @@ class SubscriptionsPage(PageObject):
             self.register_btn.click()
             self.wait(period=40)
 
-    def register_satellite(self):
+    def check_register_satellite(self):
         """
         Purpose:
             RHEVM-16752
@@ -113,7 +109,6 @@ class SubscriptionsPage(PageObject):
             self.wait(period=0.5)
             self.url_input.send_keys("satellite61.redhat.com/rhsm")
             self.wait(period=0.5)
-            # add funciton to install CA to host
             self.login_input.send_keys("admin")
             self.wait(period=0.5)
             self.passwd_input.send_keys("redhat")
@@ -147,17 +142,17 @@ class SubscriptionsPage(PageObject):
         if subscripted != "System has been unregistered":
             self.wait(period=5)
 
-    def ca_install(self):
-        cmd_download_ca = "curl -O -k " + weiwang.CA_PATH
+    def ca_install(self, ca_path):
+        cmd_download_ca = "curl -O -k " + ca_path
         run(cmd_download_ca)
         self.wait(period=5)
-        cmd_install_ca = "rpm -Uvh " + os.path.basename(weiwang.CA_PATH)
+        cmd_install_ca = "rpm -Uvh " + os.path.basename(ca_path)
         run(cmd_install_ca)
         self.wait(period=10)
 
-    def add_domain_name(self):
-        append_txt = weiwang.SATELLITE_IP + '  ' + weiwang.SATELLITE_HOSTNAME
-        cmd_dns = "echo " + append_txt + " >> " + weiwang.HOSTS_FILE
+    def add_domain_name(self, ip, hostname, file):
+        append_txt = ip + '  ' + hostname
+        cmd_dns = "echo " + append_txt + " >> " + file
         run(cmd_dns)
 
     def _clean_all(self):
@@ -166,10 +161,10 @@ class SubscriptionsPage(PageObject):
         self.key_input.clear()
         self.org_input.clear()
 
-    def reset(self):
+    def reset(self, ca_path):
         cmd_rpm_qa = "rpm -qa|grep katello"
         result = run(cmd_rpm_qa)
         if result:
-            cmd = "rpm -e " + os.path.splitext(os.path.basename(weiwang.CA_PATH))[0]
+            cmd = "rpm -e " + os.path.splitext(os.path.basename(ca_path))[0]
             run(cmd)
             self.wait()
