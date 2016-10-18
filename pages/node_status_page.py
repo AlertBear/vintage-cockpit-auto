@@ -109,8 +109,9 @@ class NodeStatusPage(PageObject):
             accordion_header_btn_list = list(self.accordion_header_btn)
             for i in accordion_header_btn_list[0:3]:
                 i.click()
-            time.sleep(3)
+            time.sleep(10)
             ok_number = len(list(self.ok_icons))
+
             if is_registerd:
                 assert ok_number == 14, "Node health status is error"
             else:
