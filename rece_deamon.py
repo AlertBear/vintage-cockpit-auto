@@ -4,12 +4,13 @@ import os
 import time
 import json
 import pytest
-from fabric import run, local, settings
+from tests.conf import REDIS_HOST
+from fabric.api import run, local, settings
 
 
 class RedisAction(object):
     def __init__(self):
-        self.redis_host = "10.66.9.216"
+        self.redis_host = REDIS_HOST
         self.redis_conn = redis.StrictRedis(host=self.redis_host, port=6379, db=0, password="redhat")
         self.p = self.redis_conn.pubsub(ignore_subscribe_messages=True)
         self.p.subscribe("dell-per510-01.lab.eng.pek2.redhat.com-cockpit")
@@ -23,15 +24,16 @@ class RedisAction(object):
             elif "done" in msg[-1]:
                 self.p.unsubscribe()
                 return 2
-        except Exception:
+        except Exception as e:
+            print e
             return 1
 
     def test_connection(self, ipaddr):
-        with settings(host_string='root@' + ipaddr):
+        with settings(host_string='root@' + ipaddr, password="redhat"):
             run("hostname")
 
     def publish_result(self, data):
-        self.redis_conn.publish("dell-per510-01.lab.eng.pek2.redhat.com-cockpit-result", data)
+        self.redis_conn.publish("dell-per510-01.lab.eng.pek2.redhat.com-cockpit-result", str(data))
 
 
 def format_result(file):
