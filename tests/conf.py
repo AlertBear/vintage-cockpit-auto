@@ -3,7 +3,8 @@
 # import conf_xxx
 import conf_dguo as dguo
 
+import conf_weiwang as weiwang
 
 HOST_IP = "10.66.8.217"
 HOST_CREDENTIAL = ("root", "redhat")
-BUILD_VERSION = "rhvh-4.0-0.20161007.0"
+BUILD_VERSION = ""

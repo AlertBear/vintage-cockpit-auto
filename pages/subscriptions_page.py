@@ -1,14 +1,12 @@
 import os
 import re
 from utils.page_objects import PageObject, PageElement
-# from terminal_page import TerminalPage
-from fabric.api import run, env, get
+from tests.conf import *
+from fabric.api import run, get, env
 from StringIO import StringIO
 
-env.host_string = 'root@10.66.8.149'
-env.password = 'redhat'
-ca_path = "https://10.73.75.134/pub/katello-ca-consumer-satellite61.redhat.com-1.0-1.noarch.rpm"
-
+env.host_string = 'root@' + HOST_IP
+env.password = HOST_CREDENTIAL[-1]
 
 class SubscriptionsPage(PageObject):
     """Subscription-manager for host to register to RHSM/Satellite server"""
@@ -32,10 +30,10 @@ class SubscriptionsPage(PageObject):
     url_custom_item = PageElement(
         xpath=".//*[@id='subscription-register-url']/ul/li[2]/a")
     url_input = PageElement(id_="subscription-register-url-custom")
-    product_name = PageElement(
-        xpath=".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[1]/td[2]/span")
-    register_status = PageElement(
-        xpath=".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[5]/td[2]/span")
+    product_name = PageElement(xpath=
+        ".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[1]/td[2]/span")
+    register_status = PageElement(xpath=
+        ".//*[@id='subscriptions-subscribed']/div/div[2]/table/tbody/tr[5]/td[2]/span")
     # frame name
     frame_right_name = "cockpit1:localhost/subscriptions"
 
@@ -59,7 +57,6 @@ class SubscriptionsPage(PageObject):
             assert self.url_custom_item, "custom item in url list not exist"
             assert self.url_input, "url text editor not exist"
 
-    # function_1: register to rhsm with username and password
     def register_rhsm(self):
         """
         Purpose:
@@ -81,7 +78,6 @@ class SubscriptionsPage(PageObject):
             self.register_btn.click()
             self.wait(period=50)
 
-    # function_2: register to rhsm with activation key and organization
     def register_rhsm_key_org(self):
         """
         Purpose:
@@ -103,7 +99,6 @@ class SubscriptionsPage(PageObject):
             self.register_btn.click()
             self.wait(period=40)
 
-    # function_3: register to satellite with custom url.
     def register_satellite(self):
         """
         Purpose:
@@ -138,7 +133,6 @@ class SubscriptionsPage(PageObject):
         content = fd.getvalue()
         assert not re.search("NWmfx9m28UWzxuvh", content), "There is plain password in rhsm.log file"
 
-    # function_4: Check subscription result
     def check_subscription_result(self):
         with self.switch_to_frame(self.frame_right_name):
             assert self.product_name.text == "Red Hat Virtualization Host", \
@@ -146,7 +140,6 @@ class SubscriptionsPage(PageObject):
             assert self.register_status.text == "Subscribed", \
                 "subscription fail"
 
-    # function_5: subscription-manager unregister
     def unregister_subsciption(self):
         cmd = 'subscription-manager unregister'
         subscripted = run(cmd)
@@ -154,27 +147,29 @@ class SubscriptionsPage(PageObject):
         if subscripted != "System has been unregistered":
             self.wait(period=5)
 
-    # function_6: Install ca for host
     def ca_install(self):
-        cmd_download_ca = "curl -O -k " + ca_path
+        cmd_download_ca = "curl -O -k " + weiwang.CA_PATH
         run(cmd_download_ca)
         self.wait(period=5)
-        cmd_install_ca = "rpm -Uvh " + os.path.basename(ca_path)
+        cmd_install_ca = "rpm -Uvh " + os.path.basename(weiwang.CA_PATH)
         run(cmd_install_ca)
-        self.wait(period=7)
+        self.wait(period=10)
 
-    # function_6: Clean all textarea's input.
+    def add_domain_name(self):
+        append_txt = weiwang.SATELLITE_IP + '  ' + weiwang.SATELLITE_HOSTNAME
+        cmd_dns = "echo " + append_txt + " >> " + weiwang.HOSTS_FILE
+        run(cmd_dns)
+
     def _clean_all(self):
         self.login_input.clear()
         self.passwd_input.clear()
         self.key_input.clear()
         self.org_input.clear()
 
-    # function_7: Reset environment for register RHSM.
     def reset(self):
         cmd_rpm_qa = "rpm -qa|grep katello"
         result = run(cmd_rpm_qa)
         if result:
-            cmd = "rpm -e " + os.path.splitext(os.path.basename(ca_path))[0]
+            cmd = "rpm -e " + os.path.splitext(os.path.basename(weiwang.CA_PATH))[0]
             run(cmd)
             self.wait()
