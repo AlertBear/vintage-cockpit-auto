@@ -34,55 +34,64 @@ class RedisAction(object):
         self.redis_conn.publish("dell-per510-01.lab.eng.pek2.redhat.com-cockpit-result", data)
 
 
+def format_result(file):
+    # Parse the result and pass to redis channel
+    with open(file) as f:
+        r = json.load(f)
+    ret = {}
+    format_ret = {}
+    for case in r['report']['tests']:
+        ret.update({case['name']: case['outcome']})
+    print ret
+
+    for k, v in ret.items():
+        format_k = k.split('::')[1].split('_')[1]
+        if format_k == "login":
+            continue
+        format_ret.update({'RHEVM-' + format_k: v})
+    return format_ret
+
+
 if __name__ == "__main__":
+    # All files used
+    abspath = os.path.abspath(os.path.dirname(__file__))
+    conf_file = os.path.join(abspath, "tests/conf.py")
+    test_file = os.path.join(abspath, "tests/test_nodectl.py")
+    result_file = "./result.json"
+
     redis_act = RedisAction()
     while True:
         ipaddr = redis_act.receive_ipaddr()
         if ipaddr == 1:
-            print "break for next test!"
+            print "Break for next test!"
             time.sleep(5)
             continue
         elif ipaddr == 2:
-            print "all the test finished!"
+            print "All the test finished!"
             break
         else:
-            while True:
-                print "Try to connect %s" % ipaddr
-                try:
-                    redis_act.test_connection(ipaddr)
-                except Exception:
-                    time.sleep(10)
-                    continue
-
-                print "Connect succeed! try to run test now..."
-
-                abspath = os.path.abspath(os.path.dirname(__file__))
-                conf_file = os.path.join(abspath, "tests/conf.py")
-                test_file = os.path.join(abspath, "tests/test_nodectl.py")
-
-                # Modify the conf.py to add the host ip
-                local("sed -i 's/HOST_IP =.*/HOST_IP=%s/' %s" % (str(ipaddr), str(conf_file)))
-
-                # Execute to do the tests
-                try:
-                    pytest.main("-s -v %s --json=result.json")
-                except Exception as e:
-                    print e
-                    break
-
-                # Parse the result and pass to redis channel
-                with open('./result.json') as f:
-                    r = json.load(f)
-                ret = {}
-                format_ret = {}
-                for case in r['report']['tests']:
-                    ret.update({case['name']: case['outcome']})
-                print ret
-
-                for k, v in ret.items():
-                    format_k = k.split('::')[1].split('_')[1]
-                    if format_k == "login":
+            try:
+                while True:
+                    print "Try to connect %s" % ipaddr
+                    try:
+                        redis_act.test_connection(ipaddr)
+                    except Exception:
+                        time.sleep(10)
                         continue
-                    format_ret.update({'RHEVM-' + format_k: v})
 
-                redis_act.publish_result(format_ret)
+                    print "Connect succeed! try to run test now..."
+
+                    # Modify the conf.py to add the host ip
+                    local("""sed -i 's/HOST_IP =.*/HOST_IP="%s"/' %s""" % (str(ipaddr), str(conf_file)))
+
+                    # Execute to do the tests
+                    pytest.main("-s -v %s --json=%s" % (test_file, result_file))
+
+                    # Parse the results and pass to redis
+                    format_result = format_result(result_file)
+                    redis_act.publish_result(str(format_result))
+                    raise Exception("Done")
+            except Exception as e:
+                if e != "Done":
+                    print e
+                break
