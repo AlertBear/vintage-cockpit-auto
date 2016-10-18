@@ -206,7 +206,7 @@ class NodeStatusPage(PageObject):
         # This will be tested on a rhvh with fc storage
         self.check_node_status()
         self.check_node_health()
-        self.check_node_info()
+        self.check_node_info(test_layer)
 
     def check_node_status_efi(self, test_layer, is_registerd=True):
         """
@@ -268,7 +268,7 @@ class NodeStatusPage(PageObject):
             Check the ssh host key in virtualization dashboard
         """
         self.wait()
-        with self.switch_to_frame(sleepf.frame_right_name):
+        with self.switch_to_frame(self.frame_right_name):
             page_links_list = list(self.page_links)
             storage_link = page_links_list[3]
             storage_link.click()
