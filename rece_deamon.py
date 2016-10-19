@@ -51,7 +51,7 @@ def format_result(file):
         if format_k == "login":
             continue
         format_ret.update({'RHEVM-' + format_k: v})
-    return format_ret
+    return json.dumps(format_ret)
 
 
 if __name__ == "__main__":
@@ -90,8 +90,8 @@ if __name__ == "__main__":
                     pytest.main("-s -v %s --json=%s" % (test_file, result_file))
 
                     # Parse the results and pass to redis
-                    format_result = format_result(result_file)
-                    redis_act.publish_result(str(format_result))
+                    res = format_result(result_file)
+                    redis_act.publish_result(res)
                     raise Exception("Done")
             except Exception as e:
                 if e != "Done":
