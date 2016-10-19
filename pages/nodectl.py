@@ -161,12 +161,12 @@ class Nodectl():
         run(cmd_check)
 
         # nodectl init --debug
-        cmd = "imgbase layout|sed -n '/+-.*/p'"
-        output1 = run(cmd)
-        layouts = re.findall(r'rhvh-.*', output1)
-        for layout in layouts:
-            cmd = "nodectl init --source %s --debug" % layout
-            run(cmd)
+        # cmd = "imgbase layout|sed -n '/+-.*/p'"
+        # output1 = run(cmd)
+        # layouts = re.findall(r'rhvh-.*', output1)
+        # for layout in layouts:
+        #     cmd = "nodectl init --source %s --debug" % layout
+        #     run(cmd)
 
     def check_nodectl_json(self):
         """

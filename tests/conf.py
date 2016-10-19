@@ -5,7 +5,7 @@ import conf_dguo as dguo
 
 import conf_weiwang as weiwang
 
-HOST_IP="10.73.75.230"
+HOST_IP="10.66.8.217"
 HOST_CREDENTIAL = ("root", "redhat")
 BUILD_VERSION = "rhvh-4.0-0.20161012.0"
 REDIS_HOST = "10.66.11.155"
