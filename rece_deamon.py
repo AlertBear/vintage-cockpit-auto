@@ -58,7 +58,7 @@ if __name__ == "__main__":
     # All files used
     abspath = os.path.abspath(os.path.dirname(__file__))
     conf_file = os.path.join(abspath, "tests/conf.py")
-    test_file = os.path.join(abspath, "tests/test_nodectl.py")
+    test_file = os.path.join(abspath, "tests/test_demo.py")
     result_file = "./result.json"
 
     redis_act = RedisAction()
