@@ -65,3 +65,5 @@ cockpitauto.sublime-project
 cockpitauto.sublime-workspace
 
 test_fordebug.py
+
+.idea
