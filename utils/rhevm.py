@@ -4,6 +4,10 @@ import pycurl
 import ovirtsdk4 as sdk
 import ovirtsdk4.types as types
 
+# pip uninstall pycurl
+# export PYCURL_SSL_LIBRARY=nss
+# pip install pycurl
+
 
 class RHEVM(object):
     """base class represents rhevm instance"""
@@ -91,9 +95,7 @@ class Hosts(RHEVM):
             address=address,
             root_password=root_password,
             cluster=types.Cluster(
-                name=cluster_name,
-            ),
-        )
+                name=cluster_name, ), )
         host = self.hosts_service.add(host_)
 
         if wait_host_up:
@@ -133,6 +135,7 @@ class Hosts(RHEVM):
     def __del__(self):
         self.conn.close()
 
+
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+    hosts = Hosts("fqdn")
+    print hosts.remove_host("host_name")
