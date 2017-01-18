@@ -27,10 +27,10 @@ class HandleVNCSetup:
         self.host_password = host_password
         self.vnc_password = vnc_password
         self._set_vnc_pass()
-        self.cli = api.connect(self.ip, password=self.vnc_pass)
+        self.cli = api.connect(self.host_ip, password=self.vnc_password)
 
     def _set_vnc_pass(self):
-        with settings(warn_only=True, host_string='root@' + self.ip, password=self.host_password):
+        with settings(warn_only=True, host_string='root@' + self.host_ip, password=self.host_password):
             run('hosted-engine --add-console-password --password=%s' % self.vnc_password, quiet=True)
 
     def turn_on_ssh(self):
@@ -134,6 +134,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     id = dr.find_element_by_id
     class_name = dr.find_element_by_class_name
     xpath = dr.find_element_by_xpath
+    tag = dr.find_element_by_tag_name
 
     id("login-user-input").send_keys("root")
     time.sleep(1)
@@ -155,9 +156,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("form-control").send_keys(nfs_storage)  # NFS storage path
     time.sleep(2)
     class_name("btn-default").click()    # confirm nfs storage path
-    time.sleep(5)
+    time.sleep(10)
     class_name("btn-default").click()    # iptables default confirm
-    time.sleep(2)
+    time.sleep(5)
     class_name("btn-default").click()    # gateway ip confirm
     time.sleep(2)
     class_name("form-control").clear()   # select NIC
@@ -165,7 +166,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("form-control").send_keys(nic)
     time.sleep(1)
     class_name("btn-default").click()
-    time.sleep(2)
+    time.sleep(1)
     class_name("form-control").clear()   # select deploy model
     time.sleep(1)
     class_name("form-control").send_keys(deploy_mode)
@@ -180,14 +181,14 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(1)
     class_name("btn-default").click()
     time.sleep(65)
-
+    '''
     class_name("form-control").clear()
     time.sleep(2)
     class_name("form-control").send_keys(storage_path)
     time.sleep(5)
     class_name("btn-default").click()
     time.sleep(3)
-
+    '''
     class_name("btn-default").click()    # select cloud-init
     time.sleep(2)
     class_name("btn-default").click()    # select Generate
@@ -226,12 +227,16 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(1)
     class_name("btn-default").click()
     time.sleep(2)
+    """
     class_name("form-control").clear()    # set memory size
     time.sleep(1)
     class_name("form-control").send_keys("4096")
     time.sleep(1)
-    class_name("btn-default").click()
+    """
+    class_name("btn-default").click()     # set memory to default size
     time.sleep(2)
+    print tag('span')   
+    print tag('span').text
     class_name("btn-default").click()     # network,default DHCP
     time.sleep(2)
     class_name("btn-default").click()     # resovle hostname
@@ -260,9 +265,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(5)
     class_name("btn-default").click()    # confirm the configuration
     time.sleep(600)
-
+    
     with settings(warn_only=True, host_string='root@' + host_ip, password=host_password):
-        HandleVNCSetup(host_ip=self.host_ip, host_password=host_password).turn_on_ssh()
+        HandleVNCSetup(host_ip=host_ip, host_password=host_password).turn_on_ssh()
     time.sleep(10)
 
     with settings(warn_only=True, host_string='root@' + vm_ip, password=vm_password):
