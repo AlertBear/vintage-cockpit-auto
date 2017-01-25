@@ -116,7 +116,3 @@ class RhevmAction:
                 raise RuntimeError("Can not delete host %s" % host_name)
         else:
             print "Can't find host with name %s" % host_name
-
-
-if __name__ == '__main__':
-    print RhevmAction("rhevm-40-1.englab.nay.redhat.com").query_host_id_by_name("ccfg")
