@@ -2,11 +2,12 @@
 #
 # The variable to be used by each case
 #
-HOST_IP = "10.66.148.10"
+HOST_IP = "10.66.148.7"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
 TEST_BUILD = "rhvh-4.1-0.20170120.0"
 REDIS_HOST = "10.66.11.155"
+
 
 #
 # The variable to be used by cockpit-ovirt common cases
@@ -16,7 +17,7 @@ REDIS_HOST = "10.66.11.155"
 #
 # The variable to be used by cockpit-ovirt dashboard cases
 #
-RHVM_FQDN = "rhevm-40-2.englab.nay.redhat.com"
+RHVM_FQDN = "rhvm41-vlan50-1.lab.eng.pek2.redhat.com"
 ADD_HOSTNAME = "cockpit-ovirt"
 
 
@@ -24,10 +25,15 @@ ADD_HOSTNAME = "cockpit-ovirt"
 # The variable to be used by cockpit-ovirt subscription 
 # manager cases
 #
-CA_PATH = "https://10.73.75.134/pub/katello-ca-consumer-satellite61.redhat.com-1.0-1.noarch.rpm"
-SATELLITE_IP = '10.73.75.134'
-SATELLITE_HOSTNAME = 'satellite61.redhat.com'
-HOSTS_FILE = '/etc/hosts'
+RHN_USER = "qa@redhat.com"
+RHN_PASSWORD = "EC3YWpKxSe524GCK"
+ACTIVATION_KEY = "rhevh"
+ACTIVATION_ORG = "711497"
+SATELLITE_IP = "10.73.75.61"
+SATELLITE_HOSTNAME = "satellite62.lab.eng.pek2.redhat.com"
+SATELLITE_USER = "admin"
+SATELLITE_PASSWORD = "redhat"
+CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.redhat.com-1.0-1.noarch.rpm"
 
 
 #

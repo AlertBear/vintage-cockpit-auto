@@ -8,7 +8,6 @@ class Nodectl():
     def check_nodectl_help(self):
         """
         Purpose:
-            RHEVM-16591
             Tets the nodectl help subcommand
         """
         cmd1 = "nodectl -h"
@@ -36,7 +35,6 @@ class Nodectl():
     def check_nodectl_version(self):
         """
         Purpose:
-            RHEVM-16592
             Test the nodectl version
         """
         cmd = "nodectl --version"
@@ -48,7 +46,6 @@ class Nodectl():
     def check_nodectl_init(self):
         """
         Purpose:
-            RHEVM-16593
             Test the nodectl init subcommand
         """
         # Skip this case currently since bug 1361055
@@ -57,7 +54,6 @@ class Nodectl():
     def check_nodectl_info(self, layer):
         """
         Purpose:
-            RHEVM-16594
             Test teh nodectl info subcommand
         """
         cmd_info = "nodectl info --machine-readable"
@@ -85,7 +81,6 @@ class Nodectl():
     def check_nodectl_update(self):
         """
         Purpose:
-            RHEVM-16602
             Test the nodectl update subcommand
         """
         # Drop this case currently since bug 1366955
@@ -94,7 +89,6 @@ class Nodectl():
     def check_nodectl_rollback(self):
         """
         Purpose:
-            RHEVM-16603
             Test the nodectl rollback subcommand
         """
         # Skip this case currently since bug 1366549
@@ -103,7 +97,6 @@ class Nodectl():
     def check_nodectl_check(self):
         """
         Purpose:
-            RHEVM-16604
             Test the nodectl check subcommand
         """
         cmd_check = "nodectl check --machine-readable"
@@ -141,7 +134,6 @@ class Nodectl():
     def check_nodectl_debug(self):
         """
         Purpose:
-            RHEVM-16605
             Test the nodectl sub-command --debug
         """
         # nodectl info debug
@@ -171,7 +163,6 @@ class Nodectl():
     def check_nodectl_json(self):
         """
         Purpose:
-            RHEVM-16606
             Test the nodectl sub-command --machine-readable
         """
         # nodectl info --machine-readable
@@ -185,3 +176,33 @@ class Nodectl():
         output_nodectl_check = run(cmd_nodectl_check)
         nodectl_check_dict = simplejson.loads(output_nodectl_check)
         assert nodectl_check_dict, "nodectl json output failed"
+
+    def check_nodectl_motd(self):
+        """
+        Purpose:
+            Check the motd for nodectl in Terminal
+        """
+        # nodectl motd
+        cmd_nodectl_motd = "nodectl motd"
+        output_nodectl_motd = run(cmd_nodectl_motd)
+        assert output_nodectl_motd, "nodectl motd output failed"
+
+    def check_nodectl_banner(self):
+        """
+        Purpose:
+            Check the generate-banner output for nodectl in Terminal
+        """
+        # nodectl generate-banner
+        cmd_nodectl_banner = "nodectl generate-banner"
+        run(cmd_nodectl_banner)
+        cmd = "cat /etc/issue"
+        output1 = run(cmd)
+
+        cmd_modify_banner = "echo 'cockpit-ovirt' >> /etc/issue"
+        run(cmd_modify_banner)
+
+        cmd_nodectl_update = "nodectl generate-banner --update-issue"
+        run(cmd_nodectl_update)
+        output2 = run(cmd)
+
+        assert output1 == output2, "nodectl generate-banner failed"

@@ -2,15 +2,33 @@ import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.virtual_machines_page import VirtualMachinesPage
-from utils.helpers import Config
+from conf import *
 
-cfg = Config('./cockpit.ini')
-
-host_ip = cfg.get('SHARE', 'HOST_IP')
-host_user = cfg.get('SHARE', 'HOST_USER')
-host_password = cfg.get('SHARE', 'HOST_PASSWORD')
+host_ip = HOST_IP
+host_user = HOST_USER
+host_password = HOST_PASSWORD
 
 ROOT_URI = "https://" + host_ip + ":9090"
+
+
+@pytest.fixture(autouse=True)
+def _environment(request):
+    cmd = "rpm -qa|grep cockpit-ovirt"
+    cockpit_ovirt_version = run(cmd)
+
+    cmd = "rpm -q imgbased"
+    result = run(cmd)
+    if result.failed:
+        cmd = "cat /etc/redhat-release"
+        redhat_release = run(cmd)
+        request.config._environment.append(('redhat-release', redhat_release))
+    else:
+        cmd_imgbase = "imgbase w"
+        output_imgbase = run(cmd_imgbase)
+        rhvh_version = output_imgbase.split()[-1].split('+')[0]
+        request.config._environment.append(('rhvh-version', rhvh_version))
+
+    request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")
@@ -42,7 +60,3 @@ def test_virtual_machines_vdsm(firfox):
     virtual_machines_page.basic_check_elements_exists()
     virtual_machines_page.check_vdsm_elements()
     virtual_machines_page.check_vdsm_conf_edit()
-
-# def test_running_virtual_machines_register(firfox):
-#     virtual_machines_page = VirtualMachinesPage(firfox)
-#     virtual_machines_page.check_running_vms_register()

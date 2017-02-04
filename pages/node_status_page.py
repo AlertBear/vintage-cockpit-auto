@@ -72,7 +72,6 @@ class NodeStatusPage(PageObject):
     def check_virtual_machine(self):
         """
         Purpose:
-            RHEVM-16578
             Check the virtual Machines in oVirt page
         """
         raise NotImplementedError
@@ -81,7 +80,6 @@ class NodeStatusPage(PageObject):
     def check_node_status(self):
         """
         Purpose:
-            RHEVM-16579
             Check node status in virtualization dashboard.
         """
         with self.switch_to_frame(self.frame_right_name):
@@ -100,7 +98,6 @@ class NodeStatusPage(PageObject):
     def check_node_health(self, is_registerd=True):
         """
         Purpose:
-            RHEVM-16580
             Check node health info in virtualization dashboard
         """
         self.wait()
@@ -126,7 +123,6 @@ class NodeStatusPage(PageObject):
     def check_node_info(self, test_layer):
         """
         Purpose:
-            RHEVM-16581
             Check node information in virtualization dashboard
         """
         self.wait()
@@ -154,7 +150,6 @@ class NodeStatusPage(PageObject):
     def check_node_layer(self, test_layer):
         """
         Purpose:
-            RHEVM-16582
             Check node layers in virtualization dashboard
         """
         self.wait()
@@ -182,7 +177,6 @@ class NodeStatusPage(PageObject):
     def check_node_rollback(self, test_layer):
         """
         Purpose:
-            RHEVM-16583
             Check node rollback in virtualization dashboard
         """
         self.wait()
@@ -196,12 +190,11 @@ class NodeStatusPage(PageObject):
 
             # Check rollback button
             # Just assume it is a new freshed rhvh, will implement later
-            pass
+            raise NotImplementedError
 
     def check_node_status_fc(self, test_layer, is_registerd=True):
         """
         Purpose:
-            RHEVM-16584
             Check node status with FC multipath
         """
         # This will be tested on a rhvh with fc storage
@@ -212,7 +205,6 @@ class NodeStatusPage(PageObject):
     def check_node_status_efi(self, test_layer, is_registerd=True):
         """
         Purpose:
-            RHEVM-16585
             Check node status with EFI
         """
         self.check_node_status()
@@ -222,7 +214,6 @@ class NodeStatusPage(PageObject):
     def check_rollabck_func(self):
         """
         Purpose:
-            RHEVM-16586
             Rollback funciton in virtualization dashboard
         """
         raise NotImplementedError
@@ -230,16 +221,19 @@ class NodeStatusPage(PageObject):
     def check_network_func(self):
         """
         Purpose:
-            RHEVM-16587
             Check the Networking Information in virtualization dashboard
         """
         # Since no network info on cockpit, just drop this case currently
-        raise NotImplementedError
+        self.wait()
+        with self.switch_to_frame(self.frame_right_name):
+            page_links_list = list(self.page_links)
+            system_logs_link = page_links_list[0]
+            system_logs_link.click()
+            time.sleep(3)
 
     def check_system_log(self):
         """
         Purpose:
-            RHEVM-16588
             Check the System Logs in virtualization dashboard
         """
         self.wait()
@@ -252,7 +246,6 @@ class NodeStatusPage(PageObject):
     def check_storage(self):
         """
         Purpose:
-            RHEVM-16588
             Check the Storage in virtualization dashboard
         """
         self.wait()
@@ -265,7 +258,6 @@ class NodeStatusPage(PageObject):
     def check_ssh_key(self):
         """
         Purpose:
-            RHEVM-16589
             Check the ssh host key in virtualization dashboard
         """
         self.wait()
@@ -278,7 +270,6 @@ class NodeStatusPage(PageObject):
     def check_list_vms(self):
         """
         Purpose:
-            RHEVM-16660
             List of vms in dashboard
         """
         with self.switch_to_frame(self.frame_right_name):

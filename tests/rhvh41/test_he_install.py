@@ -25,6 +25,26 @@ engine_password = ENGINE_PASSWORD
 auto_answer = AUTO_ANSWER
 
 
+@pytest.fixture(autouse=True)
+def _environment(request):
+    cmd = "rpm -qa|grep cockpit-ovirt"
+    cockpit_ovirt_version = run(cmd)
+
+    cmd = "rpm -q imgbased"
+    result = run(cmd)
+    if result.failed:
+        cmd = "cat /etc/redhat-release"
+        redhat_release = run(cmd)
+        request.config._environment.append(('redhat-release', redhat_release))
+    else:
+        cmd_imgbase = "imgbase w"
+        output_imgbase = run(cmd_imgbase)
+        rhvh_version = output_imgbase.split()[-1].split('+')[0]
+        request.config._environment.append(('rhvh-version', rhvh_version))
+
+    request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+
+
 @pytest.fixture(scope="module")
 def firefox(request):
     pass
