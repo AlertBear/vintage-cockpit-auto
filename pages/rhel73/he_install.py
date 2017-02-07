@@ -40,7 +40,7 @@ class HandleVNCSetup:
         self.cli.keyPress('enter')
         time.sleep(1)
 
-        for k in 'redhat':
+        for k in self.vm_password:
             self.cli.keyPress(k)
             time.sleep(0.1)
         self.cli.keyPress('enter')
@@ -237,6 +237,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()     # set vm memory,default
     time.sleep(2)
 
+    """
     tags = tags("span")
     mem_continue = False
     #  Continue with specified memory size? (Yes, No) [No]: 
@@ -250,7 +251,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
         time.sleep(2)
         class_name("btn-default").click()
         time.sleep(2)        
-
+    """
     class_name("btn-default").click()     # set cpu type,default
     time.sleep(2)
 

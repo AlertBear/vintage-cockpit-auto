@@ -1,11 +1,11 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.node_status_page import NodeStatusPage
-from pages.dashboard_page import DashboardPage
+from pages.rhvh40.node_status_page import NodeStatusPage
+from pages.rhvh40.dashboard_page import DashboardPage
 from fabric.api import env
-from pages.nodectl import Nodectl
-from pages.subscriptions_page import SubscriptionsPage
+from pages.rhvh40.nodectl import Nodectl
+from pages.rhvh40.subscriptions_page import SubscriptionsPage
 from conf import *
 
 

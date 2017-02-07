@@ -1,5 +1,5 @@
 import pytest
-from pages.he_info import HeInfo
+from pages.rhvh40.he_info import HeInfo
 from fabric.api import env
 from conf import *
 

@@ -1,7 +1,8 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.virtual_machines_page import VirtualMachinesPage
+from pages.rhel73.virtual_machines_page import VirtualMachinesPage
+from fabric.api import env, settings, run
 from conf import *
 
 host_ip = HOST_IP
@@ -13,22 +14,23 @@ ROOT_URI = "https://" + host_ip + ":9090"
 
 @pytest.fixture(autouse=True)
 def _environment(request):
-    cmd = "rpm -qa|grep cockpit-ovirt"
-    cockpit_ovirt_version = run(cmd)
+    with settings(warn_only=True):
+        cmd = "rpm -qa|grep cockpit-ovirt"
+        cockpit_ovirt_version = run(cmd)
 
-    cmd = "rpm -q imgbased"
-    result = run(cmd)
-    if result.failed:
-        cmd = "cat /etc/redhat-release"
-        redhat_release = run(cmd)
-        request.config._environment.append(('redhat-release', redhat_release))
-    else:
-        cmd_imgbase = "imgbase w"
-        output_imgbase = run(cmd_imgbase)
-        rhvh_version = output_imgbase.split()[-1].split('+')[0]
-        request.config._environment.append(('rhvh-version', rhvh_version))
+        cmd = "rpm -q imgbased"
+        result = run(cmd)
+        if result.failed:
+            cmd = "cat /etc/redhat-release"
+            redhat_release = run(cmd)
+            request.config._environment.append(('redhat-release', redhat_release))
+        else:
+            cmd_imgbase = "imgbase w"
+            output_imgbase = run(cmd_imgbase)
+            rhvh_version = output_imgbase.split()[-1].split('+')[0]
+            request.config._environment.append(('rhvh-version', rhvh_version))
 
-    request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+        request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +45,7 @@ def firfox(request):
 def test_login_page(firfox):
     login_page = LoginPage(firfox)
     login_page.basic_check_elements_exists()
-    login_page.login_with_credential()
+    login_page.login_with_credential(host_user, host_password)
 
 def test_running_virtual_machines_unregister(firfox):
     virtual_machines_page = VirtualMachinesPage(firfox)

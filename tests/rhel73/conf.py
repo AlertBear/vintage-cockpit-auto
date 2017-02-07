@@ -2,7 +2,7 @@
 #
 # The variable to be used by each case
 #
-HOST_IP = "10.66.148.7"
+HOST_IP = "10.66.149.62"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
 TEST_BUILD = "rhvh-4.1-0.20170120.0"
@@ -39,15 +39,16 @@ CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.
 #
 # The variable to be used by cockpit-ovirt Hosted engine cases
 #
-RHVM_APPLIANCE_PATH="/home/dguo/Work/iso/rhvm-appliance-4.1.20170126.0-1.el7ev.noarch.rpm"
+RHVM_APPLIANCE_PATH="/home/dguo/Work/iso/rhvm-appliance-4.1.20170120.1-1.el7ev.noarch.rpm"
 NFS_IP = "10.66.8.173"
 NFS_PASSWORD = "l1admin"
 NFS_STORAGE_PATH = "/home/dguo/Public/he"
 NIC = "em1"
+DEPLOY_MODE = "disk"
+STORAGE_PATH = "/home"
 MAC = "52:54:00:05:61:f2"
 VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
 VM_IP = "10.66.148.102"
 VM_PASSWORD = "redhat"
-ENGINE_PASSWORD = "password"
+ENGINE_PASSWORD = "redhat"
 AUTO_ANSWER = "/home/dguo/Public/work/run"
-SECOND_HOST = "10.66.8.140"

@@ -1,5 +1,5 @@
 import pytest
-from pages.he_install import he_install
+from pages.rhvh40.he_install import he_install
 from fabric.api import env
 from conf import *
 

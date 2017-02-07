@@ -1,6 +1,6 @@
 from fabric.api import env
 import pytest
-from pages.nodectl import Nodectl
+from pages.rhvh40.nodectl import Nodectl
 from conf import *
 
 

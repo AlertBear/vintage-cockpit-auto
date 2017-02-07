@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.node_status_page import NodeStatusPage
+from pages.rhvh41.node_status_page import NodeStatusPage
 from fabric.api import env, run
 from conf import *
 
@@ -52,7 +52,7 @@ def firefox(request):
 def test_login(firefox):
     login_page = LoginPage(firefox)
     login_page.basic_check_elements_exists()
-    login_page.login_with_credential()
+    login_page.login_with_credential(host_user, host_password)
 
 
 '''
