@@ -3,9 +3,9 @@ from pages.rhvh41.he_install import he_install
 from fabric.api import env, run
 from conf import *
 
-host_ip = HOST_IP
-host_user = HOST_USER
-host_password = HOST_PASSWORD
+host_ip = BOND_HOST_IP
+host_user = BOND_HOST_USER
+host_password = BOND_HOST_PASSWORD
 
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
@@ -14,7 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = NFS_STORAGE_PATH
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = NIC
+nic = BOND_NIC
 mac = MAC
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
@@ -48,11 +48,11 @@ def firefox(request):
     pass
 
 
-def test_18667(firefox):
+def test_18674(firefox):
     """
     Purpose:
         RHEVM-18667
-        Setup Hosted Engine with OVA(engine-appliance-rpm)
+        Setup hosted engine through ova with bond as network
     """
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,

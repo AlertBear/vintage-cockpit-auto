@@ -14,7 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = NFS_STORAGE_PATH
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = NIC
+nic = VLAN_NIC
 mac = MAC
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
@@ -48,11 +48,11 @@ def firefox(request):
     pass
 
 
-def test_18667(firefox):
+def test_18677(firefox):
     """
     Purpose:
-        RHEVM-18667
-        Setup Hosted Engine with OVA(engine-appliance-rpm)
+        RHEVM-18677
+        Setup hosted engine through ova with bond+vlan as network
     """
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,

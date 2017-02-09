@@ -106,32 +106,6 @@ def test_18537(firefox):
 '''
 
 
-'''
-# This will be tested on a rhvh with FC
-def test_18538(firefox):
-    """
-    RHEVM-18538
-        Check node status with FC multipath.
-    """
-    node_status_page = NodeStatusPage(firefox)
-    test_layer = test_build + '+1'
-    node_status_page.check_node_status_fc(test_layer)
-'''
-
-
-'''
-# This will be tested on a rhvh with EFI
-def test_18539(firefox):
-    """
-    RHEVM-18539
-        Check node status with EFI
-    """
-    node_status_page = NodeStatusPage(firefox)
-    test_layer = test_build + '+1'
-    node_status_page.check_node_status_efi(test_layer)
-'''
-
-
 def test_18540(firefox):
     """
     RHEVM-18540

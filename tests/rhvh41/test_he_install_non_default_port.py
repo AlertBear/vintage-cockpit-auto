@@ -1,4 +1,5 @@
 import pytest
+import time
 from pages.rhvh41.he_install import he_install
 from fabric.api import env, run
 from conf import *
@@ -52,11 +53,50 @@ def test_18667(firefox):
     """
     Purpose:
         RHEVM-18667
-        Setup Hosted Engine with OVA(engine-appliance-rpm)
+        Verify to deploy Hosted-Engine via non-default cockpit port
     """
-    host_dict = {'host_ip': host_ip,
+    # Check the cockpit is active
+    cmd = "systemctl status cockpit|grep Active"
+    output = run(cmd)
+    status = output.split()[1]
+    assert status == "active", "Cockpit dameon is not active"
+
+    # Check cockpit packages
+    cmd = "cockpit-bridge --packages"
+    output = run(cmd)
+    assert output, "Cockpit packages not exist"
+
+    # Modify the default cockpit port
+    cmd = "sed -i 's/ListenStream=9090/ListenStream=9898/'"
+    run(cmd)
+
+    # Add port to firewall
+    cmd = "firewall-cmd --add-port=9898/tcp"
+    run(cmd)
+
+    # Add to permanent
+    cmd = "firewall-cmd --permanent --add-port=9898/tcp"
+    run(cmd)
+
+    # SElinux operation
+    cmd = "semanage port -a -t websm_port_t -p tcp 9898"
+    run(cmd)
+
+    # Reload the dameon
+    cmd = "systemctl daemon-reload"
+    run(cmd)
+
+    # Restart the cockpit
+    cmd = "systemctl restart cockpit.socket"
+    run(cmd)
+    time.sleep(5)
+
+
+    host_dict = {
+    'host_ip': host_ip,
     'host_user': host_user,
-    'host_password': host_password}   
+    'host_password': host_password
+    'cockpit_port': '9898'}
 
     nfs_dict = {
     'nfs_ip': nfs_ip,
