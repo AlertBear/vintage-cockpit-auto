@@ -52,6 +52,7 @@ RHVM_APPLIANCE_PATH="/home/dguo/Work/iso/rhvm-appliance-4.1.20170126.0-1.el7ev.n
 NFS_IP = "10.66.8.173"
 NFS_PASSWORD = "l1admin"
 NFS_STORAGE_PATH = "/home/dguo/Public/he"
+SECOND_NFS_PATH = "/home/dguo/Public/he2"
 NIC = "em1"
 MAC = "52:54:00:05:61:f2"
 VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
@@ -59,7 +60,7 @@ VM_IP = "10.66.148.102"
 VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
 AUTO_ANSWER = "/home/dguo/Public/work/run"
-SECOND_HOST = "10.66.8.140"
+SECOND_HOST = "10.66.149.116"
 SECOND_PASSWORD = "redhat"
 
 

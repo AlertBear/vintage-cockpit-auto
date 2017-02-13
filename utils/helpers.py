@@ -103,7 +103,9 @@ class RhevmAction:
 
     def add_new_host(self, *rhvh_credentials):
         ip, host_name, password = rhvh_credentials
-        api_url = self.api_url.format(rhevm_fqdn=self.rhevm_fqdn, item="hosts")
+        api_url = self.api_url.format(
+            rhevm_fqdn=self.rhevm_fqdn, item="hosts")
+
         body = self.new_host_post_body.format(
             host_name=host_name, ip=ip, password=password)
 

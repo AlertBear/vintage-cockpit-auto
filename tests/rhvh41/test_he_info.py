@@ -1,7 +1,10 @@
 import time
 import pytest
+from selenium import webdriver
+from pages.login_page import LoginPage
 from pages.rhvh41.hosted_engine_page import HePage
-from fabric.api import env, run
+from fabric.api import env, run, settings
+from utils.helpers import RhevmAction
 from conf import *
 
 
@@ -18,6 +21,9 @@ env.password = host_password
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
 vm_password = VM_PASSWORD
+second_nfs_path = SECOND_NFS_PATH  # Be added to hosted engine
+second_host_ip = SECOND_HOST       # Second host to run hosted engine
+second_password = SECOND_PASSWORD
 
 
 @pytest.fixture(autouse=True)
@@ -25,6 +31,7 @@ def _environment(request):
     cmd = "rpm -qa|grep cockpit-ovirt"
     cockpit_ovirt_version = run(cmd)
 
+    # Check whether the host is rhvh or regular host 
     cmd = "rpm -q imgbased"
     result = run(cmd)
     if result.failed:
@@ -71,11 +78,6 @@ def test_18670(firefox):
         Check the vm still up after reboot node
     """
     he_page = HePage(firefox)
-    # Reboot the rhvh
-    cmd = "reboot"
-    with settings(warn_only=True):
-        run(cmd)
-    time.sleep(300)
 
     # Check engine status
     he_page.check_engine_status()
@@ -84,6 +86,7 @@ def test_18670(firefox):
     he_page.check_vm_status()
 
 
+'''
 def test_18671(firefox):
     """
     RHEVM-18671
@@ -129,3 +132,26 @@ def test_18668(firefox):
         another_password)
     he_page.check_additonal_host(vm_fqdn, another_hostname)
     he_page.remove_host_from_rhvm(vm_fqdn, another_hostname)
+
+
+def test_18678(firefox):
+    """
+    RHEVM-18678
+        Put the host into local maintenance
+    """
+    # Add another nfs storage to default DC
+    he_rhvm = RhevmAction(vm_fqdn)
+    he_rhvm.attach_storage_to_datacenter(second_nfs_path, 'Default')
+
+    # Add another host to default DC where also can be running HE
+    he_rhvm.add_new_host(
+        second_host_ip,
+        "cockpit-he2",
+        host_password,
+        deploy_hosted_engine=True)
+    time.sleep(120)
+
+    # Put the host to local matenance
+    he_page = HePage(firefox)
+    he_page.check_put_host_to_local_maintenance()
+'''

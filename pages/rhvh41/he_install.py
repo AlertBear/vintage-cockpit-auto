@@ -245,6 +245,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()    # confirm the configuration
     time.sleep(600)
 
+    # Handle vnc to login, which is for engine-setup go script  
     with settings(
         warn_only=True,
         host_string=host_user + '@' + host_ip,
@@ -256,6 +257,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
             host_password=host_password).vnc_vm_login(vm_password)
     time.sleep(10)
 
+    # Run engine-setup by go auto_answer script 
     with settings(
         warn_only=True,
         host_string='root@' + vm_ip,
@@ -268,9 +270,20 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()
     time.sleep(500)
 
+    # Reboot the host
     with settings(
         warn_only=True,
         host_string='root@' + vm_ip,
         password=vm_password):
         run("reboot", quiet=True)
-    time.sleep(60)
+    time.sleep(120)
+
+    # Reboot second time for next test_he_info.py test
+    with settings(
+        warn_only=True,
+        host_string='root@' + vm_ip,
+        password=vm_password):
+        run("reboot", quiet=True)
+    time.sleep(120)
+
+    dr.quit()
