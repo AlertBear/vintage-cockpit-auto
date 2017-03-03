@@ -2,7 +2,7 @@ import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.rhvh41.subscriptions_page import SubscriptionsPage
-from fabric.api import env
+from fabric.api import env, run
 from conf import *
 
 

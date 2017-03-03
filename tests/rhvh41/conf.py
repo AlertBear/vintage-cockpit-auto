@@ -5,7 +5,7 @@
 HOST_IP = "10.66.148.7"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
-TEST_BUILD = "rhvh-4.1-0.20170120.0"
+TEST_BUILD = "rhvh-4.1-0.20170223.0"
 REDIS_HOST = "10.66.11.155"
 
 #

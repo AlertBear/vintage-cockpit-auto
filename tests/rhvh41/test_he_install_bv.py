@@ -77,3 +77,6 @@ def test_18677(firefox):
     }
 
     he_install(host_dict, nfs_dict, install_dict, vm_dict)
+
+    # Check the hosted engine is deployed
+    check_he_is_deployed(host_ip, host_user, host_password)

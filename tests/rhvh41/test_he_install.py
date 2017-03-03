@@ -1,6 +1,6 @@
 import pytest
-from pages.rhvh41.he_install import he_install
-from fabric.api import env, run
+from pages.rhvh41.he_install import *
+from fabric.api import env, run, settings
 from conf import *
 
 host_ip = HOST_IP
@@ -77,3 +77,6 @@ def test_18667(firefox):
     }
 
     he_install(host_dict, nfs_dict, install_dict, vm_dict)
+
+    # Check the hosted engine is deployed
+    check_he_is_deployed(host_ip, host_user, host_password)

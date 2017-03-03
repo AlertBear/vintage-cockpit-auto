@@ -1,6 +1,7 @@
 import time
+import re
 from utils.helpers import RhevmAction
-from utils.page_objects import PageObject, MultiPageElement
+from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import run, env, settings
 
 
@@ -17,6 +18,8 @@ class HePage(PageObject):
     vm_state_txts = MultiPageElement(
         xpath=".//*[@class='list-view-pf-additional-info']/div/div")
     list_group_item_txts = MultiPageElement(class_name= "list-group-item-text")
+
+    global_maintenance_div = PageElement(xpath=".//*[@class='panel-body']/div")
 
     # frame name
     frame_right_name = "cockpit1:localhost/ovirt-dashboard"
@@ -59,8 +62,7 @@ class HePage(PageObject):
         Purpose:
             Chech three "Maintenance" buttons exist
         """
-        print len(list(self.btns))
-        assert len(list(self.btns)) == 3, "Maintenance buttons not exist"
+        assert len(list(self.btns)) == 2, "Maintenance buttons not exist"
 
     def check_engine_status(self):
         """
@@ -80,8 +82,8 @@ class HePage(PageObject):
             Check the host status
         """
         with self.switch_to_frame(self.frame_right_name):
-            print list(self.vm_state_txts)[0].text.split()[-1]
-            assert list(self.vm_state_txts)[0].text.split()[-1] == "up" "The VM is not up"
+            print list(self.vm_state_txts)[0].text
+            assert re.search('up', list(self.vm_state_txts)[0].text), "The VM is not up"
 
     def check_he_running_on_host(self, host_ip):
         """
@@ -95,7 +97,7 @@ class HePage(PageObject):
             assert he_running_on_txt.text == "Hosted Engine is running on %s" \
                 % hostname, "Hosted engine running on host not correct"
 
-    def check_put_host_to_local_maintenance(self):
+    def put_host_to_local_maintenance(self):
         """
         Purpose:
             Put the host to local maintenance
@@ -105,16 +107,58 @@ class HePage(PageObject):
             put_host_local_maintenace_btn.click()
             time.sleep(60)
 
+    def check_host_in_local_maintenance(self):
+        """
+        Purpose:
+            Check the host is in local maintenance
+        """
+        with self.switch_to_frame(self.frame_right_name):
             host_agent_maintenance_txt = list(self.list_group_item_txts)[0].text
             host_maintenance_txt = host_agent_maintenance_txt.split()[-1]
-            if host_maintenance_txt == "false":
-                with settings(warn_only=True):
-                    cmd = "hosted-engine --set-maintenance --mode=local"
-                    result = run(cmd)
-                    print result.stderr
-                assert result.succeeded, "Failed to put host to local maintenance"
+            assert host_maintenance_txt == "true", "Host is not in local maintenance"
 
-    def check_vm_migraged(self):
+    def check_host_not_in_local_maintenance(self):
+        """
+        Purpose:
+            Check the host is not in local maintenance
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            host_agent_maintenance_txt = list(self.list_group_item_txts)[0].text
+            host_maintenance_txt = host_agent_maintenance_txt.split()[-1]
+            assert host_maintenance_txt == "false", "Host is in local maintenance"
+
+    def remove_host_from_local_maintenance(self):
+        """
+        Purpose:
+            Remove the host from local maintenance
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            remove_host_local_maintenace_btn = list(self.btns)[1]
+            remove_host_local_maintenace_btn.click()
+            time.sleep(60)
+
+    def put_cluster_to_global_maintenance(self):
+        """
+        Purpose:
+            Put the cluster to global maintenance
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            put_host_local_maintenace_btn = list(self.btns)[2]
+            put_host_local_maintenace_btn.click()
+            time.sleep(10)
+
+    def check_cluster_in_global_maintenance(self):
+        """
+        Purpose:
+            Check whether the cluster is in global maintenance
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            try:
+                self.global_maintenance_div.is_displayed()
+            except:
+                assert 0, "The cluster is not in global maintenance"
+
+    def check_vm_migrated(self):
         """
             Suppose there are only two hosts,
             check the HE vm already migrate to another host

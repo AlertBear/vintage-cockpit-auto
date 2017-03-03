@@ -38,6 +38,10 @@ class NodeStatusPage(PageObject):
     # elements under rollback dialog
     available_layer_txt = MultiPageElement(class_name="col-md-8")
 
+    # elements with warning if login with non-root account
+    alert_div_span = PageElement(xpath=".//*[@id='content']/div/div[1]/span")
+    alert_div = PageElement(class_name="alert-danger")
+
     # frame name
     frame_right_name = "cockpit1:localhost/ovirt-dashboard"
 
@@ -279,3 +283,17 @@ class NodeStatusPage(PageObject):
             assert int(list(self.strong_txt)[0].text) == vm_count, \
                 "VM count not correct"
         self.wait()
+
+    def check_non_root_alert(self, default=False):
+        """
+        Purpose:
+            Check if login with non-root account, if yes, there
+            will be a alert div
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            if default:
+                try:
+                    assert self.alert_div,  \
+                        "Can't check node status! Please run as administrator not exists"
+                except Exception as e:
+                    assert False, "Can't check node status! Please run as administrator not exists"

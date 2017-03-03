@@ -5,6 +5,7 @@ import time
 import json
 import pytest
 import smtplib
+import test_scen
 from tests.conf import REDIS_HOST
 from fabric.api import run, local, settings
 from email.mime.text import MIMEText
@@ -103,8 +104,13 @@ def format_result(file):
 if __name__ == "__main__":
     # All files used
     abspath = os.path.abspath(os.path.dirname(__file__))
-    conf_file = os.path.join(abspath, "tests/conf.py")
-    test_file = os.path.join(abspath, "tests/test_demo.py")
+    conf_file = os.path.join(abspath, "tests/rhvh41/conf.py")
+    test_files_str = ""
+
+    for each_file in test_scen.rhvh41_normal_scen:
+        test_file = os.path.join(abspath, each_file)
+        test_files_str = test_files_str.append(" %s" % test_file)
+
     log_dir = "/var/log/cockpit-ovirt-auto"
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
@@ -143,7 +149,7 @@ if __name__ == "__main__":
                     local("""sed -i 's/HOST_IP =.*/HOST_IP="%s"/' %s""" % (str(ipaddr), str(conf_file)))
 
                     # Execute to do the tests
-                    pytest.main("-s -v %s --json=%s --html=%s" % (test_file, result_json, result_html))
+                    pytest.main("-s -v%s --json=%s --html=%s" % (test_files_str, result_json, result_html))
 
                     # Parse the results and pass to redis
                     res = format_result(result_json)

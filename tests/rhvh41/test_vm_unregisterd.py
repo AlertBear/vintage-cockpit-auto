@@ -2,6 +2,7 @@ import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.rhvh41.virtual_machines_page import VirtualMachinesPage
+from fabric.api import run, env, settings
 from conf import *
 
 host_ip = HOST_IP
@@ -9,6 +10,9 @@ host_user = HOST_USER
 host_password = HOST_PASSWORD
 
 ROOT_URI = "https://" + host_ip + ":9090"
+
+env.host_string = host_user + '@' + host_ip
+env.password = host_password
 
 
 @pytest.fixture(autouse=True)
@@ -32,7 +36,7 @@ def _environment(request):
 
 
 @pytest.fixture(scope="module")
-def firfox(request):
+def firefox(request):
     driver = webdriver.Firefox()
     driver.implicitly_wait(20)
     root_uri = getattr(request.module, "ROOT_URI", None)
@@ -40,23 +44,27 @@ def firfox(request):
     yield driver
     driver.close()
 
-def test_login(firfox):
-    login_page = LoginPage(firfox)
+
+def test_login(firefox):
+    login_page = LoginPage(firefox)
     login_page.basic_check_elements_exists()
     login_page.login_with_credential(host_user, host_password)
 
-def test_running_virtual_machines_unregister(firfox):
-    virtual_machines_page = VirtualMachinesPage(firfox)
+
+def test_18803(firefox):
+    """
+    RHEVM-18803
+        Check running VMs (Unregister to RHEVM) status in virtual machines page
+    """
+    virtual_machines_page = VirtualMachinesPage(firefox)
     virtual_machines_page.basic_check_elements_exists()
     virtual_machines_page.check_running_vms_unregister()
 
-def test_virtual_machines_in_cluster_unregister(firfox):
-    virtual_machines_page = VirtualMachinesPage(firfox)
-    virtual_machines_page.basic_check_elements_exists()
-    virtual_machines_page.check_vms_in_cluster_unregister()
 
-def test_virtual_machines_vdsm(firfox):
-    virtual_machines_page = VirtualMachinesPage(firfox)
-    virtual_machines_page.basic_check_elements_exists()
-    virtual_machines_page.check_vdsm_elements()
-    virtual_machines_page.check_vdsm_conf_edit()
+def test_18804(firefox):
+    """
+    RHEVM-18804
+        Check VMs in cluster (Unregister to RHEVM) status in virtual machines page
+    """
+    virtual_machines_page = VirtualMachinesPage(firefox)
+    virtual_machines_page.check_vms_in_cluster_unregister()

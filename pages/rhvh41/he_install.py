@@ -101,6 +101,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(5)
     id = dr.find_element_by_id
     class_name = dr.find_element_by_class_name
+    tag_name = dr.find_elements_by_tag_name
     xpath = dr.find_element_by_xpath
 
     # Login to cockpit
@@ -118,7 +119,8 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-primary").click()    # Click to deploy HE
     time.sleep(10)
     class_name("btn-default").click()    # click next button,continue yes
-    dr.implicitly_wait(45)
+    # dr.implicitly_wait(60)
+    time.sleep(60)
 
     class_name("btn-default").click()    # specify storage mode
     time.sleep(2)
@@ -287,3 +289,18 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(120)
 
     dr.quit()
+
+
+def check_he_is_deployed(host_ip, host_user, host_password):
+    """
+    Purpose:
+        Check the HE is deployed on the host
+    """
+    with settings(
+        warn_only=True,
+        host_string= host_user + '@' + host_ip,
+        password=host_password):
+        cmd = "hosted-engine --check-deployed"
+        result = run(cmd)
+
+        assert result.successed, "HE is not deployed on %s" % host_ip

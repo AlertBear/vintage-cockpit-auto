@@ -21,6 +21,7 @@ env.password = host_password
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
 vm_password = VM_PASSWORD
+engine_password = ENGINE_PASSWORD
 second_nfs_path = SECOND_NFS_PATH  # Be added to hosted engine
 second_host_ip = SECOND_HOST       # Second host to run hosted engine
 second_password = SECOND_PASSWORD
@@ -86,7 +87,7 @@ def test_18670(firefox):
     he_page.check_vm_status()
 
 
-'''
+
 def test_18671(firefox):
     """
     RHEVM-18671
@@ -96,6 +97,7 @@ def test_18671(firefox):
 
     # Check engine status
     he_page.check_engine_status()
+    time.sleep(2)
 
     # Check three maintenance buttons exist
     he_page.check_three_buttons()
@@ -134,24 +136,26 @@ def test_18668(firefox):
     he_page.remove_host_from_rhvm(vm_fqdn, another_hostname)
 
 
-def test_18678(firefox):
+def test_18684(firefox):
     """
-    RHEVM-18678
-        Put the host into local maintenance
+    RHEVM-18684
+        Check if there are a large number of redundant log generation in /var/log/messages
     """
-    # Add another nfs storage to default DC
-    he_rhvm = RhevmAction(vm_fqdn)
-    he_rhvm.attach_storage_to_datacenter(second_nfs_path, 'Default')
+    pass
 
-    # Add another host to default DC where also can be running HE
-    he_rhvm.add_new_host(
-        second_host_ip,
-        "cockpit-he2",
-        host_password,
-        deploy_hosted_engine=True)
-    time.sleep(120)
 
-    # Put the host to local matenance
-    he_page = HePage(firefox)
-    he_page.check_put_host_to_local_maintenance()
-'''
+def test_18685(firefox):
+    """
+    RHEVM-18685
+        Check there is no Hosted Engine passwords are saved in the logs as clear text
+    """
+    # Find the hosted engine setup log
+    cmd = "find /var/log -type f |grep ovirt-hosted-engine-setup-.*.log"
+    output = run(cmd)
+
+    # Find the line contains "Enter engine admin password"
+    cmd = "grep 'Enter engine admin password' %s" % output
+    output = run(cmd)
+    password = output.split(':')[-1]
+
+    assert password != engine_password, "Hosted engine password is saved in the logs as clear text"

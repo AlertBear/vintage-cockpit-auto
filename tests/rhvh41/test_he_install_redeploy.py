@@ -14,7 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = NFS_STORAGE_PATH
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = VLAN_NIC
+nic = NIC
 mac = MAC
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
@@ -48,12 +48,32 @@ def firefox(request):
     pass
 
 
-def test_18675(firefox):
+def test_18686(firefox):
     """
     Purpose:
-        RHEVM-18675
-        Setup hosted engine through ova with vlan tagged
+        RHEVM-18686
+        Re-deploy the HostedEngine after clean up the previous HostedEngine
     """
+    # Fisrtly to check if there exists HE
+    pass
+
+    # Cleanup previous HE
+    cmd = "vdsClient -s 0 list table | awk '{print $1}' | xargs vdsClient -s 0 destory"
+    run(cmd)
+    cmd = "rm -rf /etc/vdsm  /etc/ovirt-hosted-engine*"
+    run(cmd)
+    cmd = "umount -f /rhev/data-center/mnt"
+    run(cmd)
+    cmd = "rm -rf /rhev/data-center/mnt/*"
+    run(cmd)
+    cmd = "glusterfs volume stop your_stg"
+    run(cmd)
+    cmd = "rm -rf /gluster_volume/your_stg/*"
+    run(cmd)
+    cmd = "glusterfs volume start your_stg"
+    run(cmd)
+
+    # Deploy a new HE
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,
     'host_password': host_password}   

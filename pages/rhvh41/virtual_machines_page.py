@@ -1,38 +1,52 @@
 import re
 import time
-from utils.page_objects import PageObject, PageElement
+from utils.page_objects import PageObject, PageElement, MultiPageElement
 from utils.helpers import RhevmAction
 from selenium.common.exceptions import NoAlertPresentException
 from fabric.api import run, env, get
 from StringIO import StringIO
 
-env.host_string = 'root@10.66.8.149'
-env.password = 'redhat'
-str_input = "#some_text"
-rhevm_fqdn = "rhevm-40-1.englab.nay.redhat.com"
-rhvh_credentials = ["10.66.8.149", "dhcp-8-149.nay.redhat.com", "redhat"]
-rhvh_nfs = ['10.66.65.30','/home/wangwei/nfs','dhcp-8-149.nay.redhat.com']
 
 class VirtualMachinesPage(PageObject):
     """
     Function:
         Inspect virtual machines which managed by RHEVM in cockpit WebUI
     """
+    content_username_txt = PageElement(id_="content-user-name")
+    logout_link = PageElement(id_="go-logout")
 
     running_vms_btn = PageElement(id_="main-btn-menu-hostvms")
     vms_in_cluster_btn = PageElement(id_="main-btn-menu-allvms")
     vdsm_btn = PageElement(id_="main-btn-menu-vdsm")
 
-    technical_preview_text = PageElement(xpath=".//*[@id='ovirt-content']/table/tbody/tr/td[2]/div")
-    engine_login_link = PageElement(link_text="Login to Engine")
+    technical_preview_text = PageElement(
+        xpath=".//*[@id='ovirt-content']/table/tbody/tr/td[2]/div")
+    engine_login_link = PageElement(id_="engine-login-title")
     maintenance_host_link = PageElement(link_text="Host to Maintenance")
     refresh_link = PageElement(partial_link_text="Refresh")
+    engine_login_passwd_input = PageElement(id_="engine-login-pwd")
+    engine_login_url_input = PageElement(id_="engine-login-url")
+    engine_login_submit_btn = PageElement(id_="modal-engine-login-form-dologin")
 
-    virtual_machines_title = PageElement(xpath=".//*[@id='virtual-machines']/div[1]/div/div[1]/h3")
+    virtual_machines_title = PageElement(
+        xpath=".//*[@id='virtual-machines']/div[1]/div/div[1]/h3")
     total_vms_text = PageElement(id_="host-vms-total")
     vdsm_unactived_textblock = PageElement(id_="vdsm-is-not-active")
 
-    vdsm_service_management_link = PageElement(link_text="VDSM Service Management")
+    vm_hostname_link = PageElement(
+        xpath=".//*[@id='host-vms-list-item-name-']/a")
+    vm_guest_ip_txt = PageElement(
+        xpath=".//*[@id='host-vms-list-item-name-']/small[1]")
+    vm_hostname_txt = PageElement(
+        xpath=".//*[@id='host-vms-list-item-name-']/small[2]")
+    vm_up_txt = PageElement(
+        xpath=".//*[@id='host-vms-list-item-name-']/small[3]")
+    vm_lifecycle_btn = PageElement(tag_name="button")
+    vm_lifecycle_operations = MultiPageElement(tag_name="li")
+
+
+    vdsm_service_management_link = PageElement(
+        link_text="VDSM Service Management")
     vdsm_conf_textarea = PageElement(id_="editor-vdsm-conf")
     vdsm_save_btn = PageElement(id_="editor-vdsm-btn-save")
     vdsm_reload_btn = PageElement(id_="editor-vdsm-btn-reload")
@@ -41,18 +55,17 @@ class VirtualMachinesPage(PageObject):
     vdsm_config_dialog_close_btn = PageElement(class_name="close")
     vdsm_config_dialog_text = PageElement(id_="modal-confirmation-text")
     vdsm_config_dialog_ok = PageElement(id_="modal-confirmation-ok")
-    vdsm_config_dialog_cancel = PageElement(xpath=".//*[@id='modal-confirmation']/div/div/div[3]/button[1]")
+    vdsm_config_dialog_cancel = PageElement(
+        xpath=".//*[@id='modal-confirmation']/div/div/div[3]/button[1]")
     vdsm_config_dialog_saved = PageElement(id_="editor-vds-conf-msg")
-    
-    #sub-frame name
+
+    # sub-frame name
     frame_right_name = "cockpit1:localhost/ovirt-dashboard"
 
     def __init__(self, *args, **kwargs):
         super(VirtualMachinesPage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard#/management")
         self.wait(period=10)
-
-        self.rhevm_action_obj = RhevmAction(rhevm_fqdn)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -61,31 +74,33 @@ class VirtualMachinesPage(PageObject):
             assert self.vms_in_cluster_btn, "VMs in cluster button is missing"
             assert self.vdsm_btn, "VDSM button is missing"
             assert self.engine_login_link, "Login to engine link is missing"
-            assert self.maintenance_host_link, "Host to maintenance link is missing"
+            assert self.maintenance_host_link,  \
+                "Host to maintenance link is missing"
             assert self.refresh_link, "Refresh link is missing"
 
-    # function_1: Check vms when host unregister to RHEVM
     def check_running_vms_unregister(self):
         """
         Purpose:
-            RHEVM-17065
-            Check running VMs (Unregister to RHEVM) status in virtual machines page
+            Check running VMs (Unregister to RHEVM) 
+            status in virtual machines page
         """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
-            assert re.search("Virtual Machines", self.virtual_machines_title.text),\
-             "Running VMs page title is wrong"
+
+            assert re.search("Virtual Machines",self.virtual_machines_title.text),  \
+                "Running VMs page title is wrong"
             assert self.total_vms_text.text == "0", "Total VMs number is displayed wrong"
+
             target_textblock = "The VDSM service is not responding on this host"
+
             assert re.search(target_textblock, self.vdsm_unactived_textblock.text), \
             "The VDSM service is responding on this host"
 
-    # function_2: Check vms in cluster when host unregister to RHEVM
     def check_vms_in_cluster_unregister(self):
         """
         Purpose:
-            RHEVM-17066
-            Check VMs in cluster (Unregister to RHEVM) status in virtual machines page
+            Check VMs in cluster (Unregister to RHEVM)
+            status in virtual machines page
         """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
@@ -93,91 +108,117 @@ class VirtualMachinesPage(PageObject):
             self.wait(period=1)
             try:
                 assert self.w.switch_to_alert()
-            except NoAlertPresentException as e: 
+            except NoAlertPresentException as e:
                 raise e
-    
-    # function_3: Check vms when host register to RHEVM
-    # def check_running_vms_register(self):
-    #     """
-    #     Purpose:
-    #         RHEVM-16607
-    #         Check running VMs(local storage disk image) status in virtual machines page
-    #     """
-    #     with self.switch_to_frame(self.frame_right_name):
-    #         self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
-    #         # if self.rhevm_action_obj:
-    #         #     if self.rhevm_action_obj.add_new_host(*rhvh_credentials):
-    #         #         print 'Host regitst to RHEVM successfully'
-    #         #         if self.rhevm_action_obj.add_nfs_data_storage(*rhvh_nfs):
-    #         #             self.rhevm_action_obj.create_vm("vm_1")
-    #         #         else:
-    #         #             print "Add nfs data storage failed"
-    #         #     else:
-    #         #         print "Add new host failed"
-    #         # else:
-    #         #     print "Create rhevm_action object failed"
-    #         self.rhevm_action_obj.create_vm("vm1")
 
+    def check_running_vms_register(self, vm_hostname, vm_ip):
+        """
+        Purpose:
+            Check running VMs (Register to RHEVM) status
+            Suppose this VM is Hosted Engine
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            assert self.vm_hostname_link, "VM hostname link not exists"
+            assert re.search(vm_ip, self.vm_guest_ip_txt.text), "Guest IP text not correct"
+            assert re.search(vm_hostname, self.vm_hostname_txt.text), "VM hostname text not correct"
+            assert self.vm_up_txt, "VM up time text not exists"
 
-    # function_3: Check vdsm page elements are exist
+    def check_vms_lifecycle(self):
+        """
+        Purpose:
+            Check life-cycle of VMs in virtual machines page
+            Suppose this VM is Hosted Engine
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            assert self.vm_lifecycle_btn, "VM lifecycle button not exists"
+            assert self.vm_lifecycle_btn.click()
+
+            assert self.vm_lifecycle_operations,    \
+                "VM lifecycle operations buttons not exist"
+
+            # TO Do: operation like restart, force off
+            pass
+
     def check_vdsm_elements(self):
+        """
+        Purpose:
+            Check vdsm page elements exist
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vdsm_btn.click()
-            assert self.vdsm_service_management_link, "The VDSM service management link is missing"
-            assert self.vdsm_conf_textarea, "The VDSM config editor is missing"
-            assert self.vdsm_save_btn, "The VDSM config editor save button is missing"
-            assert self.vdsm_reload_btn, "The VDSM config editor reload button is missing"
+            assert self.vdsm_service_management_link,   \
+                "The VDSM service management link is missing"
+            assert self.vdsm_conf_textarea, \
+                "The VDSM config editor is missing"
+            assert self.vdsm_save_btn,  \
+                "The VDSM config editor save button is missing"
+            assert self.vdsm_reload_btn,    \
+                "The VDSM config editor reload button is missing"
 
-    # function_4: Check vdsm textarea is editable
     def check_vdsm_conf_edit(self):
         """
         Purpose:
-            RHEVM-16610
-            Check VDSM info in virtual machines page
+            Check vdsm textarea is editable
         """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vdsm_btn.click()
-            self._edit_vdsm_conf(str_input)
-            assert self.vdsm_conf_textarea.get_attribute('value').endswith("some_text"), \
-            "Edit vdsm.conf textarea failed"
+            self._edit_vdsm_conf("#some_text")
+            assert self.vdsm_conf_textarea.get_attribute('value').endswith("some_text"),    \
+                "Edit vdsm.conf textarea failed"
             self.wait(period=1)
             self._vdsm_conf_confirm(self.vdsm_reload_btn)
             self._vdsm_conf_confirm(self.vdsm_save_btn)
             if not self._check_vdsm_conf_host():
                 print "edit operation is successful"
-            #TODO: Add VDSM service Management link testing
 
-    # function_5: Check save function of vdsm page
+            # TODO: Add VDSM service Management link testing
+            pass
+
     def check_vdsm_conf_save(self):
+        """
+        Purpose:
+            Check save function of vdsm page
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vdsm_btn.click()
             if self.vdsm_save_btn:
                 self._check_vdsm_config_dialog(self.vdsm_save_btn)
-    
-    # function_6: Check reload function of vdsm page
+
     def check_vdsm_conf_reload(self):
+        """
+        Purpose:
+            Check reload function of vdsm page
+        """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vdsm_btn.click()
             if self.vdsm_reload_btn:
                 self._check_vdsm_config_dialog(self.vdsm_reload_btn)
 
-    # function_7: Append text to vdsm.conf
     def _edit_vdsm_conf(self, input):
+        """
+        Purpose:
+            Append text to vdsm.conf
+        """
         self.vdsm_conf_textarea.send_keys(input)
 
-    # function_8: Check dialogue in vdsm page
     def _check_vdsm_config_dialog(self, button):
+        """
+        Purpose:
+            Check dialogue in vdsm page
+        """
         button.click()
         self.wait(period=1)
         if button.text == 'Save':
-            assert re.search("Save to vdsm.conf", self.vdsm_config_dialog_title.\
-                get_attribute('innerHTML')), "Dialogue is not save to vdsm.conf"
-            assert self.vdsm_config_dialog_text.get_attribute('innerHTML').startswith(\
-                "Content of vdsm.conf file will be replaced."), "Dialogue text is wrong!"
+            assert re.search("Save to vdsm.conf", self.vdsm_config_dialog_title.get_attribute('innerHTML')),    \
+                "Dialogue is not save to vdsm.conf"
+            assert self.vdsm_config_dialog_text.get_attribute('innerHTML').startswith("Content of vdsm.conf file will be replaced."),\
+                "Dialogue text is wrong!"
         elif button.text == "Reload":
             assert re.search("Reload stored vdsm.conf", self.vdsm_config_dialog_title.\
                 get_attribute('innerHTML')), "Dialogue is not reload stored vdsm.conf"
@@ -185,7 +226,7 @@ class VirtualMachinesPage(PageObject):
                 "Content of vdsm.conf will be reloaded, unsaved changes will be lost."), "Dialogue text is wrong!"
         assert self.vdsm_config_dialog_ok, "Save button is missing in the dialogue"
         assert self.vdsm_config_dialog_cancel, "Cancel button is missing in the dialogue"
-            
+
         if self.vdsm_config_dialog_cancel.click():
             self.wait(period=1)
             print "The function of cancel button in vdsm.conf dialogue is invalid"
@@ -208,18 +249,112 @@ class VirtualMachinesPage(PageObject):
                 "Load to vdsm.conf failed"
             self.wait(period=5)
             assert re.search("", self.vdsm_config_dialog_saved.text)
-    
-    # function_8: confirm dialogue
+
     def _vdsm_conf_confirm(self, button):
+        """
+        Purpose:
+            Confirm dialogue
+        """
         button.click()
         self.wait(period=1)
         self.vdsm_config_dialog_ok.click()
         self.wait(period=2)
-    
-    # function_9: check vdsm configurate file on remote host
+
     def _check_vdsm_conf_host(self):
+        """
+        Purpose:
+            Check vdsm config file on remote host
+        """
         remote_path = "/etc/vdsm/vdsm.conf"
         fd = StringIO()
         get(remote_path, fd)
         content = fd.getvalue()
-        assert not re.search(str_input, content), "Edit & Save vdsm.conf failed"
+        assert not re.search("#some_text", content),   \
+            "Edit & Save vdsm.conf failed"
+
+    def check_vm_login_to_engine(self, he, he_password):
+        """
+        Purpose:
+            Check the function to click the login to engine
+            Suppose the VM is "HOSTED ENGINE"
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            # Click the engine login link
+            self.engine_login_link.click()
+            time.sleep(1)
+
+            # Input engine login password
+            self.engine_login_passwd_input.clear()
+            time.sleep(1)
+            self.engine_login_passwd_input.send_keys(he_password)
+
+            # Input the HE url
+            he_url = "https://" + he + "/ovirt-engine"
+            self.engine_login_url_input.clear()
+            time.sleep(1)
+            self.engine_login_url_input.send_keys(he_url)
+
+            # Submit to login HE
+            self.engine_login_submit_btn.click()
+            time.sleep(2)
+
+            assert re.search("Logout from Engine", self.engine_login_link.text),    \
+                "Failed to login Engine"
+
+    def check_vm_logout_from_engine(self):
+        """
+        Purpose:
+            Check the function to click the login to engine
+            Suppose the VM is "HOSTED ENGINE"
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            # Ensure it had been login to engine
+            assert re.search("Logout from Engine", self.engine_login_link.text),     \
+                "No need to logout from engine"
+
+            # Click the engine login link
+            self.engine_login_link.click()
+            time.sleep(1)
+
+            assert re.search("Login to Engine", self.engine_login_link.text),  \
+                "Failed to logout from Engine"
+
+    def check_vm_host_to_maintenance(self):
+        """
+        Purpose:
+            Check Host to Maintenance in virtual machines page
+        """
+        pass
+
+    def check_vm_refresh(self):
+        """
+        Purpose:
+            Check Refrash in virtual machines page
+        """
+        with self.switch_to_frame(self.frame_right_name):
+            self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
+            print self.refresh_link.text
+            if re.search("Refresh: auto", self.refresh_link.text):
+                    self.refresh_link.click()
+                    time.sleep(2)
+                    print self.refresh_link.text
+                    assert re.search("Refresh: off", self.refresh_link.text),   \
+                        "Refresh click not switch to off"
+            else:
+                self.refresh_link.click()
+                time.sleep(2)
+                print self.refresh_link.text
+                assert re.search("Refresh: auto", self.refresh_link.text),    \
+                    "Refresh click not switch to auto"
+
+    def logout_from_cockpit(self):
+        """
+        Purpose:
+            Logout from cockpit
+        """
+        self.content_username_txt.click()
+        time.sleep(0.5)
+        self.logout_link.click()
+        time.sleep(0.5)
