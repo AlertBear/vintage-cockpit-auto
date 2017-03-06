@@ -39,10 +39,37 @@ class RhevmAction:
     </storage_domain>
     '''
 
+    new_vm_body = '''
+    <vm>
+    <name>{vm_name}</name>
+    <description>{vm_name}</description>
+    <cluster>
+    <name>{cluster_name}</name>
+    </cluster>
+    <template>
+    <name>{tpl_name}</name>
+    </template>
+    </vm>
+    '''
+
+    vm_action = '''
+    <action>
+      <vm>
+        <os>
+          <boot>
+            <devices>
+              <device>hd</device>
+            </devices>
+          </boot>
+        </os>
+      </vm>
+    </action>
+    '''
+
     def __init__(self,
                  rhevm_fqdn,
                  user="admin",
-                 password="password",
+                 password="123qweP",
                  domain="internal"):
 
         self.rhevm_fqdn = rhevm_fqdn
@@ -103,8 +130,7 @@ class RhevmAction:
 
     def add_new_host(self, *rhvh_credentials):
         ip, host_name, password = rhvh_credentials
-        api_url = self.api_url.format(
-            rhevm_fqdn=self.rhevm_fqdn, item="hosts")
+        api_url = self.api_url.format(rhevm_fqdn=self.rhevm_fqdn, item="hosts")
 
         body = self.new_host_post_body.format(
             host_name=host_name, ip=ip, password=password)
@@ -148,3 +174,37 @@ class RhevmAction:
             print r.text
             raise RuntimeError("Failed to attach storage %s to datacenter %s" %
                                (storage_name, dc_name))
+
+    def create_vm(self, vm_name, tpl_name="RHEL73GA-Clean", cluster="810-02"):
+        api_url_base = self.api_url.format(
+            rhevm_fqdn=self.rhevm_fqdn, item="vms")
+
+        body = self.new_vm_body.format(
+            vm_name=vm_name, tpl_name=tpl_name, cluster_name=cluster)
+
+        r = self.req.post(
+            api_url_base,
+            data=body,
+            headers=self.headers,
+            verify=self.rhevm_cert)
+
+        if r.status_code != 202:
+            raise RuntimeError("Failed to create viratual machine")
+        else:
+            return r.json()["id"]
+
+    def start_vm(self, vm_id):
+        api_url_base = self.api_url.format(
+            rhevm_fqdn=self.rhevm_fqdn, item="vms")
+        api_url = api_url_base + '/%s/start' % vm_id
+
+        r = self.req.post(
+            api_url,
+            data=self.vm_action,
+            headers=self.headers,
+            verify=self.rhevm_cert)
+        print r.status_code
+
+
+if __name__ == '__main__':
+    RhevmAction("hp-dl380g9-01.lab.eng.pek2.redhat.com").create_vm("vm005")
