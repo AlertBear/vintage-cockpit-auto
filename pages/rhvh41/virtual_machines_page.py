@@ -5,6 +5,7 @@ from utils.helpers import RhevmAction
 from selenium.common.exceptions import NoAlertPresentException
 from fabric.api import run, env, get
 from StringIO import StringIO
+from fabric.api import run, settings
 
 
 class VirtualMachinesPage(PageObject):
@@ -33,18 +34,40 @@ class VirtualMachinesPage(PageObject):
     total_vms_text = PageElement(id_="host-vms-total")
     vdsm_unactived_textblock = PageElement(id_="vdsm-is-not-active")
 
-    vm_hostname_link = PageElement(
+    # VM elements
+    vm_hostname_links = MultiPageElement(
         xpath=".//*[@id='host-vms-list-item-name-']/a")
-    vm_guest_ip_txt = PageElement(
+    vm_guest_ip_txts = MultiPageElement(
         xpath=".//*[@id='host-vms-list-item-name-']/small[1]")
-    vm_hostname_txt = PageElement(
+    vm_hostname_txts = MultiPageElement(
         xpath=".//*[@id='host-vms-list-item-name-']/small[2]")
-    vm_up_txt = PageElement(
+    vm_up_txts = MultiPageElement(
         xpath=".//*[@id='host-vms-list-item-name-']/small[3]")
-    vm_lifecycle_btn = PageElement(tag_name="button")
+    vm_lifecycle_btns = MultiPageElement(tag_name="button")
     vm_lifecycle_operations = MultiPageElement(tag_name="li")
 
+    # Elements under detail of VM
+    name_first_row_second_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[1]/td[2]")
+    ip_first_row_fourth_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[1]/td[4]")
+    id_second_row_second_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[2]/td[2]")
+    vcpu_second_row_fourth_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[2]/td[4]")
+    username_third_row_second_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[3]/td[2]")
+    uptime_third_row_fourth_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[3]/td[4]")
+    display_fourth_row_second_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td[2]")
+    fqdn_fourth_row_fourth_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td[4]")
+    app_fifth_row_second_column = PageElement(
+        xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[5]/td[4]")
 
+
+    # VDSM related elements
     vdsm_service_management_link = PageElement(
         link_text="VDSM Service Management")
     vdsm_conf_textarea = PageElement(id_="editor-vdsm-conf")
@@ -111,18 +134,65 @@ class VirtualMachinesPage(PageObject):
             except NoAlertPresentException as e:
                 raise e
 
-    def check_running_vms_register(self, vm_hostname, vm_ip):
+    def check_running_vms_register(
+        self,
+        he_vm_fqdn,
+        he_vm_ip,
+        he_password,
+        second_vm_fqdn):
         """
         Purpose:
             Check running VMs (Register to RHEVM) status
-            Suppose this VM is Hosted Engine
+            Suppose this VM is Hosted Engine and another common VM
         """
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
-            assert self.vm_hostname_link, "VM hostname link not exists"
-            assert re.search(vm_ip, self.vm_guest_ip_txt.text), "Guest IP text not correct"
-            assert re.search(vm_hostname, self.vm_hostname_txt.text), "VM hostname text not correct"
-            assert self.vm_up_txt, "VM up time text not exists"
+
+            # To Do: Need to check the accurate up time
+            assert self.vm_up_txts, "VM up time text not exists"
+
+            he_vm_sequence_num = 0
+            # Check HostedEngine VM and common vm without any guest OS
+            for k, hostname_link in enumerate(list(self.vm_hostname_links)):
+                if re.search("HostedEngine", hostname_link.text):
+                    he_vm_sequence_num = k
+                    assert re.search(he_vm_ip, list(self.vm_guest_ip_txts)[k].text),    \
+                        "HE Guest IP text not correct"
+                    assert re.search(he_vm_fqdn, self.vm_hostname_txts[k].text),    \
+                        "HE hostname text not correct"
+                else:
+                    re.search(second_vm_fqdn, list(self.vm_hostname_links)[k].text),     \
+                        "Second VM name not correct"
+
+            # Click to check the detail info of the HE vm
+            list(self.vm_hostname_links)[he_vm_sequence_num].click()
+
+            assert re.search(
+                "HostedEngine", self.name_first_row_second_column.text) # HostedEngine
+
+            assert re.search(
+                he_vm_ip, self.ip_first_row_fourth_column.text) # HE vm ip
+
+            cmd = "cat /proc/cpuinfo|grep processor|wc -l"
+            with settings(
+                warn_only=True,
+                host_string='root@' + he_vm_ip,
+                password=he_password):
+                vcpu_count = run(cmd)
+            assert re.search(
+                vcpu_count, self.vcpu_second_row_fourth_column.text) # VCPU count
+
+            assert re.search(
+                "None", self.username_third_row_second_column.text) # Username
+
+            assert re.search(
+                "vnc", self.display_fourth_row_second_column.text) # Display type
+
+            assert re.search(
+                he_vm_fqdn, self.fqdn_fourth_row_fourth_column.text) # FQDN
+
+            pass # To do: Apps list, up time
+
 
     def check_vms_lifecycle(self):
         """
@@ -297,7 +367,7 @@ class VirtualMachinesPage(PageObject):
 
             # Submit to login HE
             self.engine_login_submit_btn.click()
-            time.sleep(2)
+            time.sleep(5)
 
             assert re.search("Logout from Engine", self.engine_login_link.text),    \
                 "Failed to login Engine"

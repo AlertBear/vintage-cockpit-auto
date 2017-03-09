@@ -1,4 +1,5 @@
 import pytest
+import time
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.rhvh41.subscriptions_page import SubscriptionsPage
@@ -68,6 +69,7 @@ def test_18412(firefox):
     """
     subscriptions_page = SubscriptionsPage(firefox)
     subscriptions_page.check_register_rhsm(rhn_user, rhn_password)
+    time.sleep(5)
     subscriptions_page.check_subscription_result()
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
@@ -82,6 +84,7 @@ def test_18413(firefox):
     subscriptions_page.check_register_rhsm_key_org(
         activation_key,
         activation_org)
+    time.sleep(5)
     subscriptions_page.check_subscription_result()
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
@@ -98,6 +101,7 @@ def test_18414(firefox):
     subscriptions_page.unregister_subsciption()
 
 
+'''
 def test_18415(firefox):
     """
     RHEVM-18415
@@ -116,3 +120,4 @@ def test_18415(firefox):
     subscriptions_page.check_subscription_result()
     subscriptions_page.unregister_subsciption()
     subscriptions_page.reset(ca_path)
+'''

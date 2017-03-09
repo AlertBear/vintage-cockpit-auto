@@ -126,7 +126,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(2)
 
     nfs_storage = nfs_ip + ':' + nfs_path
-    class_name("form-control").send_keys(nfs_storage)  # NFS storage path
+    list(tag_name("input"))[0].send_keys(nfs_storage)  # NFS storage path
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(5)
@@ -137,9 +137,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()    # gateway ip confirm
     time.sleep(2)
 
-    class_name("form-control").clear()   # select NIC
+    list(tag_name("input"))[0].clear()   # select NIC
     time.sleep(2)
-    class_name("form-control").send_keys(nic)
+    list(tag_name("input"))[0].send_keys(nic)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -156,7 +156,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()    # select Generate
     time.sleep(2)
 
-    class_name("form-control").send_keys(vm_fqdn)  # set VM FQDN
+    list(tag_name("input"))[0].send_keys(vm_fqdn)  # set VM FQDN
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -164,22 +164,22 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()       # set vm domain
     time.sleep(2)
 
-    class_name("form-control").clear()      # Manual setup
+    list(tag_name("input"))[0].clear()      # Manual setup
     time.sleep(2)
-    class_name("form-control").send_keys("No")
+    list(tag_name("input"))[0].send_keys("No")
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
 
-    class_name("form-control").clear()      # set root password
+    list(tag_name("input"))[0].clear()      # set root password
     time.sleep(2)
-    class_name("form-control").send_keys(vm_password)
+    list(tag_name("input"))[0].send_keys(vm_password)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
-    class_name("form-control").clear()
+    list(tag_name("input"))[0].clear()
     time.sleep(2)
-    class_name("form-control").send_keys(vm_password)
+    list(tag_name("input"))[0].send_keys(vm_password)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -187,9 +187,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()     # leave ssh key empty
     time.sleep(2)
 
-    class_name("form-control").clear()    # enable ssh access for root
+    list(tag_name("input"))[0].clear()    # enable ssh access for root
     time.sleep(2)
-    class_name("form-control").send_keys("yes")
+    list(tag_name("input"))[0].send_keys("yes")
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -206,9 +206,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()     # set the number of vcpu
     time.sleep(2)
 
-    class_name("form-control").clear()    # set unicast MAC
+    list(tag_name("input"))[0].clear()    # set unicast MAC
     time.sleep(2)
-    class_name("form-control").send_keys(mac)
+    list(tag_name("input"))[0].send_keys(mac)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -219,15 +219,15 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()     # resovle hostname
     time.sleep(2)
 
-    class_name("form-control").clear()    # set engine admin password
+    list(tag_name("input"))[0].clear()    # set engine admin password
     time.sleep(1)
-    class_name("form-control").send_keys(engine_password)
+    list(tag_name("input"))[0].send_keys(engine_password)
     time.sleep(1)
     class_name("btn-default").click()
     time.sleep(1)
-    class_name("form-control").clear()
+    list(tag_name("input"))[0].clear()
     time.sleep(1)
-    class_name("form-control").send_keys(engine_password)
+    list(tag_name("input"))[0].send_keys(engine_password)
     time.sleep(1)
     class_name("btn-default").click()
     time.sleep(2)
@@ -275,18 +275,12 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     # Reboot the host
     with settings(
         warn_only=True,
-        host_string='root@' + vm_ip,
-        password=vm_password):
-        run("reboot", quiet=True)
-    time.sleep(120)
-
-    # Reboot second time for next test_he_info.py test
-    with settings(
-        warn_only=True,
-        host_string='root@' + vm_ip,
-        password=vm_password):
-        run("reboot", quiet=True)
-    time.sleep(120)
+        host_string=host_user + '@' + vm_ip,
+        password=host_password):
+        run("hosted-engine --vm-poweroff", quiet=True)
+        time.sleep(30)
+        run("hosted-engine --vm-start", quiet=True)
+        time.sleep(120)
 
     dr.quit()
 
@@ -303,4 +297,4 @@ def check_he_is_deployed(host_ip, host_user, host_password):
         cmd = "hosted-engine --check-deployed"
         result = run(cmd)
 
-        assert result.successed, "HE is not deployed on %s" % host_ip
+        assert result.succeeded, "HE is not deployed on %s" % host_ip

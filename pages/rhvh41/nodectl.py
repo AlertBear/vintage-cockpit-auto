@@ -194,15 +194,17 @@ class Nodectl():
         """
         # nodectl generate-banner
         cmd_nodectl_banner = "nodectl generate-banner"
-        run(cmd_nodectl_banner)
-        cmd = "cat /etc/issue"
-        output1 = run(cmd)
+        output1 = run(cmd_nodectl_banner)
 
         cmd_modify_banner = "echo 'cockpit-ovirt' >> /etc/issue"
         run(cmd_modify_banner)
 
         cmd_nodectl_update = "nodectl generate-banner --update-issue"
         run(cmd_nodectl_update)
+
+        cmd = "cat /etc/issue"
         output2 = run(cmd)
 
-        assert output1 == output2, "nodectl generate-banner failed"
+        assert re.search(output1, output2), "nodectl generate-banner failed"
+        assert not re.search('cockpit-ovirt', output2),     \
+            "nodectl generate-banner failed"

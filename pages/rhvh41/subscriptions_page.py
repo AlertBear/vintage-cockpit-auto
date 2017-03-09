@@ -42,7 +42,7 @@ class SubscriptionsPage(PageObject):
             assert self.register_sys_btn, "register system btn not exist"
             assert self.login_input, "login text editor not exist"
             assert self.passwd_input, "password text editor not exist"
-            assert self.register_btn, "register button not exist"
+            assert self.submit_btn, "register button not exist"
             assert self.key_input, "Activation Key text editor not exist"
             assert self.org_input, "Organization text editor not exist"
             assert self.url_select_btn, "Url select btn not exist"
@@ -66,8 +66,8 @@ class SubscriptionsPage(PageObject):
             self.passwd_input.send_keys(rhn_password)
             self.wait(period=0.5)
 
-            register_btn = list(self.btns)[3]
-            register_btn.click()
+            submit_btn = list(self.btns)[3]
+            submit_btn.click()
             self.wait(period=50)
 
     def check_register_rhsm_key_org(self, activation_key, activation_org):
@@ -86,8 +86,8 @@ class SubscriptionsPage(PageObject):
             self.org_input.send_keys(activation_org)
             self.wait(period=0.5)
 
-            register_btn = list(self.btns)[3]
-            register_btn.click()
+            submit_btn = list(self.btns)[3]
+            submit_btn.click()
             self.wait(period=40)
 
     def check_register_satellite(self, satellite_ip, satellite_user, satellite_password):
@@ -108,7 +108,7 @@ class SubscriptionsPage(PageObject):
             self.wait(period=0.5)
             self.passwd_input.send_keys(satellite_password)
             self.wait(period=0.5)
-            self.register_btn.click()
+            self.submit_btn.click()
             self.wait(period=40)
 
     def check_password_encrypted(self, rhn_password):

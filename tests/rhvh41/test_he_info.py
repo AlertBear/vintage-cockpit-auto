@@ -1,5 +1,6 @@
 import time
 import pytest
+import re
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.rhvh41.hosted_engine_page import HePage
@@ -11,20 +12,17 @@ from conf import *
 host_ip = HOST_IP
 host_user = HOST_USER
 host_password = HOST_PASSWORD
-another_host = SECOND_HOST
-another_password = SECOND_PASSWORD
 ROOT_URI = "https://" + host_ip + ":9090"
 
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-vm_fqdn = VM_FQDN
-vm_ip = VM_IP
-vm_password = VM_PASSWORD
+vm_fqdn = HE_VM_FQDN
+vm_ip = HE_VM_IP
+vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
-second_nfs_path = SECOND_NFS_PATH  # Be added to hosted engine
-second_host_ip = SECOND_HOST       # Second host to run hosted engine
-second_password = SECOND_PASSWORD
+he_data_nfs = HE_DATA_NFS
+
 
 
 @pytest.fixture(autouse=True)
@@ -78,6 +76,9 @@ def test_18670(firefox):
     RHEVM-18670
         Check the vm still up after reboot node
     """
+    # To do: Reboot RHVH
+    pass
+
     he_page = HePage(firefox)
 
     # Check engine status
@@ -87,12 +88,14 @@ def test_18670(firefox):
     he_page.check_vm_status()
 
 
-
 def test_18671(firefox):
     """
     RHEVM-18671
         Reboot RHVH after finished configure hosted engine
     """
+    # To do: Reboot RHVH
+    pass
+
     he_page = HePage(firefox)
 
     # Check engine status
@@ -120,28 +123,15 @@ def test_18672(firefox):
     he_page.check_vm_status()
 
 
-def test_18668(firefox):
-    """
-    RHEVM-18668
-        Setup additional host
-    """
-    another_hostname = "cockpit-he"
-    he_page = HePage(firefox)
-    he_page.add_host_to_rhvm(
-        vm_fqdn,
-        another_host,
-        another_hostname,
-        another_password)
-    he_page.check_additonal_host(vm_fqdn, another_hostname)
-    he_page.remove_host_from_rhvm(vm_fqdn, another_hostname)
-
-
+'''
 def test_18684(firefox):
     """
     RHEVM-18684
         Check if there are a large number of redundant log generation in /var/log/messages
     """
+    # To Do
     pass
+'''
 
 
 def test_18685(firefox):
@@ -151,11 +141,31 @@ def test_18685(firefox):
     """
     # Find the hosted engine setup log
     cmd = "find /var/log -type f |grep ovirt-hosted-engine-setup-.*.log"
-    output = run(cmd)
+    output_log = run(cmd)
 
     # Find the line contains "Enter engine admin password"
-    cmd = "grep 'Enter engine admin password' %s" % output
-    output = run(cmd)
-    password = output.split(':')[-1]
+    cmd = "grep 'Enter engine admin password' %s" % output_log
+    with settings(warn_only=True):
+        output_password = run(cmd)
 
-    assert password != engine_password, "Hosted engine password is saved in the logs as clear text"
+    assert not re.search(engine_password, output_password),     \
+        "Hosted engine password is saved in the logs as clear text"
+
+
+def test_he_create_vm(firefox):
+    """
+    Purpose:
+        Create a vm under HE host, which for tests/rhvh41/test_vm_resgisterd.py
+    """
+    # Add nfs storage to Default DC on Hosted Engine,
+    # which is used for creating vm
+    he_rhvm = RhevmAction(he_vm_fqdn)
+    he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
+
+    # Create new vm without installing guest os under Default DC
+    he_rhvm.add_new_host(
+        second_host_ip,
+        "cockpit-he2",
+        second_password,
+        deploy_hosted_engine=True)
+    time.sleep(120)

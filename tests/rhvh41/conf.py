@@ -34,7 +34,7 @@ EFI_HOST_PASSWORD = "redhat"
 # Config variable to be used by test_common_subscription.py
 #
 RHN_USER = "qa@redhat.com"
-RHN_PASSWORD = "EC3YWpKxSe524GCK"
+RHN_PASSWORD = "CZvGMy7TwJpVKW9t "
 ACTIVATION_KEY = "rhevh"
 ACTIVATION_ORG = "711497"
 SATELLITE_IP = "10.73.75.61"
@@ -51,17 +51,18 @@ CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.
 RHVM_APPLIANCE_PATH="/home/dguo/Work/iso/rhvm-appliance-4.1.20170126.0-1.el7ev.noarch.rpm"
 NFS_IP = "10.66.8.173"
 NFS_PASSWORD = "l1admin"
-NFS_STORAGE_PATH = "/home/dguo/Public/he"
-SECOND_NFS_PATH = "/home/dguo/Public/he2"
+HE_INSTALL_NFS = "/home/dguo/Public/cockpit/he_install"
+HE_DATA_NFS = "/home/dguo/Public/cockpit/he_data"
 NIC = "em1"
 MAC = "52:54:00:05:61:f2"
-VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
-VM_IP = "10.66.148.102"
-VM_PASSWORD = "redhat"
+HE_VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
+HE_VM_IP = "10.66.148.102"
+HE_VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
 AUTO_ANSWER = "/home/dguo/Public/work/run"
 SECOND_HOST = "10.66.149.116"
 SECOND_PASSWORD = "redhat"
+SECOND_VM_FQDN = "cockpit-vm"
 
 
 #

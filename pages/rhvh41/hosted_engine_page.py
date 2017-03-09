@@ -74,7 +74,8 @@ class HePage(PageObject):
             assert len(ok_icons) == 2, "Hosted engine status not up"
 
             he_status_txt = list(self.vcenters)[0]
-            assert he_status_txt.text.strip() == "Hosted Engine is up!", "Hosted engine status not up"
+            assert he_status_txt.text.strip() == "Hosted Engine is up!",    \
+                "Hosted engine status not up"
 
     def check_vm_status(self):
         """
@@ -82,8 +83,8 @@ class HePage(PageObject):
             Check the host status
         """
         with self.switch_to_frame(self.frame_right_name):
-            print list(self.vm_state_txts)[0].text
-            assert re.search('up', list(self.vm_state_txts)[0].text), "The VM is not up"
+            assert re.search('up', list(self.vm_state_txts)[0].text),   \
+                "The VM is not up"
 
     def check_he_running_on_host(self, host_ip):
         """
@@ -94,8 +95,10 @@ class HePage(PageObject):
         hostname = run(cmd)
         with self.switch_to_frame(self.frame_right_name):
             he_running_on_txt = list(self.vcenters)[1]
-            assert he_running_on_txt.text == "Hosted Engine is running on %s" \
-                % hostname, "Hosted engine running on host not correct"
+            print he_running_on_txt.text
+            print hostname
+            assert re.search(hostname, he_running_on_txt.text),     \
+                "Hosted engine running on host not correct"
 
     def put_host_to_local_maintenance(self):
         """
@@ -115,7 +118,8 @@ class HePage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             host_agent_maintenance_txt = list(self.list_group_item_txts)[0].text
             host_maintenance_txt = host_agent_maintenance_txt.split()[-1]
-            assert host_maintenance_txt == "true", "Host is not in local maintenance"
+            assert host_maintenance_txt == "true",  \
+                "Host is not in local maintenance"
 
     def check_host_not_in_local_maintenance(self):
         """
@@ -125,7 +129,8 @@ class HePage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             host_agent_maintenance_txt = list(self.list_group_item_txts)[0].text
             host_maintenance_txt = host_agent_maintenance_txt.split()[-1]
-            assert host_maintenance_txt == "false", "Host is in local maintenance"
+            assert host_maintenance_txt == "false",     \
+                "Host is in local maintenance"
 
     def remove_host_from_local_maintenance(self):
         """

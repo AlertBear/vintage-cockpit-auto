@@ -16,9 +16,12 @@ ROOT_URI = "https://" + host_ip + ":9090"
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-vm_fqdn = VM_FQDN
-vm_ip = VM_IP
-engine_password = ENGINE_PASSWORD
+he_vm_fqdn = HE_VM_FQDN
+he_vm_ip = HE_VM_IP
+he_vm_password = HE_VM_PASSWORD
+he_engine_password = ENGINE_PASSWORD
+second_vm_fqdn = SECOND_VM_FQDN
+
 
 @pytest.fixture(autouse=True)
 def _environment(request):
@@ -60,12 +63,16 @@ def test_18805(firefox):
     """
     RHEVM-18805
         Check running VMs (Register to RHEVM) status in virtual machines page
-        Suppose the vm is HOSTED ENGINE
+        Suppose there are two vms including HE vm and another commom vm
     """
     vm_page = VirtualMachinesPage(firefox)
-    vm_page.check_running_vms_register(vm_fqdn, vm_ip)
+    vm_page.check_running_vms_register(
+        he_vm_fqdn,
+        he_vm_ip,
+        he_vm_password,
+        second_vm_fqdn)
 
-
+'''
 def test_18808(firefox):
     """
     RHEVM-18808
@@ -84,7 +91,7 @@ def test_18809(firefox):
         Check Login to Engine in virtual machines page
     """
     vm_page = VirtualMachinesPage(firefox)
-    vm_page.check_vm_login_to_engine(vm_fqdn, engine_password)
+    vm_page.check_vm_login_to_engine(he_vm_fqdn, he_engine_password)
     time.sleep(2)
     vm_page.check_vm_logout_from_engine()
 
@@ -148,3 +155,4 @@ def test_login_again(firefox):
     # Login with root account
     login_page = LoginPage(firefox)
     login_page.login_with_credential(host_user, host_password)
+'''

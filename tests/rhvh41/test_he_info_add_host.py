@@ -21,7 +21,7 @@ env.password = host_password
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
 vm_password = VM_PASSWORD
-second_nfs_path = SECOND_NFS_PATH  # Be added to hosted engine
+second_nfs_path = HE_DATA_NFS_PATH  # Be added to hosted engine
 second_host_ip = SECOND_HOST       # Second host to run hosted engine
 second_password = SECOND_PASSWORD
 
@@ -63,10 +63,10 @@ def test_login(firefox):
     login_page.login_with_credential(host_user, host_password)
 
 
-def test_18678(firefox):
+def test_18668(firefox):
     """
-    RHEVM-18678
-        Put the host into local maintenance
+    RHEVM-18668
+        Setup additional host
     """
     '''
     # Add another nfs storage to default DC
@@ -77,10 +77,19 @@ def test_18678(firefox):
     he_rhvm.add_new_host(
         second_host_ip,
         "cockpit-he2",
-        host_password,
+        second_password,
         deploy_hosted_engine=True)
     time.sleep(120)
     '''
+    he_page.check_additonal_host(vm_fqdn, "cockpit-he2")
+    he_page.remove_host_from_rhvm(vm_fqdn, "cockpit-he2")
+
+
+def test_18678(firefox):
+    """
+    RHEVM-18678
+        Put the host into local maintenance
+    """
     # Put the host to local maintenance
     he_page = HePage(firefox)
     he_page.put_host_to_local_maintenance()
@@ -116,3 +125,14 @@ def test_18680(firefox):
 
     # Check the cluster is in global maintenance
     he_page.check_cluster_in_global_maintenance()
+
+
+'''
+def test_18681(firefox):
+    """
+    RHEVM-18681
+        Migrate HE
+    """
+    # To Do
+    pass
+'''
