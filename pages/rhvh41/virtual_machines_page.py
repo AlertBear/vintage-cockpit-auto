@@ -145,6 +145,18 @@ class VirtualMachinesPage(PageObject):
             Check running VMs (Register to RHEVM) status
             Suppose this VM is Hosted Engine and another common VM
         """
+        # Delete the previous screenshot of the VM page
+        with settings(warn_only=True):
+            cmd1 = "rm -f /tmp/running_vms.png"
+            run(cmd1)
+            cmd2 = "rm -f /tmp/he_vm_detail.png"
+            run(cmd2)
+            cmd3 = "rm -f /tmp/common_vm_detail.png"
+            run(cmd3)
+
+        # Screenshot of the VM page
+        self.save_screenshot("/tmp/running_vms.png")
+
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
 
@@ -152,10 +164,14 @@ class VirtualMachinesPage(PageObject):
             assert self.vm_up_txts, "VM up time text not exists"
 
             he_vm_sequence_num = 0
+            common_vm_sequence_num = 1
             # Check HostedEngine VM and common vm without any guest OS
             for k, hostname_link in enumerate(list(self.vm_hostname_links)):
                 if re.search("HostedEngine", hostname_link.text):
+                    if k == 1:
+                        common_vm_sequence_num = 0
                     he_vm_sequence_num = k
+
                     assert re.search(he_vm_ip, list(self.vm_guest_ip_txts)[k].text),    \
                         "HE Guest IP text not correct"
                     assert re.search(he_vm_fqdn, self.vm_hostname_txts[k].text),    \
@@ -167,6 +183,7 @@ class VirtualMachinesPage(PageObject):
             # Click to check the detail info of the HE vm
             list(self.vm_hostname_links)[he_vm_sequence_num].click()
 
+            self.save_screenshot("/tmp/he_vm_detail.png")
             assert re.search(
                 "HostedEngine", self.name_first_row_second_column.text) # HostedEngine
 
@@ -184,15 +201,16 @@ class VirtualMachinesPage(PageObject):
 
             assert re.search(
                 "None", self.username_third_row_second_column.text) # Username
-
+            '''
             assert re.search(
                 "vnc", self.display_fourth_row_second_column.text) # Display type
-
+            '''
             assert re.search(
                 he_vm_fqdn, self.fqdn_fourth_row_fourth_column.text) # FQDN
 
-            pass # To do: Apps list, up time
-
+            # Click to screenshot the detail of common VM
+            list(self.vm_hostname_links)[common_vm_sequence_num].click()
+            self.save_screenshot("/tmp/common_vm_detail.png")
 
     def check_vms_lifecycle(self):
         """

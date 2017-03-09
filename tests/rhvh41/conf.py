@@ -46,7 +46,7 @@ CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.
 
 #
 # Config variable to be used by test_he_install.py/test_he_install_bond.py/
-# test_he_install_vlan.py/test_he_install_bv.py
+# test_he_install_vlan.py/test_he_install_bv.py/test_vm_registerd.py
 #
 RHVM_APPLIANCE_PATH="/home/dguo/Work/iso/rhvm-appliance-4.1.20170126.0-1.el7ev.noarch.rpm"
 NFS_IP = "10.66.8.173"

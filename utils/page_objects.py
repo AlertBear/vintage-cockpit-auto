@@ -51,6 +51,9 @@ class PageObject(object):
     def basic_check_elements_exists(self):
         raise NotImplementedError
 
+    def save_screenshot(self, save_path):
+        self.w.save_screenshot(save_path)
+
     @contextmanager
     def switch_to_frame(self, frame_name):
         self.w.switch_to_default_content()

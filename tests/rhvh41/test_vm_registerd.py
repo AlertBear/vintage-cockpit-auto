@@ -72,7 +72,7 @@ def test_18805(firefox):
         he_vm_password,
         second_vm_fqdn)
 
-'''
+
 def test_18808(firefox):
     """
     RHEVM-18808
@@ -155,4 +155,3 @@ def test_login_again(firefox):
     # Login with root account
     login_page = LoginPage(firefox)
     login_page.login_with_credential(host_user, host_password)
-'''
