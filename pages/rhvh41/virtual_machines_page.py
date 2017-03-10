@@ -155,7 +155,7 @@ class VirtualMachinesPage(PageObject):
             run(cmd3)
 
         # Screenshot of the VM page
-        self.save_screenshot("/tmp/running_vms.png")
+        self.save_screenshot("running_vms.png")
 
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
@@ -183,7 +183,7 @@ class VirtualMachinesPage(PageObject):
             # Click to check the detail info of the HE vm
             list(self.vm_hostname_links)[he_vm_sequence_num].click()
 
-            self.save_screenshot("/tmp/he_vm_detail.png")
+            self.save_screenshot("he_vm_detail.png")
             assert re.search(
                 "HostedEngine", self.name_first_row_second_column.text) # HostedEngine
 
@@ -210,6 +210,7 @@ class VirtualMachinesPage(PageObject):
 
             # Click to screenshot the detail of common VM
             list(self.vm_hostname_links)[common_vm_sequence_num].click()
+            time.sleep(2)
             self.save_screenshot("/tmp/common_vm_detail.png")
 
     def check_vms_lifecycle(self):

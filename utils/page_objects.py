@@ -1,4 +1,5 @@
 import time
+import os
 from contextlib import contextmanager
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -51,8 +52,11 @@ class PageObject(object):
     def basic_check_elements_exists(self):
         raise NotImplementedError
 
-    def save_screenshot(self, save_path):
-        self.w.save_screenshot(save_path)
+    def save_screenshot(self, filename):
+        save_dir = "/tmp/cockpit_auto"
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+        self.w.save_screenshot(filename)
 
     @contextmanager
     def switch_to_frame(self, frame_name):
