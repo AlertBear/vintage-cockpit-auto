@@ -56,7 +56,7 @@ class PageObject(object):
         save_dir = "/tmp/cockpit_auto"
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        self.w.save_screenshot(filename)
+        self.w.save_screenshot(save_dir + '/' + filename)
 
     @contextmanager
     def switch_to_frame(self, frame_name):

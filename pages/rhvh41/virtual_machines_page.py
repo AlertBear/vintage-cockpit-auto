@@ -147,11 +147,11 @@ class VirtualMachinesPage(PageObject):
         """
         # Delete the previous screenshot of the VM page
         with settings(warn_only=True):
-            cmd1 = "rm -f /tmp/running_vms.png"
+            cmd1 = "rm -f /tmp/cockpit_auto/running_vms.png"
             run(cmd1)
-            cmd2 = "rm -f /tmp/he_vm_detail.png"
+            cmd2 = "rm -f /tmp/cockpit_auto/he_vm_detail.png"
             run(cmd2)
-            cmd3 = "rm -f /tmp/common_vm_detail.png"
+            cmd3 = "rm -f /tmp/cockpit_auto/common_vm_detail.png"
             run(cmd3)
 
         # Screenshot of the VM page

@@ -1,9 +1,10 @@
 import pytest
+import time
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.rhvh41.dashboard_page import DashboardPage
-from fabric.api import run, env
+from fabric.api import env, run
 from conf import *
+
 
 host_ip = HOST_IP
 host_user = HOST_USER
@@ -47,53 +48,16 @@ def firefox(request):
     driver.close()
 
 
-def test_login(firefox):
+def test_18377(firefox):
+    """
+    RHEVM-18377
+        Login cockpit via Firefox browser
+    """
     login_page = LoginPage(firefox)
     login_page.basic_check_elements_exists()
+    login_page.login_with_incorrect_credential()
+    time.sleep(2)
     login_page.login_with_credential(host_user, host_password)
 
 
-def test_18372(firefox):
-    """
-    RHEVM-18372
-        CPU shown in cockpit page
-    """
-    dashboard_page = DashboardPage(firefox)
-    dashboard_page.check_cpu()
-
-
-def test_18373(firefox):
-    """
-    RHEVM-18373
-        Memory shown in cockpit page
-    """
-    dashboard_page = DashboardPage(firefox)
-    dashboard_page.check_memory()
-
-
-def test_18374(firefox):
-    """
-    RHEVM-18372
-        Network shown in cockpit page
-    """
-    dashboard_page = DashboardPage(firefox)
-    dashboard_page.check_network()
-
-
-def test_18375(firefox):
-    """
-    RHEVM-18372
-        Disk IO shown in cockpit page
-    """
-    dashboard_page = DashboardPage(firefox)
-    dashboard_page.check_disk_io()
-
-
-def test_18371(firefox):
-    """
-    RHEVM-18372
-        Servers can be added in Dashboard page
-    """
-    # To do:
-    dashboard_page = DashboardPage(firefox)
-    dashboard_page.check_server_can_be_added(second_ip, second_password)
+def test_18379

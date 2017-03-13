@@ -60,7 +60,7 @@ HE_VM_IP = "10.66.148.102"
 HE_VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
 AUTO_ANSWER = "/home/dguo/Public/work/run"
-SECOND_HOST = "10.66.149.116"
+SECOND_HOST = "10.66.8.140"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
 

@@ -1,4 +1,5 @@
-""""""
+import time
+import re
 from utils.page_objects import PageObject, PageElement
 
 
@@ -10,6 +11,11 @@ class LoginPage(PageObject):
     username_input = PageElement(id_="login-user-input")
     password_input = PageElement(id_="login-password-input")
     login_btn = PageElement(id_="login-button")
+    login_error_message = PageElement(id_="login-error-message")
+
+    # Other options
+    other_option = PageElement(id_="option-caret")
+    server_input = PageElement(id_="server-field")
 
     def __init__(self, *args, **kwargs):
         super(LoginPage, self).__init__(*args, **kwargs)
@@ -23,7 +29,53 @@ class LoginPage(PageObject):
         self.wait()
 
     def login_with_credential(self, username, password):
+        self.username_input.clear()
+        time.sleep(0.5)
         self.username_input.send_keys(username)
+        time.sleep(0.5)
+
+        self.password_input.clear()
+        time.sleep(0.5)
         self.password_input.send_keys(password)
+        time.sleep(0.5)
+
         self.login_btn.click()
+        self.wait()
+
+    def login_with_incorrect_credential(self):
+        self.username_input.send_keys("cockpit")
+        self.password_input.send_keys("non")
+        self.login_btn.click()
+        self.wait()
+
+        assert re.search(
+            "Wrong user name or password",
+            self.login_error_message),    \
+            "No error message prompt with incorrect credential login"
+
+    def check_other_option_allow_unknow_default(self):
+        self.username_input.send_keys("root")
+        self.password_input.send_keys("redhat")
+
+        self.other_option.click()
+        self.server_input.send_keys("10.66.8.173")
+        self.login_btn.click()
+
+        assert re.search(
+            "Refusing to connect. Host is unknown",
+            self.login_error_message.text),     \
+            "No error message prompt with allownUnknow default"
+
+    def check_other_option_allow_unknow_true(
+        self,
+        another_ip,
+        another_user,
+        another_password):
+        self.username_input.send_keys(another_user)
+        self.password_input.send_keys(another_password)
+
+        self.other_option.click()
+        self.server_input.send_keys(another_ip)
+        self.login_btn.click()
+
         self.wait()

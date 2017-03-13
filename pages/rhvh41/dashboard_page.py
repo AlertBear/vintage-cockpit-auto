@@ -14,6 +14,16 @@ class DashboardPage(PageObject):
     # Elements after click the "add server" button
     add_address_input = PageElement(id_="add-machine-address")
     submit_btn = PageElement(class_name="btn-primary")
+    cancel_btn = PageElement(class_name="btn-default")
+
+    # Elements after click submit
+    connect_btn = PageElement(class_name="btn_primary")
+    user_input = PageElement(id_="login-custom-user")
+    password_input = PageElement(id_="login-custom-password")
+    login_btn = PageElement(class_name="btn-primary")
+
+    # Elements under severs
+    servers = MultiPageElement(class_name="host-label")
 
     # frame name
     frame_right_name = "cockpit1:localhost/dashboard"
@@ -72,15 +82,28 @@ class DashboardPage(PageObject):
             time.sleep(120)
             self.save_screenshot("disk_io_graph.png")
 
-    def check_server_can_be_added(self, another_host):
+    def check_server_can_be_added(self, another_host, another_password):
         """
         Purpose:
             Check another server can be added to cockpit on dashboard page
         """
-        self.add_btn.click()
-        time.sleep(2)
+        with self.switch_to_frame(self.frame_right_name):
+            self.add_btn.click()
+            time.sleep(2)
 
-        self.add_address_input.clear()
-        time.sleep(1)
-        self.add_address_input.input(another_host)
-        self.submit_btn.click()
+            self.add_address_input.send_keys(another_host)
+            time.sleep(2)
+            self.submit_btn.click()
+            time.sleep(1)
+
+            try:
+                self.connect_btn.click()
+            except Exception:
+                self.user_input.send_keys("root")
+                self.password_input.send_keys(another_password)
+                time.sleep(1)
+                self.login_btn.click(1)
+            finally:
+                time.sleep(5)
+
+            assert list(self.servers) == 2, "Failed to add another host"
