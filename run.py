@@ -1,49 +1,14 @@
 #!/usr/bin/python2.7
-import redis
 import os
 import time
 import json
 import pytest
+import re
 import smtplib
 import test_scen
-from tests.conf import REDIS_HOST
 from fabric.api import run, local, settings
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
-
-class RedisAction(object):
-    def __init__(self):
-        self.redis_host = REDIS_HOST
-        self.redis_conn = redis.StrictRedis(
-            host=self.redis_host,
-            port=6379,
-            db=0,
-            password="redhat")
-        self.p = self.redis_conn.pubsub(ignore_subscribe_messages=True)
-        self.p.subscribe("dell-per510-01.lab.eng.pek2.redhat.com-cockpit")
-
-    def receive_ipaddr(self):
-        msg = self.p.parse_response()
-        try:
-            if "redhat" in msg[-1]:
-                ipaddr = msg[-1].split(",")[0]
-                return ipaddr
-            elif "done" in msg[-1]:
-                self.p.unsubscribe()
-                return 2
-        except Exception as e:
-            print e
-            return 1
-
-    def test_connection(self, ipaddr):
-        with settings(host_string='root@' + ipaddr, password="redhat"):
-            run("hostname")
-
-    def publish_result(self, data):
-        self.redis_conn.publish(
-            "dell-per510-01.lab.eng.pek2.redhat.com-cockpit-result",
-            str(data))
 
 
 class EmailAction(object):
@@ -59,7 +24,7 @@ class EmailAction(object):
         attachments):
         msg = MIMEMultipart()
         msg['From'] = from_addr
-        msg['To'] = to_addr
+        msg['To'] = ', '.join(to_addr)
         msg['Subject'] = subject
 
         msg.attach(MIMEText(text, 'plain', 'utf-8'))
@@ -83,15 +48,32 @@ class EmailAction(object):
             server.quit()
 
 
+def get_nic_from_ip(ip, user="root", password="redhat"):
+    with settings(
+        warn_only=True,
+        host_string=user + '@' + ip,
+        password=password):
+        cmd = "ip a s|grep %s" % ip
+        output = run(cmd)
+        nic = output.split()[-1]
+        return nic
+
+
+def modify_config_file(file, value_dict):
+    # Modify test values in the config file
+    for k, v in value_dict.items():
+        local("""sed -i 's/%s =.*/%s="%s"/' %s""" % (
+            k, k, v, file))
+
+
 def format_result(file):
-    # Parse the result and pass to redis channel
+    # Parse the result from json file
     with open(file) as f:
         r = json.load(f)
     ret = {}
     format_ret = {}
     for case in r['report']['tests']:
         ret.update({case['name']: case['outcome']})
-    print ret
 
     for k, v in ret.items():
         format_k = k.split('::')[1].split('_')[1]
@@ -102,74 +84,81 @@ def format_result(file):
 
 
 if __name__ == "__main__":
+    # Parse variable from json file export by rhvh auto testing platform
+    http_json = "/tmp/http.json"
+    with open(http_json, 'r') as f:
+        r = json.load(f)
+    profiles = r["test_profile"]
+    host_ip = r["host_ip"]
+    test_build = r["test_build"]
+    test_scenarios = []
+    for profile in profiles:
+        for c in getattr(test_scen, profile)["CASES"]:
+            test_scenarios.append(c)
+
     # All files used
     abspath = os.path.abspath(os.path.dirname(__file__))
-    conf_file = os.path.join(abspath, "tests/rhvh41/conf.py")
+    if re.search("rhvh41", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/rhvh41/conf.py")
+    elif re.search("rhvh40", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/rhvh40/conf.py")
+    elif re.search("rhel73", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/rhel73/conf.py")
+    elif re.search("centos73", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/centos73/conf.py")
+    elif re.search("fedora24", test_scenarios[1]):
+        conf_file = os.path.join(abspath, "tests/fedora24/conf.py")
+
     test_files_str = ""
-
-    for each_file in test_scen.rhvh41_normal_scen:
+    for each_file in test_scenarios:
         test_file = os.path.join(abspath, each_file)
-        test_files_str = test_files_str.append(" %s" % test_file)
+        test_files_str = test_files_str.join(" %s" % test_file)
 
-    log_dir = "/var/log/cockpit-ovirt-auto"
+    log_dir = os.path.join(abspath, "logs")
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
     result_json = log_dir + "/cockpit-result.json"
     result_html = log_dir + "/cockpit-result.html"
 
+    # Get the mapped device of the host_ip,
+    # which will be used for test_he_install.py
+    host_nic = get_nic_from_ip(host_ip)
+
+    # Modify the variable value in the config file
+    variable_dict = {
+        "HOST_IP": host_ip,
+        "NIC": host_nic,
+        "TEST_BUILD": test_build}
+    modify_config_file(conf_file, variable_dict)
+
+    # Execute to do the tests
+    pytest.main("-s -v%s --json=%s --html=%s" % (
+        test_files_str, result_json, result_html))
+
+    # Rename the result files in case be deleted
+    asset = log_dir + "/assets"
+    now = time.strftime("%y%m%d%H%M%S")
+    json_result_rename = log_dir + "/cockpit-result-" + now + ".json"
+    os.rename(result_json, json_result_rename)
+    html_result_rename = log_dir + "/cockpit-result-" + now + ".html"
+    os.rename(result_html, html_result_rename)
+
+    # Send email to administrator
     email_subject = "Test Report For Cockpit-ovirt"
     email_from = "dguo@redhat.com"
-    email_to = ["dguo@redhat.com", "ycui@redhat.com", "weiwang@redhat.com"]
+    email_to = ["dguo@redhat.com"]
     email_text = "Please see the Test Report of Cockpit-ovirt"
     email_attachment = ""
 
-    redis_act = RedisAction()
-    while True:
-        ipaddr = redis_act.receive_ipaddr()
-        if ipaddr == 1:
-            print "Break for next test!"
-            time.sleep(5)
-            continue
-        elif ipaddr == 2:
-            print "All the test finished!"
-            break
-        else:
-            try:
-                while True:
-                    print "Try to connect %s" % ipaddr
-                    try:
-                        redis_act.test_connection(ipaddr)
-                    except Exception:
-                        time.sleep(10)
-                        continue
+    email = EmailAction()
+    email_attachment = [html_result_rename]
+    email.send_email(
+        email_from,
+        email_to,
+        email_subject,
+        email_text,
+        email_attachment)
 
-                    print "Connect succeed! try to run test now..."
-
-                    # Modify the conf.py to add the host ip
-                    local("""sed -i 's/HOST_IP =.*/HOST_IP="%s"/' %s""" % (str(ipaddr), str(conf_file)))
-
-                    # Execute to do the tests
-                    pytest.main("-s -v%s --json=%s --html=%s" % (test_files_str, result_json, result_html))
-
-                    # Parse the results and pass to redis
-                    res = format_result(result_json)
-                    redis_act.publish_result(res)
-
-                    # Send email to administrator
-                    email = EmailAction()
-                    now = time.strftime("%y-%m-%d-%H-%M-%S")
-                    attach_name = log_dir + now + '.' + os.path.basename(result_html)
-                    os.rename(result_html, attach_name)
-                    email_attachment = [attach_name]
-                    email.send_email(
-                        email_from,
-                        email_to,
-                        email_subject,
-                        email_text,
-                        email_attachment)
-
-                    raise Exception("Done")
-            except Exception as e:
-                if e != "Done":
-                    print e
-                break
+    # Loads the results to json from result_json file
+    res = format_result(json_result_rename)
+    pass

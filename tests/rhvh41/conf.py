@@ -2,11 +2,10 @@
 #
 # The variable to be used by each case
 #
-HOST_IP = "10.66.148.7"
+HOST_IP="10.66.8.140"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
-TEST_BUILD = "rhvh-4.1-0.20170223.0"
-REDIS_HOST = "10.66.11.155"
+TEST_BUILD="rhvh-4.1-0.20170223.0"
 
 #
 # Config variable to be used by test_dashboard_ui.py/
@@ -18,14 +17,14 @@ ADD_HOSTNAME = "cockpit-ovirt"
 #
 # Additional Config variable to be used by test_dashboard_ui_fc.py
 #
-FC_HOST_IP = "10.66.148.7"
+FC_HOST_IP="10.66.148.7"
 FC_HOST_USER = "root"
 FC_HOST_PASSWORD = "redhat"
 
 #
 # Additional Config variable to be used by test_dashboard_ui_efi.py
 #
-EFI_HOST_IP = "10.66.148.7"
+EFI_HOST_IP="10.66.148.7"
 EFI_HOST_USER = "root"
 EFI_HOST_PASSWORD = "redhat"
 
@@ -53,7 +52,7 @@ NFS_IP = "10.66.8.173"
 NFS_PASSWORD = "l1admin"
 HE_INSTALL_NFS = "/home/dguo/Public/cockpit/he_install"
 HE_DATA_NFS = "/home/dguo/Public/cockpit/he_data"
-NIC = "em1"
+NIC="ovirtmgmt"
 MAC = "52:54:00:05:61:f2"
 HE_VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
 HE_VM_IP = "10.66.148.102"
@@ -68,25 +67,25 @@ SECOND_VM_FQDN = "cockpit-vm"
 #
 # Additional config variable to be used by test_he_install_bond.py
 #
-BOND_HOST_IP = "10.66.148.7"
+BOND_HOST_IP="10.66.148.7"
 BOND_HOST_USER = "root"
 BOND_HOST_PASSWORD = "redhat"
-BOND_NIC = "bond0"
+BOND_NIC="ovirtmgmt"
 
 
 #
 # Additional config variable to be used by test_he_install_vlan.py
 #
-VLAN_HOST_IP = "10.66.148.7"
+VLAN_HOST_IP="10.66.148.7"
 VLAN_HOST_USER = "root"
 VLAN_HOST_PASSWORD = "redhat"
-VLAN_NIC = "em1.50"
+VLAN_NIC="ovirtmgmt"
 
 
 #
 # Additional config variable to be used by test_he_install_bv.py
 #
-BV_HOST_IP = "10.66.148.7"
+BV_HOST_IP="10.66.148.7"
 BV_HOST_USER = "root"
 BV_HOST_PASSWORD = "redhat"
-BV_NIC = "bond0.50"
+BV_NIC="ovirtmgmt"

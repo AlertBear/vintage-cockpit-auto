@@ -175,7 +175,7 @@ class RhevmAction:
             raise RuntimeError("Failed to attach storage %s to datacenter %s" %
                                (storage_name, dc_name))
 
-    def create_vm(self, vm_name, tpl_name="RHEL73GA-Clean", cluster="810-02"):
+    def create_vm(self, vm_name, tpl_name="blank", cluster="default"):
         api_url_base = self.api_url.format(
             rhevm_fqdn=self.rhevm_fqdn, item="vms")
 

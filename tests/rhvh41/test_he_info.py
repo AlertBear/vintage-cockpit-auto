@@ -22,6 +22,7 @@ vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
 he_data_nfs = HE_DATA_NFS
+second_vm_fqdn = SECOND_VM_FQDN
 
 
 
@@ -154,9 +155,5 @@ def test_he_create_vm(firefox):
     he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
 
     # Create new vm without installing guest os under Default DC
-    he_rhvm.add_new_host(
-        second_host_ip,
-        "cockpit-he2",
-        second_password,
-        deploy_hosted_engine=True)
+    he_rhvm.create_vm(second_vm_fqdn)
     time.sleep(120)
