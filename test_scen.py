@@ -1,7 +1,7 @@
 #
 # RHVH4.1 test scenarios contains only one case
 #
-rhvh41_common_ui_dashboard = {
+rhvh41_common_ui = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
@@ -9,21 +9,12 @@ rhvh41_common_ui_dashboard = {
         "dell-pet105-02.qe.lab.eng.nay.redhat.com",
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_common_ui_dashboard.py"]
+    "CASES": [
+        "tests/rhvh41/test_common_ui_dashboard.py",
+        "tests/rhvh41/test_common_ui_system.py"]
 }
 
-rhvh41_common_ui_system = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-op790-01.qe.lab.eng.nay.redhat.com",
-        "dell-pet105-02.qe.lab.eng.nay.redhat.com",
-        "hp-z620-04.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_common_ui_system.py"]
-}
-
-rhvh41_common_tools_subscription = {
+rhvh41_common_tools = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
@@ -34,7 +25,7 @@ rhvh41_common_tools_subscription = {
     "CASES": ["tests/rhvh41/test_common_tools_subscription.py"]
 }
 
-rhvh41_dashboard_nodectl = {
+rhvh41_dashboard = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
@@ -42,18 +33,10 @@ rhvh41_dashboard_nodectl = {
         "dell-pet105-02.qe.lab.eng.nay.redhat.com",
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_dashboard_nodectl.py"]
+    "CASES": [
+        "tests/rhvh41/test_dashboard_nodectl.py",
+        "tests/rhvh41/test_dashboard_ui.py"]
 }
-
-rhvh41_dashboard_ui = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-op790-01.qe.lab.eng.nay.redhat.com",
-        "dell-pet105-02.qe.lab.eng.nay.redhat.com",
-        "hp-z620-04.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_dashboard_ui.py"]}
 
 rhvh41_dashboard_ui_uefi = {
     "TAG": ["RHVH41"],
@@ -122,7 +105,7 @@ rhvh41_vm_unregister = {
 #
 # RHVH4.1 test scenario contains multiple cases
 #
-rhvh41_normal = {
+rhvh41_tier1 = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
