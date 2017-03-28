@@ -5,7 +5,6 @@ rhvh41_common_ui = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
-        "dell-op790-01.qe.lab.eng.nay.redhat.com",
         "dell-pet105-02.qe.lab.eng.nay.redhat.com",
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
@@ -18,7 +17,6 @@ rhvh41_common_tools = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
-        "dell-op790-01.qe.lab.eng.nay.redhat.com",
         "dell-pet105-02.qe.lab.eng.nay.redhat.com",
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
@@ -29,7 +27,6 @@ rhvh41_dashboard = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
-        "dell-op790-01.qe.lab.eng.nay.redhat.com",
         "dell-pet105-02.qe.lab.eng.nay.redhat.com",
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
