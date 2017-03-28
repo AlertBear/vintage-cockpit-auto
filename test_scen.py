@@ -1,5 +1,6 @@
+import json
 #
-# RHVH4.1 test scenarios contains only one case
+# RHVH-4.1 test scenarios
 #
 rhvh41_common_ui_dashboard = {
     "TAG": ["RHVH41"],
@@ -168,6 +169,12 @@ rhvh41_he_info_add_host = {
     "CASES": ["tests/rhvh41/test_he_info_add_host.py"]
 }
 
+rhvh41_vm_unregister = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/rhvh41/conf.py",
+    "CASES": ["tests/rhvh41/test_vm_unregister.py"]
+}
+
 rhvh41_vm_registerd = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
@@ -175,3 +182,8 @@ rhvh41_vm_registerd = {
     "DEPEND_SCEN": [],
     "CASES": ["tests/rhvh41/test_vm_registerd.py"]
 }
+
+if __name__ == '__main__':
+    obj = {k: v for k, v in locals().items() if k.startswith('rhvh')}
+    with open("test_scen.json", "w") as fp:
+        json.dump(obj, fp, indent=2)

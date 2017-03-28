@@ -69,3 +69,5 @@ test_fordebug.py
 
 *.sublime-project
 *.sublime-workspace
+
+test_scen.json
