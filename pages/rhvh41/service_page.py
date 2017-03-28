@@ -3,7 +3,7 @@ import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import run, settings
 
-class SystemPage(PageObject):
+class ServicePage(PageObject):
     targets_btn = PageElement(
         xpath=".//*[@id='services-filter']/button[1]")
     sys_service_btn = PageElement(
@@ -17,7 +17,7 @@ class SystemPage(PageObject):
 
     # Elements under the system service button
     fcoe_service = PageElement(
-        xpath=".//*[@tag_name='tbody']/tr[1]/td/span")
+        xpath=".//*[@id='services-list-enabled']/div/table/tbody/tr[5]/td[1]")
 
     # Elements after click above service button
     service_title_name = PageElement(
@@ -37,9 +37,9 @@ class SystemPage(PageObject):
     frame_right_name = "cockpit1:localhost/system"
 
     def __init__(self, *args, **kwargs):
-        super(MainPage, self).__init__(*args, **kwargs)
+        super(ServicePage, self).__init__(*args, **kwargs)
         self.get("/system/services")
-        self.wait_until_element_visible(self.brand_log)
+        self.wait(period=5)
 
     def basic_check_elements_exists(self):
         assert self.targets_btn, "targets button not exists"

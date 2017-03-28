@@ -1,7 +1,7 @@
 import time
 import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
-from fabric import settings, run
+from fabric.api import settings, run
 
 
 class SystemPage(PageObject):
@@ -32,7 +32,7 @@ class SystemPage(PageObject):
     frame_right_name = "cockpit1:localhost/system"
 
     def __init__(self, *args, **kwargs):
-        super(MainPage, self).__init__(*args, **kwargs)
+        super(SystemPage, self).__init__(*args, **kwargs)
         self.get("/system")
         self.wait_until_element_visible(self.brand_log)
 

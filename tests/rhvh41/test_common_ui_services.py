@@ -41,6 +41,12 @@ def firefox(request):
     driver.close()
 
 
+def test_login(firefox):
+    login_page = LoginPage(firefox)
+    login_page.basic_check_elements_exists()
+    login_page.login_with_credential(host_user, host_password)
+
+
 def test_18392(firefox):
     """
     RHEVM-18392

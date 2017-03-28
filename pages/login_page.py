@@ -1,7 +1,7 @@
 import time
 import re
 from utils.page_objects import PageObject, PageElement
-from fabric import run, settings
+from fabric.api import run, settings
 
 
 class LoginPage(PageObject):
