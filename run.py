@@ -15,13 +15,7 @@ class EmailAction(object):
     def __init__(self):
         self.smtp_server = "smtp.corp.redhat.com"
 
-    def send_email(
-        self,
-        from_addr,
-        to_addr,
-        subject,
-        text,
-        attachments):
+    def send_email(self, from_addr, to_addr, subject, text, attachments):
         msg = MIMEMultipart()
         msg['From'] = from_addr
         msg['To'] = ', '.join(to_addr)
@@ -50,9 +44,7 @@ class EmailAction(object):
 
 def get_nic_from_ip(ip, user="root", password="redhat"):
     with settings(
-        warn_only=True,
-        host_string=user + '@' + ip,
-        password=password):
+            warn_only=True, host_string=user + '@' + ip, password=password):
         cmd = "ip a s|grep %s" % ip
         output = run(cmd)
         nic = output.split()[-1]
@@ -62,8 +54,7 @@ def get_nic_from_ip(ip, user="root", password="redhat"):
 def modify_config_file(file, value_dict):
     # Modify test values in the config file
     for k, v in value_dict.items():
-        local("""sed -i 's/%s =.*/%s="%s"/' %s""" % (
-            k, k, v, file))
+        local("""sed -i 's/%s =.*/%s="%s"/' %s""" % (k, k, v, file))
 
 
 def format_result(file):
@@ -128,12 +119,13 @@ if __name__ == "__main__":
     variable_dict = {
         "HOST_IP": host_ip,
         "NIC": host_nic,
-        "TEST_BUILD": test_build}
+        "TEST_BUILD": test_build
+    }
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    pytest.main("-s -v%s --json=%s --html=%s" % (
-        test_files_str, result_json, result_html))
+    pytest.main("-s -v%s --json=%s --html=%s" % (test_files_str, result_json,
+                                                 result_html))
 
     # Rename the result files in case be deleted
     asset = log_dir + "/assets"
@@ -152,12 +144,8 @@ if __name__ == "__main__":
 
     email = EmailAction()
     email_attachment = [html_result_rename]
-    email.send_email(
-        email_from,
-        email_to,
-        email_subject,
-        email_text,
-        email_attachment)
+    email.send_email(email_from, email_to, email_subject, email_text,
+                     email_attachment)
 
     # Loads the results to json from result_json file
     res = format_result(json_result_rename)
