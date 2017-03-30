@@ -1,8 +1,25 @@
 import json
+
 #
-# RHVH-4.1 test scenarios
+# RHVH4.1 test scenario contains multiple cases
 #
-rhvh41_common_ui = {
+rhvh41_tier1 = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/rhvh41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_CASES": [],
+    "CASES": [
+        "tests/rhvh41/test_dashboard_nodectl.py",
+        "tests/rhvh41/test_dashboard_ui.py",
+        "tests/rhvh41/test_vm_unregisterd.py",
+        "tests/rhvh41/test_common_subscription.py",
+        "tests/rhvh41/test_he_install.py",
+        "tests/rhvh41/test_he_info.py",
+        "tests/rhvh41/test_vm_registerd.py",
+        "tests/rhvh41/test_he_info_add_host.py"]
+}
+
+rhvh41_common = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [
@@ -10,18 +27,9 @@ rhvh41_common_ui = {
         "hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
     "CASES": [
+        "tests/rhvh41/test_common_tools_subscription.py",
         "tests/rhvh41/test_common_ui_dashboard.py",
         "tests/rhvh41/test_common_ui_system.py"]
-}
-
-rhvh41_common_tools = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-pet105-02.qe.lab.eng.nay.redhat.com",
-        "hp-z620-04.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_common_tools_subscription.py"]
 }
 
 rhvh41_dashboard = {
@@ -36,7 +44,7 @@ rhvh41_dashboard = {
         "tests/rhvh41/test_dashboard_ui.py"]
 }
 
-rhvh41_dashboard_ui_uefi = {
+rhvh41_dashboard_uefi = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [],
@@ -44,12 +52,20 @@ rhvh41_dashboard_ui_uefi = {
     "CASES": ["tests/rhvh41/test_dashboard_ui_efi.py"]
 }
 
-rhvh41_dashboard_ui_fc = {
+rhvh41_dashboard_fc = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": [],
     "DEPEND_SCEN": [],
     "CASES": ["tests/rhvh41/test_dashboard_ui_fc.py"],
+}
+
+rhvh41_vm_unregister = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/rhvh41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/rhvh41/test_vm_unregister.py"]
 }
 
 rhvh41_he_install = {
@@ -92,33 +108,6 @@ rhvh41_he_install_non_default_port = {
     "CASES": ["tests/rhvh41/test_he_install_non_default_port.py"]
 }
 
-rhvh41_vm_unregister = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/rhvh41/test_vm_unregister.py"]
-}
-
-#
-# RHVH4.1 test scenario contains multiple cases
-#
-rhvh41_tier1 = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_CASES": [],
-    "CASES": [
-        "tests/rhvh41/test_dashboard_nodectl.py",
-        "tests/rhvh41/test_dashboard_ui.py",
-        "tests/rhvh41/test_vm_unregisterd.py",
-        "tests/rhvh41/test_common_subscription.py",
-        "tests/rhvh41/test_he_install.py",
-        "tests/rhvh41/test_he_info.py",
-        "tests/rhvh41/test_vm_registerd.py",
-        "tests/rhvh41/test_he_info_add_host.py"]
-}
-
 #
 # RHVH4.1 test scenarios which has dependency scenario
 #
@@ -140,19 +129,12 @@ rhvh41_he_info = {
     "CASES": ["tests/rhvh41/test_he_info.py"]
 }
 
-
 rhvh41_he_info_add_host = {
     "TAG": ["RHVH41", "ANOTHER_HOST"],
     "CONFIG": "tests/rhvh41/conf.py",
     "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": ["rhvh41_he_install"],
     "CASES": ["tests/rhvh41/test_he_info_add_host.py"]
-}
-
-rhvh41_vm_unregister = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/rhvh41/conf.py",
-    "CASES": ["tests/rhvh41/test_vm_unregister.py"]
 }
 
 rhvh41_vm_registerd = {

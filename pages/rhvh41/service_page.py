@@ -16,12 +16,13 @@ class ServicePage(PageObject):
         xpath=".//*[@id='services-filter']/button[5]")
 
     # Elements under the system service button
-    fcoe_service = PageElement(
-        xpath=".//*[@id='services-list-enabled']/div/table/tbody/tr[5]/td[1]")
+    test_services_state = MultiPageElement(class_name="service-unit-data")
+    test_services_description = MultiPageElement(
+        class_name="service-unit-description")
 
     # Elements after click above service button
     service_title_name = PageElement(
-        xpath=".//*[@id='service']/ol/li/")
+        xpath=".//*[@id='service']/ol/li[2]")
     service_start_stop_action = PageElement(
         xpath=".//*[@id='service-unit-action']/button[1]")
     service_enable_disable_action = PageElement(
@@ -31,10 +32,11 @@ class ServicePage(PageObject):
     service_file_dropdown_action = PageElement(
         xpath=".//*[@id='service-file-action']/button[2]")
 
-    service_units = MultiPageElement(xpath=".//*[@tag_name='li']/a")
+    service_restart_action = PageElement(
+        xpath=".//*[@id='service-unit-action']/ul/li[3]/a")
 
     # frame name
-    frame_right_name = "cockpit1:localhost/system"
+    frame_right_name = "cockpit1:localhost/system/services"
 
     def __init__(self, *args, **kwargs):
         super(ServicePage, self).__init__(*args, **kwargs)
@@ -48,69 +50,82 @@ class ServicePage(PageObject):
         assert self.timers_btn, "timers button not exists"
         assert self.paths_btn, "paths button not exists"
 
-    def check_service_disable(self):
+    def disable_service_action(self):
         with self.switch_to_frame(self.frame_right_name):
-            self.fcoe_service.click()
+
+            # Get a running service to disable
+            for k in range(len(list(self.test_services_state))):
+                if re.search(
+                        "running", list(self.test_services_state)[k].text):
+                    running_seq = k
+                    break
+
+            list(self.test_services_description)[running_seq].click()
             time.sleep(1)
+
+            # Get the running service name and click disable
+            service_name = self.service_title_name.text
+            self.service_enable_disable_action.click()
+            time.sleep(1)
+            return service_name
+
+    def check_service_is_disabled(self, service_name):
+        # Check the service is disabled
+        with settings(warn_only=True):
+            cmd = "service %s status|grep Loaded" % service_name
+            output = run(cmd)
+        assert re.search("disabled", output.split(';')[1]),   \
+            "Failed to disable %s" % service_name
+
+    def enable_service_action(self):
+        with self.switch_to_frame(self.frame_right_name):
+            # Click enable button to enable the service
             self.service_enable_disable_action.click()
 
+    def check_service_is_enabled(self, service_name):
+        # Check the service is disabled
         with settings(warn_only=True):
-            cmd = "service fcoe.service status|grep Loaded"
-            output2 = run(cmd)
+            cmd = "service %s status|grep Loaded" % service_name
+            output = run(cmd)
+        assert re.search("enabled", output.split(';')[1]),   \
+            "Failed to enable %s" % service_name
 
-        assert re.search("disabled", output2.split(';')[1]),   \
-            "Failed to disable the fcoe service"
-
-    def check_service_enable(self):
+    def stop_service_action(self):
         with self.switch_to_frame(self.frame_right_name):
-            self.fcoe_service.click()
-            time.sleep(1)
-            self.service_enable_disable_action.click()
-
-        with settings(warn_only=True):
-            cmd = "service fcoe.service status|grep Loaded"
-            output2 = run(cmd)
-
-        assert re.search("enabled", output2.split(';')[1]),   \
-            "Failed to enable the fcoe service"
-
-    def check_service_stop(self):
-        with self.switch_to_frame(self.frame_right_name):
-            self.fcoe_service.click()
-            time.sleep(1)
+            # Click enable button to enable the service
             self.service_start_stop_action.click()
 
+    def check_service_is_stoped(self, service_name):
         with settings(warn_only=True):
-            cmd = "service fcoe.service status|grep Active"
-            output1 = run(cmd)
+            cmd = "service %s status|grep Active" % service_name
+            output = run(cmd)
 
-        assert re.search("inactive", output1),   \
-            "Failed to stop the fcoe service"
+        assert re.search("inactive", output),   \
+            "Failed to stop %s service" % service_name
 
-    def check_service_start(self):
+    def start_service_action(self):
         with self.switch_to_frame(self.frame_right_name):
-            self.fcoe_service.click()
-            time.sleep(1)
             self.service_start_stop_action.click()
 
+    def check_service_is_started(self, service_name):
         with settings(warn_only=True):
-            cmd = "service fcoe.service status|grep Active"
-            output1 = run(cmd)
+            cmd = "service %s status|grep Active" % service_name
+            output = run(cmd)
 
-        assert re.search("active", output1),   \
-            "Failed to start the fcoe service"
+        assert re.search("active", output),   \
+            "Failed to start %s service" % service_name
 
-    def check_service_restart(self):
+    def restart_service_action(self):
         with self.switch_to_frame(self.frame_right_name):
-            self.fcoe_service.click()
-            time.sleep(1)
             self.service_unit_dropdown_action.click()
 
             # Restart unit action
-            list(self.service_units)[2].click()
-        with settings(warn_only=True):
-            cmd = "service fcoe.service status|grep Active"
-            output1 = run(cmd)
+            self.service_restart_action.click()
 
-        assert re.search("active", output1),   \
-            "Failed to restart the fcoe service"
+    def check_service_is_restarted(self, service_name):
+        with settings(warn_only=True):
+            cmd = "service %s status|grep Active" % service_name
+            output = run(cmd)
+
+        assert re.search("active", output),   \
+            "Failed to restart the %s service" % service_name
