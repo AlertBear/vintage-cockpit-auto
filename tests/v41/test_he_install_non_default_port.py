@@ -1,6 +1,7 @@
 import pytest
-from pages.rhel73.he_install import he_install
-from fabric.api import env, settings, run
+import time
+from pages.v41.he_install import he_install
+from fabric.api import env, run
 from conf import *
 
 host_ip = HOST_IP
@@ -15,8 +16,6 @@ nfs_password = NFS_PASSWORD
 nfs_storage_path = NFS_STORAGE_PATH
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
 nic = NIC
-deploy_mode = DEPLOY_MODE
-storage_path = STORAGE_PATH
 mac = MAC
 vm_fqdn = VM_FQDN
 vm_ip = VM_IP
@@ -36,14 +35,16 @@ def _environment(request):
         if result.failed:
             cmd = "cat /etc/redhat-release"
             redhat_release = run(cmd)
-            request.config._environment.append(('redhat-release', redhat_release))
+            request.config._environment.append((
+                'redhat-release', redhat_release))
         else:
             cmd_imgbase = "imgbase w"
             output_imgbase = run(cmd_imgbase)
             rhvh_version = output_imgbase.split()[-1].split('+')[0]
             request.config._environment.append(('rhvh-version', rhvh_version))
 
-        request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+        request.config._environment.append((
+            'cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")
@@ -51,15 +52,54 @@ def firefox(request):
     pass
 
 
-def test_16341(firefox):
+def test_18667(firefox):
     """
     Purpose:
-        RHEVM-16341
-        Tests the HE_install
+        RHEVM-18667
+        Verify to deploy Hosted-Engine via non-default cockpit port
     """
-    host_dict = {'host_ip': host_ip,
+    # Check the cockpit is active
+    cmd = "systemctl status cockpit|grep Active"
+    output = run(cmd)
+    status = output.split()[1]
+    assert status == "active", "Cockpit dameon is not active"
+
+    # Check cockpit packages
+    cmd = "cockpit-bridge --packages"
+    output = run(cmd)
+    assert output, "Cockpit packages not exist"
+
+    # Modify the default cockpit port
+    cmd = "sed -i 's/ListenStream=9090/ListenStream=9898/'"
+    run(cmd)
+
+    # Add port to firewall
+    cmd = "firewall-cmd --add-port=9898/tcp"
+    run(cmd)
+
+    # Add to permanent
+    cmd = "firewall-cmd --permanent --add-port=9898/tcp"
+    run(cmd)
+
+    # SElinux operation
+    cmd = "semanage port -a -t websm_port_t -p tcp 9898"
+    run(cmd)
+
+    # Reload the dameon
+    cmd = "systemctl daemon-reload"
+    run(cmd)
+
+    # Restart the cockpit
+    cmd = "systemctl restart cockpit.socket"
+    run(cmd)
+    time.sleep(5)
+
+
+    host_dict = {
+    'host_ip': host_ip,
     'host_user': host_user,
-    'host_password': host_password}   
+    'host_password': host_password
+    'cockpit_port': '9898'}
 
     nfs_dict = {
     'nfs_ip': nfs_ip,
@@ -69,8 +109,6 @@ def test_16341(firefox):
     install_dict = {
     'rhvm_appliance_path': rhvm_appliance_path,
     'nic': nic,
-    'deploy_mode': deploy_mode,
-    'storage_path': storage_path, 
     'mac': mac}
 
     vm_dict = {
@@ -82,3 +120,6 @@ def test_16341(firefox):
     }
 
     he_install(host_dict, nfs_dict, install_dict, vm_dict)
+
+    # Check the hosted engine is deployed
+    check_he_is_deployed(host_ip, host_user, host_password)

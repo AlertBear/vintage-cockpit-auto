@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.rhvh41.virtual_machines_page import VirtualMachinesPage
+from pages.v41.virtual_machines_page import VirtualMachinesPage
 from fabric.api import run, env, settings
 from conf import *
 
@@ -17,14 +17,25 @@ env.password = host_password
 
 @pytest.fixture(autouse=True)
 def _environment(request):
-    cmd_imgbase = "imgbase w"
-    output_imgbase = run(cmd_imgbase)
-    rhvh_version = output_imgbase.split()[-1].split('+')[0]
-    request.config._environment.append(('rhvh-version', rhvh_version))
+    with settings(warn_only=True):
+        cmd = "rpm -qa|grep cockpit-ovirt"
+        cockpit_ovirt_version = run(cmd)
 
-    cmd = "rpm -qa|grep cockpit-ovirt"
-    cockpit_ovirt_version = run(cmd)
-    request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+        cmd = "rpm -q imgbased"
+        result = run(cmd)
+        if result.failed:
+            cmd = "cat /etc/redhat-release"
+            redhat_release = run(cmd)
+            request.config._environment.append((
+                'redhat-release', redhat_release))
+        else:
+            cmd_imgbase = "imgbase w"
+            output_imgbase = run(cmd_imgbase)
+            rhvh_version = output_imgbase.split()[-1].split('+')[0]
+            request.config._environment.append(('rhvh-version', rhvh_version))
+
+        request.config._environment.append((
+            'cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")

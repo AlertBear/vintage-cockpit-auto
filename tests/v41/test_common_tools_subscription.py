@@ -1,8 +1,9 @@
 import pytest
+import time
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.rhel73.subscriptions_page import SubscriptionsPage
-from fabric.api import env, settings, run
+from pages.v41.subscriptions_page import SubscriptionsPage
+from fabric.api import env, run, settings
 from conf import *
 
 
@@ -36,14 +37,16 @@ def _environment(request):
         if result.failed:
             cmd = "cat /etc/redhat-release"
             redhat_release = run(cmd)
-            request.config._environment.append(('redhat-release', redhat_release))
+            request.config._environment.append((
+                'redhat-release', redhat_release))
         else:
             cmd_imgbase = "imgbase w"
             output_imgbase = run(cmd_imgbase)
             rhvh_version = output_imgbase.split()[-1].split('+')[0]
             request.config._environment.append(('rhvh-version', rhvh_version))
 
-        request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+        request.config._environment.append((
+            'cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")
@@ -69,6 +72,7 @@ def test_18412(firefox):
     """
     subscriptions_page = SubscriptionsPage(firefox)
     subscriptions_page.check_register_rhsm(rhn_user, rhn_password)
+    time.sleep(5)
     subscriptions_page.check_subscription_result()
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
@@ -83,6 +87,7 @@ def test_18413(firefox):
     subscriptions_page.check_register_rhsm_key_org(
         activation_key,
         activation_org)
+    time.sleep(5)
     subscriptions_page.check_subscription_result()
     # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
@@ -99,6 +104,7 @@ def test_18414(firefox):
     subscriptions_page.unregister_subsciption()
 
 
+'''
 def test_18415(firefox):
     """
     RHEVM-18415
@@ -117,3 +123,4 @@ def test_18415(firefox):
     subscriptions_page.check_subscription_result()
     subscriptions_page.unregister_subsciption()
     subscriptions_page.reset(ca_path)
+'''

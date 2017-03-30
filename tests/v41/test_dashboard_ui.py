@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.rhvh41.node_status_page import NodeStatusPage
+from pages.v41.node_status_page import NodeStatusPage
 from fabric.api import env, run
 from conf import *
 
@@ -12,7 +12,7 @@ host_password = HOST_PASSWORD
 test_build = TEST_BUILD
 ROOT_URI = "https://" + host_ip + ":9090"
 
-env.host_string = host_user +'@' + host_ip
+env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
 add_hostname = ADD_HOSTNAME
@@ -21,14 +21,25 @@ rhvm_fqdn = RHVM_FQDN
 
 @pytest.fixture(autouse=True)
 def _environment(request):
-    cmd_imgbase = "imgbase w"
-    output_imgbase = run(cmd_imgbase)
-    rhvh_version = output_imgbase.split()[-1].split('+')[0]
-    request.config._environment.append(('rhvh-version', rhvh_version))
+    with settings(warn_only=True):
+        cmd = "rpm -qa|grep cockpit-ovirt"
+        cockpit_ovirt_version = run(cmd)
 
-    cmd = "rpm -qa|grep cockpit-ovirt"
-    cockpit_ovirt_version = run(cmd)
-    request.config._environment.append(('cockpit-ovirt', cockpit_ovirt_version))
+        cmd = "rpm -q imgbased"
+        result = run(cmd)
+        if result.failed:
+            cmd = "cat /etc/redhat-release"
+            redhat_release = run(cmd)
+            request.config._environment.append((
+                'redhat-release', redhat_release))
+        else:
+            cmd_imgbase = "imgbase w"
+            output_imgbase = run(cmd_imgbase)
+            rhvh_version = output_imgbase.split()[-1].split('+')[0]
+            request.config._environment.append(('rhvh-version', rhvh_version))
+
+        request.config._environment.append((
+            'cockpit-ovirt', cockpit_ovirt_version))
 
 
 @pytest.fixture(scope="module")
