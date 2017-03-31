@@ -8,8 +8,6 @@ from conf import *
 host_ip = HOST_IP
 host_user = HOST_USER
 host_password = HOST_PASSWORD
-second_ip = SECOND_HOST
-second_password = SECOND_PASSWORD
 
 ROOT_URI = "https://" + host_ip + ":9090"
 

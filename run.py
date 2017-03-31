@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 import os
 import time
+import shutil
 import json
 import pytest
 import re
@@ -89,16 +90,10 @@ if __name__ == "__main__":
 
     # All files used
     abspath = os.path.abspath(os.path.dirname(__file__))
-    if re.search("rhvh41", test_scenarios[0]):
-        conf_file = os.path.join(abspath, "tests/rhvh41/conf.py")
-    elif re.search("rhvh40", test_scenarios[0]):
-        conf_file = os.path.join(abspath, "tests/rhvh40/conf.py")
-    elif re.search("rhel73", test_scenarios[0]):
-        conf_file = os.path.join(abspath, "tests/rhel73/conf.py")
-    elif re.search("centos73", test_scenarios[0]):
-        conf_file = os.path.join(abspath, "tests/centos73/conf.py")
-    elif re.search("fedora24", test_scenarios[1]):
-        conf_file = os.path.join(abspath, "tests/fedora24/conf.py")
+    if re.search("v41", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/v41/conf.py")
+    elif re.search("v40", test_scenarios[0]):
+        conf_file = os.path.join(abspath, "tests/v40/conf.py")
 
     test_files_str = ""
     for each_file in test_scenarios:
@@ -134,6 +129,10 @@ if __name__ == "__main__":
     os.rename(result_json, json_result_rename)
     html_result_rename = log_dir + "/cockpit-result-" + now + ".html"
     os.rename(result_html, html_result_rename)
+
+    # Save the screenshot during the tests to log_dir
+    if os.path.exists("/tmp/cockpit-screenshot"):
+        shutil.move("/tmp/cockpit-screenshot", log_dir + "/screenshot-" + now)
 
     # Send email to administrator
     email_subject = "Test Report For Cockpit-ovirt"

@@ -1,16 +1,14 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.v41.service_page import ServicePage
-from fabric.api import run, env
+from pages.v41.log_page import LogPage
+from fabric.api import run, env, settings
 from conf import *
 
 
 host_ip = HOST_IP
 host_user = HOST_USER
 host_password = HOST_PASSWORD
-second_ip = SECOND_HOST
-second_password = SECOND_PASSWORD
 
 ROOT_URI = "https://" + host_ip + ":9090"
 
@@ -21,8 +19,11 @@ env.password = host_password
 @pytest.fixture(autouse=True)
 def _environment(request):
     with settings(warn_only=True):
-        cmd = "rpm -qa|grep cockpit-ovirt"
+        cmd = "rpm -q cockpit-ovirt-dashboard"
         cockpit_ovirt_version = run(cmd)
+        print cockpit_ovirt_version
+        request.config._environment.append((
+            'cockpit-ovirt', cockpit_ovirt_version))
 
         cmd = "rpm -q imgbased"
         result = run(cmd)
@@ -32,13 +33,11 @@ def _environment(request):
             request.config._environment.append((
                 'redhat-release', redhat_release))
         else:
-            cmd_imgbase = "imgbase w"
-            output_imgbase = run(cmd_imgbase)
+            cmd = "imgbase w"
+            output_imgbase = run(cmd)
             rhvh_version = output_imgbase.split()[-1].split('+')[0]
-            request.config._environment.append(('rhvh-version', rhvh_version))
-
-        request.config._environment.append((
-            'cockpit-ovirt', cockpit_ovirt_version))
+            request.config._environment.append((
+                'rhvh-version', rhvh_version))
 
 
 @pytest.fixture(scope="module")
@@ -62,15 +61,9 @@ def test_18392(firefox):
     RHEVM-18392
         Check servers status
     """
-    service_page = ServicePage(firefox)
-    service_page.basic_check_elements_exists()
-    service_name = service_page.disable_service_action()
-    service_page.check_service_is_disabled(service_name)
-    service_page.enable_service_action()
-    service_page.check_service_is_enabled(service_name)
-    service_page.stop_service_action()
-    service_page.check_service_is_stoped(service_name)
-    service_page.start_service_action()
-    service_page.check_service_is_started(service_name)
-    service_page.restart_service_action()
-    service_page.check_service_is_restarted(service_name)
+    log_page = LogPage(firefox)
+    log_page.basic_check_elements_exists()
+    log_page.check_recent_logs()
+    log_page.check_current_boot_logs()
+    log_page.check_last_24hours_logs()
+    log_page.check_last_7days_logs()

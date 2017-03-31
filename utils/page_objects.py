@@ -53,7 +53,7 @@ class PageObject(object):
         raise NotImplementedError
 
     def save_screenshot(self, filename):
-        save_dir = "/tmp/cockpit_auto"
+        save_dir = "/tmp/cockpit-screenshot"
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         self.w.save_screenshot(save_dir + '/' + filename)
