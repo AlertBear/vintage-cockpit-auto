@@ -64,3 +64,4 @@ def test_18392(firefox):
     accout_page = AccountPage(firefox)
     accout_page.create_new_account()
     accout_page.check_new_account_from_ssh(host_ip)
+    accout_page.delete_new_account()

@@ -1,6 +1,6 @@
 import time
 import re
-from fabric.api import run, settings
+from fabric.api import settings, local, run, sudo
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 
 
@@ -16,6 +16,14 @@ class AccountPage(PageObject):
     confirm_input = PageElement(id_="accounts-create-pw2")
     access_checkbox = PageElement(id_="accounts-create-locked")
     create_btn = PageElement(id_="accounts-create-create")
+
+    # Elements after click the cockpit-accounts-div
+    account_username = PageElement(id_="account-user-name")
+    account_delete = PageElement(id_="account-delete")
+
+    # Elements after click the Delete button
+    delete_files_checkbox = PageElement(id_="account-confirm-delete-files")
+    delete_apply_btn = PageElement(id_="account-confirm-delete-apply")
 
     # frame name
     frame_right_name = "cockpit1:localhost/users"
@@ -65,11 +73,22 @@ class AccountPage(PageObject):
         Purpose:
             Check the host can be accessed via new account
         """
+        cmd = "whoami"
+        local_current_user = local(cmd, capture=True)
+        print local_current_user
+        cmd = "rm -f /home/%s/.ssh/know_hosts" % local_current_user
+        local(cmd)
+        """
         with settings(
             host_string="cockpit@" + host_ip,
                 password="cockpitauto"):
-            output = run("who")
-            assert re.search("cockpit", output.split()[0]), \
+            output = run("whoami")
+            assert re.search("cockpit", output), \
+                "New account can not be accessed via ssh"
+        """
+        with settings(warn_only=True):
+            output = sudo("whoami", user="cockpit")
+            assert re.search("cockpit", output), \
                 "New account can not be accessed via ssh"
 
     def delete_new_account(self):
@@ -77,6 +96,17 @@ class AccountPage(PageObject):
         Purpose:
             Delete the new created account
         """
-        for each_account in list(self.cockpit_accounts_div):
-            each_account.click()
-            pass
+        with self.switch_to_frame(self.frame_right_name):
+            for each_account in list(self.cockpit_accounts_div):
+                each_account.click()
+                if re.search("cockpit", self.account_username.text):
+                    self.account_delete.click()
+                    time.sleep(1)
+                    self.delete_files_checkbox.click()
+                    time.sleep(1)
+                    self.delete_apply_btn.click()
+                    time.sleep(1)
+                    break
+                assert not re.search(
+                    "cockpit", self.account_username.text),     \
+                    "Failed to delete the account"
