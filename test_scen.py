@@ -29,7 +29,8 @@ v41_rhvh_tier2 = {
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
         "tests/v41/test_common_ui_system.py",
-        "tests/v41/test_common_ui_services.py"]
+        "tests/v41/test_common_ui_services.py",
+        "tests/v41/test_common_tools.py"]
 }
 
 v41_rhvh_common = {
@@ -42,7 +43,8 @@ v41_rhvh_common = {
     "CASES": [
         "tests/v41/test_common_tools_subscription.py",
         "tests/v41/test_common_ui_dashboard.py",
-        "tests/v41/test_common_ui_system.py"]
+        "tests/v41/test_common_ui_system.py",
+        "tests/v41/test_common_tools.py"]
 }
 
 v41_rhvh_dashboard = {
@@ -182,7 +184,8 @@ v41_rhel_tier2 = {
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
         "tests/v41/test_common_ui_system.py",
-        "tests/v41/test_common_ui_services.py"]
+        "tests/v41/test_common_ui_services.py",
+        "tests/v41/test_common_tools.py"]
 }
 
 v41_fedora_tier1 = {
@@ -209,7 +212,8 @@ v41_fedora_tier2 = {
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
         "tests/v41/test_common_ui_system.py",
-        "tests/v41/test_common_ui_services.py"]
+        "tests/v41/test_common_ui_services.py",
+        "tests/v41/test_common_tools.py"]
 }
 
 v41_centos_tier1 = {
@@ -236,7 +240,8 @@ v41_centos_tier2 = {
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
         "tests/v41/test_common_ui_system.py",
-        "tests/v41/test_common_ui_services.py"]
+        "tests/v41/test_common_ui_services.py",
+        "tests/v41/test_common_tools.py"]
 }
 
 
