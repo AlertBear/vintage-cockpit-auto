@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.v41.service_page import ServicePage
+from pages.v41.ui_service_page import ServicePage
 from fabric.api import run, env
 from conf import *
 

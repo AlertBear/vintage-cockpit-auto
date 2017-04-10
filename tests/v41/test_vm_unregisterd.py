@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.v41.virtual_machines_page import VirtualMachinesPage
+from pages.v41.vm_page import VirtualMachinesPage
 from fabric.api import run, env, settings
 from conf import *
 

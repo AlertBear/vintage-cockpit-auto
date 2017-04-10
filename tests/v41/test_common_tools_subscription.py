@@ -2,7 +2,7 @@ import pytest
 import time
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.v41.subscriptions_page import SubscriptionsPage
+from pages.v41.tools_subscriptions_page import SubscriptionsPage
 from fabric.api import env, run, settings
 from conf import *
 

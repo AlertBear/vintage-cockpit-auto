@@ -1,7 +1,9 @@
 import pytest
+import time
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.tools_account_page import AccountPage
+from pages.v41.tools_diagnostic_page import DiagnosticPage
 from fabric.api import run, env, settings
 from conf import *
 
@@ -56,12 +58,23 @@ def test_login(firefox):
     login_page.login_with_credential(host_user, host_password)
 
 
-def test_18392(firefox):
+def test_18410(firefox):
     """
-    RHEVM-18392
-        Check servers status
+    RHEVM-18410
+        Create account in cockpit
     """
     accout_page = AccountPage(firefox)
     accout_page.create_new_account()
     accout_page.check_new_account_from_ssh(host_ip)
     accout_page.delete_new_account()
+
+
+def test_18416(firefox):
+    """
+    RHEVM-18416
+        Create diagnositc in cockpit
+    """
+    diagnostic_page = DiagnosticPage(firefox)
+    diagnostic_page.create_sos_report()
+    time.sleep(30)
+    diagnostic_page.check_sosreport_can_be_downloaded()

@@ -2,7 +2,7 @@ import pytest
 import time
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.v41.system_page import SystemPage
+from pages.v41.ui_system_page import SystemPage
 from fabric.api import env, run
 from conf import *
 
