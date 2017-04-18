@@ -23,7 +23,7 @@ engine_password = ENGINE_PASSWORD
 auto_answer = AUTO_ANSWER
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

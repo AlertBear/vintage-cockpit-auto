@@ -18,15 +18,15 @@ ROOT_URI = "https://" + host_ip + ":9090"
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-vm_fqdn = VM_FQDN
-vm_ip = VM_IP
-vm_password = VM_PASSWORD
-second_nfs_path = HE_DATA_NFS_PATH  # Be added to hosted engine
+vm_fqdn = HE_VM_FQDN
+vm_ip = HE_VM_IP
+vm_password = HE_VM_PASSWORD
+second_nfs_path = HE_DATA_NFS  # Be added to hosted engine
 second_host_ip = SECOND_HOST       # Second host to run hosted engine
 second_password = SECOND_PASSWORD
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

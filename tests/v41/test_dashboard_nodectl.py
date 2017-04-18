@@ -13,7 +13,7 @@ env.password = host_password
 test_build = TEST_BUILD
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

@@ -3,7 +3,7 @@ import time
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.ui_system_page import SystemPage
-from fabric.api import env, run
+from fabric.api import env, run, settings
 from conf import *
 
 
@@ -19,7 +19,7 @@ env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

@@ -1,6 +1,6 @@
 import pytest
 from pages.v41.he_install import he_install
-from fabric.api import env, run
+from fabric.api import env, run, settings
 from conf import *
 
 host_ip = HOST_IP
@@ -12,18 +12,18 @@ env.password = host_password
 
 nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
-nfs_storage_path = NFS_STORAGE_PATH
+nfs_storage_path = HE_INSTALL_NFS
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
 nic = NIC
 mac = MAC
-vm_fqdn = VM_FQDN
-vm_ip = VM_IP
-vm_password = VM_PASSWORD
+vm_fqdn = HE_VM_FQDN
+vm_ip = HE_VM_IP
+vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
 auto_answer = AUTO_ANSWER
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

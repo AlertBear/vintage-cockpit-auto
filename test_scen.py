@@ -11,9 +11,11 @@ v41_rhvh_tier1 = {
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_dashboard_nodectl.py",
-        "tests/v41/test_dashboard_ui.py", "tests/v41/test_vm_unregisterd.py",
+        "tests/v41/test_dashboard_ui.py",
+        "tests/v41/test_vm_unregisterd.py",
         "tests/v41/test_common_subscription.py",
-        "tests/v41/test_he_install.py", "tests/v41/test_he_info.py",
+        "tests/v41/test_he_install.py",
+        "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
     ]
 }
@@ -44,7 +46,8 @@ v41_rhel_tier1 = {
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
         "tests/v41/test_common_subscription.py",
-        "tests/v41/test_he_install.py", "tests/v41/test_he_info.py",
+        "tests/v41/test_he_install.py",
+        "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
     ]
 }
@@ -75,7 +78,8 @@ v41_centos_tier1 = {
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
         "tests/v41/test_common_subscription.py",
-        "tests/v41/test_he_install.py", "tests/v41/test_he_info.py",
+        "tests/v41/test_he_install.py",
+        "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
     ]
 }
@@ -103,7 +107,8 @@ v41_fedora_tier1 = {
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
         "tests/v41/test_common_subscription.py",
-        "tests/v41/test_he_install.py", "tests/v41/test_he_info.py",
+        "tests/v41/test_he_install.py",
+        "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
     ]
 }
@@ -185,8 +190,10 @@ v41_rhvh_he_install_redeploy = {
     "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
     "CASES":
-    ["tests/v41/test_he_install.py", "tests/v41/test_he_install_redeploy.py"]
+    ["tests/v41/test_he_install.py",
+     "tests/v41/test_he_install_redeploy.py"]
 }
+
 '''
 #
 # Currently not consider about this case

@@ -25,7 +25,7 @@ he_data_nfs = HE_DATA_NFS
 second_vm_fqdn = SECOND_VM_FQDN
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"

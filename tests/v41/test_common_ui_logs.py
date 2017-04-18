@@ -16,7 +16,7 @@ env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -q cockpit-ovirt-dashboard"

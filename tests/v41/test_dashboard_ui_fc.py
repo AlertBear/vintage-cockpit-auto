@@ -2,7 +2,7 @@ import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.dashboard_nodestatus_page import NodeStatusPage
-from fabric.api import env, run
+from fabric.api import env, run, settings
 from conf import *
 
 
@@ -19,7 +19,7 @@ add_hostname = ADD_HOSTNAME
 rhvm_fqdn = RHVM_FQDN
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def _environment(request):
     with settings(warn_only=True):
         cmd = "rpm -qa|grep cockpit-ovirt"
