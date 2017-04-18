@@ -1,7 +1,7 @@
 import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
-from pages.virtual_machines_page import VirtualMachinesPage
+from pages.rhvh40.virtual_machines_page import VirtualMachinesPage
 
 
 ROOT_URI = "https://10.66.8.149:9090"
