@@ -9,7 +9,7 @@ from fabric.api import run, settings
 # Since RHEL/Fedora/Centos is already installed on specified system,
 # list the corresponding ip
 sys_ip_mapper = {
-    "hp-z620-05.qe.lab.eng.nay.redhat.com": "10.66.x.x",
+    "hp-z620-05.qe.lab.eng.nay.redhat.com": "10.66.149.62",
     "dell-pet105-02.qe.lab.eng.nay.redhat.com": "10.66.x.x",
     "hp-z620-04.qe.lab.eng.nay.redhat.com": "10.66.x.x",
     "bootp-73-75-177.lab.eng.pek2.redhat.com": "10.73.75.177"
