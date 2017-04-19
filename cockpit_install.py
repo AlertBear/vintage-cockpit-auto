@@ -11,14 +11,22 @@ from fabric.api import run, settings
 sys_ip_mapper = {
     "hp-z620-05.qe.lab.eng.nay.redhat.com": "10.66.x.x",
     "dell-pet105-02.qe.lab.eng.nay.redhat.com": "10.66.x.x",
-    "hp-z620-04.qe.lab.eng.nay.redhat.com": "10.66.x.x"
+    "hp-z620-04.qe.lab.eng.nay.redhat.com": "10.66.x.x",
+    "bootp-73-75-177.lab.eng.pek2.redhat.com": "10.73.75.177"
 }
 
 
 if __name__ == "__main__":
+    # The first argv is test system which will be used
+    sys_install = sys.argv[1]
+    # The remaining argv are test scenarios
+    scens_test = []
+    for i in range(2, len(sys.argv)):
+        scens_test.append(sys.argv[i])
+
     # Get the machine and parse to /tmp/http.json
-    if sys.argv[1] in sys_ip_mapper:
-        host_ip = sys_ip_mapper[sys.argv[1]]
+    if sys_install in sys_ip_mapper:
+        host_ip = sys_ip_mapper[sys_install]
     else:
         raise Exception("No such machine with existing SYS installed")
 
@@ -80,9 +88,9 @@ if __name__ == "__main__":
 
     # Create /tmp/http.json for run.py
     http_dict = {
-        "test_profile": sys.argv[2],
+        "test_profile": scens_test,
         "host_ip": host_ip,
         "test_build": ""
     }
     with open("/tmp/http.json", 'w') as f:
-        json.dump(http_dict, f)
+        json.dump(http_dict, f, indent=2)

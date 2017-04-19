@@ -95,10 +95,12 @@ if __name__ == "__main__":
     elif re.search("v40", test_scenarios[0]):
         conf_file = os.path.join(abspath, "tests/v40/conf.py")
 
-    test_files_str = ""
+    test_files = []
     for each_file in test_scenarios:
         test_file = os.path.join(abspath, each_file)
-        test_files_str = test_files_str.join(" %s" % test_file)
+        test_files.append(test_file)
+
+    test_files_str = " ".join(test_files)
 
     log_dir = os.path.join(abspath, "logs")
     if not os.path.exists(log_dir):
@@ -119,8 +121,8 @@ if __name__ == "__main__":
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    pytest.main("-s -v%s --json=%s --html=%s" % (test_files_str, result_json,
-                                                 result_html))
+    pytest.main("-s -v %s --json=%s --html=%s" % (
+        test_files_str, result_json, result_html))
 
     # Rename the result files in case be deleted
     asset = log_dir + "/assets"
