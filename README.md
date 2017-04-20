@@ -16,8 +16,8 @@
 # Test machines used
 | Hostname | Mac Addr | IP Addr | NIC | PURPOSE | valid?|
 | -------- | -------- | ------- | ------ | ------ | ------ |
-| dell-op790-01.qe.lab.eng.nay.redhat.com | d4:be:d9:95:61:ca  | 10.66.148.7 | em1 | RHVH | *YES* |
-| hp-z620-05.qe.lab.eng.nay.redhat.com | 2c:44:fd:3a:d7:d7  | 10.66.149.62 | eno1 | RHEL | *YES* |
+| dell-op790-01.qe.lab.eng.nay.redhat.com | `d4:be:d9:95:61:ca`  | 10.66.148.7 | em1 | RHVH | *YES* |
+| hp-z620-05.qe.lab.eng.nay.redhat.com | `2c:44:fd:3a:d7:d7`  | 10.66.149.62 | eno1 | RHEL | *YES* |
 | dell-pet105-02.qe.lab.eng.nay.redhat.com |   |  |  | FEDORA | *NO* |
 | hp-z620-04.qe.lab.eng.nay.redhat.com |   |  |  | CENTOS | *NO* |
 | dell-per510-01.lab.eng.pek2.redhat.com |   |  |  | BOND VLAN FC | *NO* |
