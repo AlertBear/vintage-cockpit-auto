@@ -125,7 +125,6 @@ if __name__ == "__main__":
         test_files_str, result_json, result_html))
 
     # Rename the result files in case be deleted
-    asset = log_dir + "/assets"
     now = time.strftime("%y%m%d%H%M%S")
     json_result_rename = log_dir + "/cockpit-result-" + now + ".json"
     os.rename(result_json, json_result_rename)
@@ -137,16 +136,26 @@ if __name__ == "__main__":
         shutil.move("/tmp/cockpit-screenshot", log_dir + "/screenshot-" + now)
 
     # Send email to administrator
-    email_subject = "Test Report For Cockpit-ovirt"
+    email_subject = "Test Report For Cockpit-ovirt-%s" % now
     email_from = "dguo@redhat.com"
     email_to = ["dguo@redhat.com"]
-    email_text = "Please see the Test Report of Cockpit-ovirt"
-    email_attachment = ""
+
+    if not os.path.exists(log_dir + "/screenshot-" + now):
+        email_text = "1. Please see the Test Report of " \
+                     "Cockpit-ovirt at http://10.66.8.173:8000/%s" % \
+                     "cockpit-result-" + now + ".html"
+    else:
+        email_text = "1. Please see the Test Report of " \
+                     "Cockpit-ovirt at http://10.66.8.173:8000/{html_name} \n" \
+                     "2. Please see the screenshot during the " \
+                     "test at http://10.66.8.173:8000/{screenshot_name}".format(
+                      html_name="cockpit-result-" + now + ".html",
+                      screenshot_name="screenshot-" + now)
 
     email = EmailAction()
-    email_attachment = [html_result_rename]
-    email.send_email(email_from, email_to, email_subject, email_text,
-                     email_attachment)
+    email_attachment = []
+    email.send_email(
+        email_from, email_to, email_subject, email_text, email_attachment)
 
     # Loads the results to json from result_json file
     res = format_result(json_result_rename)
