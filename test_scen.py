@@ -13,7 +13,7 @@ v41_rhvh_tier1 = {
         "tests/v41/test_dashboard_nodectl.py",
         "tests/v41/test_dashboard_ui.py",
         "tests/v41/test_vm_unregisterd.py",
-        "tests/v41/test_common_subscription.py",
+        "tests/v41/test_common_tools_subscription.py",
         "tests/v41/test_he_install.py",
         "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
@@ -45,7 +45,7 @@ v41_rhel_tier1 = {
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
-        "tests/v41/test_common_subscription.py",
+        "tests/v41/test_common_tools_subscription.py",
         "tests/v41/test_he_install.py",
         "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
@@ -73,11 +73,11 @@ v41_centos_tier1 = {
     "TAG": ["CENTOS73"],
     "CONFIG":
     "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-pet105-02.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_MACHINE": ["hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
-        "tests/v41/test_common_subscription.py",
+        "tests/v41/test_common_tools_subscription.py",
         "tests/v41/test_he_install.py",
         "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
@@ -88,7 +88,7 @@ v41_centos_tier2 = {
     "TAG": ["CENTOS73"],
     "CONFIG":
     "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-pet105-02.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_MACHINE": ["hp-z620-04.qe.lab.eng.nay.redhat.com"],
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
@@ -102,11 +102,11 @@ v41_fedora_tier1 = {
     "TAG": ["FEDORA24"],
     "CONFIG":
     "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["hp-z620-04.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_MACHINE": ["hp-z620-02.qe.lab.eng.nay.redhat.com"],
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_vm_unregisterd.py",
-        "tests/v41/test_common_subscription.py",
+        "tests/v41/test_common_tools_subscription.py",
         "tests/v41/test_he_install.py",
         "tests/v41/test_he_info.py",
         "tests/v41/test_vm_registerd.py"
@@ -117,7 +117,7 @@ v41_fedora_tier2 = {
     "TAG": ["FEDORA24"],
     "CONFIG":
     "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["hp-z620-04.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_MACHINE": ["hp-z620-02.qe.lab.eng.nay.redhat.com"],
     "DEPEND_CASES": [],
     "CASES": [
         "tests/v41/test_common_ui_dashboard.py",
@@ -154,7 +154,9 @@ v41_rhvh_dashboard_fc = {
 v41_rhvh_he_install_bond = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-per510-01.lab.eng.pek2.redhat.com"],
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
     "CASES": ["tests/v41/test_he_install_bond.py"]
 }
@@ -162,7 +164,9 @@ v41_rhvh_he_install_bond = {
 v41_rhvh_he_install_bv = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-per510-01.lab.eng.pek2.redhat.com"],
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
     "CASES": ["tests/v41/test_he_install_bv.py"]
 }
@@ -170,7 +174,9 @@ v41_rhvh_he_install_bv = {
 v41_rhvh_he_install_vlan = {
     "TAG": ["RHVH41"],
     "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-per510-01.lab.eng.pek2.redhat.com"],
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_SCEN": [],
     "CASES": ["tests/v41/test_he_install_vlan.py"]
 }
@@ -208,6 +214,7 @@ v41_rhvh_he_info_add_host = {
         "tests/v41/test_he_info_add_host.py"]
 }
 '''
+
 
 if __name__ == '__main__':
     MONGOURI = 'mongodb://rhvher:rhvher@10.73.73.23/rhvhauto?authMechanism=SCRAM-SHA-1'
