@@ -148,7 +148,7 @@ if __name__ == "__main__":
         email_text = "1. Please see the Test Report of " \
                      "Cockpit-ovirt at http://10.66.148.10:8000/{html_name} \n" \
                      "2. Please see the screenshot during the " \
-                     "test at http://10.66.8.173:8000/{screenshot_name}".format(
+                     "test at http://10.66.148.10:8000/{screenshot_name}".format(
                       html_name="cockpit-result-" + now + ".html",
                       screenshot_name="screenshot-" + now)
 
