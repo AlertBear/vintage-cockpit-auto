@@ -1,5 +1,6 @@
 #!/usr/bin/python2.7
 import os
+import sys
 import time
 import shutil
 import json
@@ -87,6 +88,20 @@ if __name__ == "__main__":
     for profile in profiles:
         for c in getattr(test_scen, profile)["CASES"]:
             test_scenarios.append(c)
+
+    # Wait for the host is ready
+    i = 0
+    while True:
+        if i > 60:
+            print "ERROR: Host is not ready for testing"
+            sys.exit(1)
+        with settings(warn_only=True):
+            output = local("ping -c5 -W5 %s" % host_ip, capture=True)
+        if output.failed:
+            time.sleep(10)
+            i += 1
+            continue
+        break
 
     # All files used
     abspath = os.path.abspath(os.path.dirname(__file__))
