@@ -77,7 +77,7 @@ def format_result(file):
     return json.dumps(format_ret)
 
 
-def run():
+def run01():
     # Parse variable from json file export by rhvh auto testing platform
     http_json = "/tmp/http.json"
     with open(http_json, 'r') as f:
@@ -181,5 +181,5 @@ def run():
 if __name__ == "__main__":
     server = SimpleXMLRPCServer(("0.0.0.0", 9090))
     print "Listening on port 9090..."
-    server.register_function(run, "run")
+    server.register_function(run01, "run01")
     server.serve_forever()
