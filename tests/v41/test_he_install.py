@@ -79,7 +79,8 @@ def test_18667(firefox):
     'auto_answer': auto_answer
     }
 
-    he_install(host_dict, nfs_dict, install_dict, vm_dict)
-
-    # Check the hosted engine is deployed
-    check_he_is_deployed(host_ip, host_user, host_password)
+    try:
+        he_install(host_dict, nfs_dict, install_dict, vm_dict)
+    except Exception as e:
+        print e
+        assert 0, "Failed to install Hosted Engine"

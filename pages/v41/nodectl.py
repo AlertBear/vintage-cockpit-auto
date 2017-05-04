@@ -51,7 +51,7 @@ class Nodectl():
         # Skip this case currently since bug 1361055
         raise NotImplementedError
 
-    def check_nodectl_info(self, layer):
+    def check_nodectl_info(self, test_build):
         """
         Purpose:
             Test teh nodectl info subcommand
@@ -59,6 +59,11 @@ class Nodectl():
         cmd_info = "nodectl info --machine-readable"
         output_info = run(cmd_info)
         info_dict = simplejson.loads(output_info)
+
+        # Get the layer by test_build(eg: redhat-virtualization-host-4.1-20170413.0)
+        xy_version = test_build.split('-')[-2]
+        date_version = test_build.split('-')[-1]
+        layer = "rhvh-" + xy_version + "-0." + date_version
 
         # Check layers
         assert 'layers' in info_dict.keys(), "nodectl info not correct"

@@ -76,6 +76,26 @@ def format_result(file):
     return json.dumps(format_ret)
 
 
+def set_mail_text(htm_report, no_screenshot=True):
+    # Get local ip for email content
+    with settings(warn_only=True):
+        local_hostname = local("hostname --fqdn")
+        local_ip = local("host %s | awk '{print $NF}'" % local_hostname)
+
+    if no_screenshot:
+        email_text = "1. Please see the Test Report of " \
+                     "Cockpit-ovirt at http://%s:8000/%s" % (local_ip, htm_report)
+    else:
+        email_text = "1. Please see the Test Report of " \
+                     "Cockpit-ovirt at http://{local_ip}:8000/{html_name} \n" \
+                     "2. Please see the screenshot during the " \
+                     "test at http://{local_ip}:8000/{screenshot_name}".format(
+                        local_ip=local_ip,
+                        html_name="cockpit-result-" + now + ".html",
+                        screenshot_name="screenshot-" + now)
+    return email_text
+
+
 if __name__ == "__main__":
     # Parse variable from json file export by rhvh auto testing platform
     http_json = "/tmp/http.json"

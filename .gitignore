@@ -72,3 +72,4 @@ test_fordebug.py
 *.sublime-workspace
 
 test_scen.json
+logs/

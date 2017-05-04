@@ -1,8 +1,69 @@
 import time
+import re
 from selenium import webdriver
 from fabric.api import run, settings, put
 import logging
+import urllib2
 from vncdotool import api
+from HTMLParser import HTMLParser
+
+
+class MyHTMLParser(HTMLParser):
+    def __init__(self):
+        HTMLParser.__init__(self)
+        self.links = []
+        self.a_texts = []
+        self.a_text_flag = False
+
+    def handle_starttag(self, tag, attrs):
+        # print "Encountered the beginning of a %s tag" % tag
+        if tag == "a":
+            self.a_text_flag = True
+            if len(attrs) == 0:
+                pass
+            else:
+                for (variable, value) in attrs:
+                    if variable == "href":
+                        self.links.append(value)
+
+    def handle_endtag(self, tag):
+        if tag == "a":
+            self.a_text_flag = False
+
+    def handle_data(self, data):
+        if self.a_text_flag:
+            if data.startswith("rhvm-appliance"):
+                self.a_texts.append(data)
+
+
+def get_latest_rhvm_appliance(appliance_path):
+    """
+    Purpose:
+        Get the latest rhvm appliance from appliance parent path
+    """
+    # Get the html page from appliance path
+    req = urllib2.Request(appliance_path)
+    response = urllib2.urlopen(req)
+    rhvm_appliance_html = response.read()
+
+    # Parse the html
+    mp = MyHTMLParser()
+    mp.feed(rhvm_appliance_html)
+    mp.close()
+
+    # Get the latest rhvm appliance url link
+    mp.a_texts.sort()
+    latest_rhvm_appliance_name = mp.a_texts[-1]
+
+    latest_rhvm_appliance_link = None
+    for link in mp.links:
+        print link
+        if re.search(latest_rhvm_appliance_name, link):
+            latest_rhvm_appliance_link = link
+
+    latest_rhvm_appliance_link = appliance_path + latest_rhvm_appliance_link
+
+    return latest_rhvm_appliance_link
 
 
 def press_keys(seq, cli):
@@ -77,7 +138,20 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
         host_string='root@' + nfs_ip,
         password=nfs_password):
         run("rm -rf %s/*" % nfs_path)
-        run("service nfs restart",quiet=True)
+        run("service nfs restart", quiet=True)
+
+    # Get the rhvm_appliance from rhvm_appliance_path
+    rhvm_appliance_link = get_latest_rhvm_appliance(rhvm_appliance_path)
+    local_rhvm_appliance = "/tmp/%s" % rhvm_appliance_link.split('/')[-1]
+    with settings(
+        warn_only=True,
+        host_string=host_user + '@' + host_ip,
+        password=host_password):
+        cmd = "curl -o %s %s" % (local_rhvm_appliance, rhvm_appliance_link)
+        output = run(cmd)
+
+    if output.failed:
+        raise RuntimeError("Failed to download the latest rhvm appliance")
 
     # Add host to /etc/hosts and install rhvm_appliance
     with settings(
@@ -90,9 +164,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
         run(cmd1)
         cmd2 = "echo '%s  %s' >> /etc/hosts" % (vm_ip, vm_fqdn)
         run(cmd2)
-
-        put(rhvm_appliance_path, "/tmp/%s" % rhvm_appliance_path.split('/')[-1])
-        cmd3 = "rpm -ivh /tmp/%s" % rhvm_appliance_path.split('/')[-1]
+        cmd3 = "rpm -ivh %s" % local_rhvm_appliance
         run(cmd3)
 
     time.sleep(2)
@@ -247,7 +319,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     class_name("btn-default").click()    # confirm the configuration
     time.sleep(600)
 
-    # Handle vnc to login, which is for engine-setup go script  
+    # Handle vnc to login, which is for engine-setup go script
     with settings(
         warn_only=True,
         host_string=host_user + '@' + host_ip,
@@ -259,7 +331,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
             host_password=host_password).vnc_vm_login(vm_password)
     time.sleep(10)
 
-    # Run engine-setup by go auto_answer script 
+    # Run engine-setup by go auto_answer script
     with settings(
         warn_only=True,
         host_string='root@' + vm_ip,
