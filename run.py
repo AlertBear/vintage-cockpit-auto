@@ -11,6 +11,7 @@ import test_scen
 from fabric.api import run, local, settings
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 
 class EmailAction(object):
@@ -96,7 +97,7 @@ def set_mail_text(htm_report, no_screenshot=True):
     return email_text
 
 
-if __name__ == "__main__":
+def run01():
     # Parse variable from json file export by rhvh auto testing platform
     http_json = "/tmp/http.json"
     with open(http_json, 'r') as f:
@@ -156,8 +157,8 @@ if __name__ == "__main__":
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    pytest.main("-s -v %s --json=%s --html=%s" % (
-        test_files_str, result_json, result_html))
+    pytest.main("-s -v %s --json=%s --html=%s" % (test_files_str, result_json,
+                                                  result_html))
 
     # Rename the result files in case be deleted
     now = time.strftime("%y%m%d%H%M%S")
@@ -189,9 +190,16 @@ if __name__ == "__main__":
 
     email = EmailAction()
     email_attachment = []
-    email.send_email(
-        email_from, email_to, email_subject, email_text, email_attachment)
+    email.send_email(email_from, email_to, email_subject, email_text,
+                     email_attachment)
 
     # Loads the results to json from result_json file
     res = format_result(json_result_rename)
     pass
+
+
+if __name__ == "__main__":
+    server = SimpleXMLRPCServer(("0.0.0.0", 9090))
+    print "Listening on port 9090..."
+    server.register_function(run01, "run01")
+    server.serve_forever()

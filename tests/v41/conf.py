@@ -12,7 +12,7 @@ TEST_BUILD="rhvh-4.1-0.20170417.0"
 # Config variable to be used by test_dashboard_ui.py/
 # test_dashboard_ui_efi.py/test_dashboard_ui_fc.py
 #
-RHVM_FQDN = "rhvm41-vlan50-1.lab.eng.pek2.redhat.com"
+RHVM_FQDN = "rhvm41-vdsm-auto.lab.eng.pek2.redhat.com"
 ADD_HOSTNAME = "cockpit-ovirt"
 
 

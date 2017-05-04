@@ -364,7 +364,7 @@ def check_he_is_deployed(host_ip, host_user, host_password):
     """
     with settings(
         warn_only=True,
-        host_string= host_user + '@' + host_ip,
+        host_string=host_user + '@' + host_ip,
         password=host_password):
         cmd = "hosted-engine --check-deployed"
         result = run(cmd)
