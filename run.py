@@ -77,24 +77,8 @@ def format_result(file):
     return json.dumps(format_ret)
 
 
-def set_mail_text(htm_report, no_screenshot=True):
-    # Get local ip for email content
-    with settings(warn_only=True):
-        local_hostname = local("hostname --fqdn")
-        local_ip = local("host %s | awk '{print $NF}'" % local_hostname)
-
-    if no_screenshot:
-        email_text = "1. Please see the Test Report of " \
-                     "Cockpit-ovirt at http://%s:8000/%s" % (local_ip, htm_report)
-    else:
-        email_text = "1. Please see the Test Report of " \
-                     "Cockpit-ovirt at http://{local_ip}:8000/{html_name} \n" \
-                     "2. Please see the screenshot during the " \
-                     "test at http://{local_ip}:8000/{screenshot_name}".format(
-                        local_ip=local_ip,
-                        html_name="cockpit-result-" + now + ".html",
-                        screenshot_name="screenshot-" + now)
-    return email_text
+def upload_result_to_polarion(result):
+    pass
 
 
 def run01():
@@ -105,10 +89,10 @@ def run01():
     profiles = r["test_profile"]
     host_ip = r["host_ip"]
     test_build = r["test_build"]
-    test_scenarios = []
+    test_cases = []
     for profile in profiles:
         for c in getattr(test_scen, profile)["CASES"]:
-            test_scenarios.append(c)
+            test_cases.append(c)
 
     # Wait for the host is ready
     i = 0
@@ -116,33 +100,35 @@ def run01():
         if i > 60:
             print "ERROR: Host is not ready for testing"
             sys.exit(1)
-        with settings(warn_only=True):
-            output = local("ping -c5 -W5 %s" % host_ip, capture=True)
+        with settings(
+            warn_only=True, host_string='root@' + host_ip, password='redhat'):
+            output = run("hostname")
         if output.failed:
             time.sleep(10)
             i += 1
             continue
         break
 
-    # All files used
+    # Get config files by rhvh version
     abspath = os.path.abspath(os.path.dirname(__file__))
-    if re.search("v41", test_scenarios[0]):
+    if re.search("v41", test_cases[0]):
         conf_file = os.path.join(abspath, "tests/v41/conf.py")
-    elif re.search("v40", test_scenarios[0]):
+    elif re.search("v40", test_cases[0]):
         conf_file = os.path.join(abspath, "tests/v40/conf.py")
 
+    # Test cases files which will be appended to the 'pytest' command line
     test_files = []
-    for each_file in test_scenarios:
+    for each_file in test_cases:
         test_file = os.path.join(abspath, each_file)
         test_files.append(test_file)
 
-    test_files_str = " ".join(test_files)
-
-    log_dir = os.path.join(abspath, "logs")
-    if not os.path.exists(log_dir):
-        os.mkdir(log_dir)
-    result_json = log_dir + "/cockpit-result.json"
-    result_html = log_dir + "/cockpit-result.html"
+    # Make a dir for storing all the test logs
+    now = time.strftime("%Y%m%d%H%M%S")
+    profiles_str = "-".join(profiles)
+    tmp_log_dir = "/tmp/cockpit-auto.logs/" + \
+                  test_build + '/' + now
+    if not os.path.exists(tmp_log_dir):
+        os.makedirs(tmp_log_dir)
 
     # Get the mapped device of the host_ip,
     # which will be used for test_he_install.py
@@ -157,46 +143,51 @@ def run01():
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    pytest.main("-s -v %s --json=%s --html=%s" % (test_files_str, result_json,
-                                                  result_html))
+    result_json = tmp_log_dir + "/result-" + profiles_str + ".json"
+    result_html = tmp_log_dir + "/result-" + profiles_str + ".html"
 
-    # Rename the result files in case be deleted
-    now = time.strftime("%y%m%d%H%M%S")
-    json_result_rename = log_dir + "/cockpit-result-" + now + ".json"
-    os.rename(result_json, json_result_rename)
-    html_result_rename = log_dir + "/cockpit-result-" + now + ".html"
-    os.rename(result_html, html_result_rename)
+    pytest_args = ['-s', '-v']
+    for file in test_files:
+        pytest_args.append(file)
+    pytest_args.append("--json={}".format(result_json))
+    pytest_args.append("--html={}".format(result_html))
 
-    # Save the screenshot during the tests to log_dir
-    if os.path.exists("/tmp/cockpit-screenshot"):
-        shutil.move("/tmp/cockpit-screenshot", log_dir + "/screenshot-" + now)
+    pytest.main(pytest_args)
+
+    # After execute the tests, loading the json from json file
+    result = format_result(result_json)
+
+    # Save the screenshot during tests to tmp_log_dir
+    has_screenshot = os.path.exists("/tmp/cockpit-screenshot")
+    if has_screenshot:
+        shutil.move("/tmp/cockpit-screenshot", tmp_log_dir + "/screenshot-" + now)
+
+    # Save all the logs and screenshot to /var/www/html where httpd is already on
+    http_logs_dir = "/var/www/html/" + test_build
+    if not os.path.exists(http_logs_dir):
+        os.makedirs(http_logs_dir)
+    shutil.move(tmp_log_dir, http_logs_dir)
 
     # Send email to administrator
-    email_subject = "Test Report For Cockpit-ovirt-%s" % now
+    email_subject = "Test Report For Cockpit-ovirt-%s(%s)" % (profiles_str, test_build)
     email_from = "dguo@redhat.com"
     email_to = ["dguo@redhat.com"]
 
-    if not os.path.exists(log_dir + "/screenshot-" + now):
-        email_text = "1. Please see the Test Report of " \
-                     "Cockpit-ovirt at http://10.66.148.10:8000/%s" % \
-                     "cockpit-result-" + now + ".html"
-    else:
-        email_text = "1. Please see the Test Report of " \
-                     "Cockpit-ovirt at http://10.66.148.10:8000/{html_name} \n" \
-                     "2. Please see the screenshot during the " \
-                     "test at http://10.66.148.10:8000/{screenshot_name}".format(
-                      html_name="cockpit-result-" + now + ".html",
-                      screenshot_name="screenshot-" + now)
+    # Get local ip for email content
+    with settings(warn_only=True):
+        local_hostname = local("hostname --fqdn", capture=True)
+        local_ip = local("host %s | awk '{print $NF}'" % local_hostname)
+
+    email_text = "1. Please see the Test Report at http://%s/%s/%s" % (
+        local_ip, test_build, now)
 
     email = EmailAction()
     email_attachment = []
     email.send_email(email_from, email_to, email_subject, email_text,
                      email_attachment)
 
-    # Loads the results to json from result_json file
-    res = format_result(json_result_rename)
-    pass
-
+    # Upload the result to polarion
+    upload_result_to_polarion(result)
 
 if __name__ == "__main__":
     server = SimpleXMLRPCServer(("0.0.0.0", 9090))
