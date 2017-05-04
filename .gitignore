@@ -67,3 +67,8 @@ cockpitauto.sublime-workspace
 test_fordebug.py
 
 .idea
+
+*.sublime-project
+*.sublime-workspace
+
+test_scen.json

@@ -45,3 +45,4 @@ vncdotool==0.10.0
 wcwidth==0.1.7
 wrapt==1.10.8
 zope.interface==4.3.2
+pytest-html==1.13.0
