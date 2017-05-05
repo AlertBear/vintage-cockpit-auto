@@ -57,10 +57,18 @@ def test_18674(firefox):
         Setup hosted engine through ova with bond as network
     """
     # Get the nic from he_bvnic_mapper
-    if not host_ip in he_bvnic_mapper.keys():
+    if host_ip not in he_bvnic_mapper.keys():
         assert 0, "This system is not configured " \
                   "with a bond or not record in our configuration"
     he_nic = he_bvnic_mapper[host_ip]['BOND_NIC']
+
+    # Test the nic is existing and has an ip address
+    cmd = "ip a s|grep %s|grep inet" % he_nic
+    with settings(warn_only=True):
+        res = run(cmd)
+    if res.failed:
+        assert 0, "No %s on %s or not configured with ip" % (
+            he_nic, host_ip)
 
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,

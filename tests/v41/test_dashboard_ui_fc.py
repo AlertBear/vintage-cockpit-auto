@@ -6,16 +6,15 @@ from fabric.api import env, run, settings
 from conf import *
 
 
-host_ip = FC_HOST_IP
-host_user = FC_HOST_USER
-host_password = FC_HOST_PASSWORD
+host_ip = HOST_IP
+host_user = HOST_USER
+host_password = HOST_PASSWORD
 test_build = TEST_BUILD
 ROOT_URI = "https://" + host_ip + ":9090"
 
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-add_hostname = ADD_HOSTNAME
 rhvm_fqdn = RHVM_FQDN
 
 

@@ -1,7 +1,7 @@
 import time
 import re
 from selenium import webdriver
-from fabric.api import run, settings, put
+from fabric.api import run, settings, put, local
 import logging
 import urllib2
 from vncdotool import api
@@ -64,6 +64,14 @@ def get_latest_rhvm_appliance(appliance_path):
     latest_rhvm_appliance_link = appliance_path + latest_rhvm_appliance_link
 
     return latest_rhvm_appliance_link
+
+
+def download_auto_answer(auto_answer):
+    with settings(warn_only=True):
+        cmd = "curl -o /tmp/he_vm_run %s" % auto_answer
+        res = local(cmd, capture=True)
+    if res.failed:
+        assert 0, "Failed to download the auto answer file"
 
 
 def press_keys(seq, cli):
@@ -331,11 +339,13 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     time.sleep(10)
 
     # Run engine-setup by go auto_answer script
+    download_auto_answer(auto_answer)
+
     with settings(
         warn_only=True,
         host_string='root@' + vm_ip,
         password=vm_password):
-        put(auto_answer, "/root/run")
+        put("/tmp/he_vm_run", "/root/run")
         run("chmod 755 /root/run")
         run("/root/run -i")
     time.sleep(40)

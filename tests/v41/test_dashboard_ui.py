@@ -15,7 +15,6 @@ ROOT_URI = "https://" + host_ip + ":9090"
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-add_hostname = ADD_HOSTNAME
 rhvm_fqdn = RHVM_FQDN
 
 

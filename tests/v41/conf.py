@@ -1,39 +1,20 @@
-
 #
 # The variable to be used by each case
 #
+TEST_BUILD = "rhvh-4.1-0.20170417.0"
 HOST_IP = "10.66.148.7"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
-TEST_BUILD = "rhvh-4.1-0.20170417.0"
 
 
 #
-# Config variable to be used by test_dashboard_ui.py/
-# test_dashboard_ui_efi.py/test_dashboard_ui_fc.py
+# Config variable to be used by adding host to engine
 #
 RHVM_FQDN = "rhvm41-vdsm-auto.lab.eng.pek2.redhat.com"
-ADD_HOSTNAME = "cockpit-ovirt"
 
 
 #
-# Additional Config variable to be used by test_dashboard_ui_fc.py
-#
-FC_HOST_IP = "10.66.148.7"
-FC_HOST_USER = "root"
-FC_HOST_PASSWORD = "redhat"
-
-
-#
-# Additional Config variable to be used by test_dashboard_ui_efi.py
-#
-EFI_HOST_IP = "10.66.148.7"
-EFI_HOST_USER = "root"
-EFI_HOST_PASSWORD = "redhat"
-
-
-#
-# Config variable to be used by test_common_subscription.py
+# Config variable to be used by Subscription cases
 #
 RHN_USER = "qa@redhat.com"
 RHN_PASSWORD = "CZvGMy7TwJpVKW9t"
@@ -47,8 +28,7 @@ CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.
 
 
 #
-# Config variable to be used by test_he_install.py/test_he_install_bond.py/
-# test_he_install_vlan.py/test_he_install_bv.py/test_vm_registerd.py/test_common_ui_dashboard.py
+# Config variable to be used by Hosted Engine cases
 #
 RHVM_APPLIANCE_PATH = "http://10.66.10.22:8090/rhevm-appliance/"
 NFS_IP = "10.66.8.173"
@@ -60,9 +40,8 @@ HE_VM_FQDN = "rhevh-hostedengine-vm-01.qe.lab.eng.nay.redhat.com"
 HE_VM_IP = "10.66.148.102"
 HE_VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
-AUTO_ANSWER = "/home/dguo/Public/work/run"
+AUTO_ANSWER = "http://10.73.73.23:8000/run?download=true"
 SECOND_HOST = "10.66.8.140"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
-
-HE_BVNIC_MAPPER = {"10.73.73.x": {"BOND_NIC": "bond0", "VLAN_NIC": "em1.50", "BV_NIC": "bond0.50"}}
+HE_BVNIC_MAPPER = {"10.66.148.7": {"BOND_NIC": "bond0", "VLAN_NIC": "p4p1.20", "BV_NIC": "bond1.20"}}
