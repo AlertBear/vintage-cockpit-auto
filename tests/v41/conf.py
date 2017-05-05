@@ -44,4 +44,20 @@ AUTO_ANSWER = "http://10.73.73.23:8000/run?download=true"
 SECOND_HOST = "10.66.8.140"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
-HE_BVNIC_MAPPER = {"10.66.148.7": {"BOND_NIC": "bond0", "VLAN_NIC": "p4p1.20", "BV_NIC": "bond1.20"}}
+HE_BVNIC_MAPPER = {
+    "10.66.148.7": {
+        # Bond/VLAN/BV is identical with the network
+        # configured during ks installation
+        "HOSTNAME": "dell-op790-01.lab.eng.pek2.redhat.com",
+        "BOND_NIC": "bond0",
+        "VLAN_NIC": "p3p1.20",
+        "BV_NIC": "bond0.20"},
+
+    "10.73.75.x": {
+        # Bond/VLAN/BV is identical with the network
+        # configured during ks installation
+        "HOSTNAME": "dell-per510-01.lab.eng.pek2.redhat.com",
+        "BOND_NIC": "bond0",
+        "VLAN_NIC": "p3p2.50",
+        "BV_NIC": "bond0.50"}
+}
