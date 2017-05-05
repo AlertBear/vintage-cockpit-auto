@@ -1,11 +1,11 @@
 import pytest
-from pages.v41.he_install import he_install
+from pages.v41.he_install import *
 from fabric.api import env, run, settings
 from conf import *
 
-host_ip = BOND_HOST_IP
-host_user = BOND_HOST_USER
-host_password = BOND_HOST_PASSWORD
+host_ip = HOST_IP
+host_user = HOST_USER
+host_password = HOST_PASSWORD
 
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
@@ -14,14 +14,13 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = HE_INSTALL_NFS
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = BOND_NIC
-mac = MAC
+vm_mac = HE_VM_MAC
 vm_fqdn = HE_VM_FQDN
 vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
 auto_answer = AUTO_ANSWER
-
+he_bvnic_mapper = HE_BVNIC_MAPPER
 
 @pytest.fixture(scope="session", autouse=True)
 def _environment(request):
@@ -57,6 +56,12 @@ def test_18674(firefox):
         RHEVM-18667
         Setup hosted engine through ova with bond as network
     """
+    # Get the nic from he_bvnic_mapper
+    if not host_ip in he_bvnic_mapper.keys():
+        assert 0, "This system is not configured " \
+                  "with a bond or not record in our configuration"
+    he_nic = he_bvnic_mapper[host_ip]['BOND_NIC']
+
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,
     'host_password': host_password}
@@ -68,10 +73,10 @@ def test_18674(firefox):
 
     install_dict = {
     'rhvm_appliance_path': rhvm_appliance_path,
-    'nic': nic,
-    'mac': mac}
+    'he_nic': he_nic}
 
     vm_dict = {
+    'vm_mac': vm_mac,
     'vm_fqdn': vm_fqdn,
     'vm_ip': vm_ip,
     'vm_password': vm_password,

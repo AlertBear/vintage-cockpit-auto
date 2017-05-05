@@ -14,8 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = HE_INSTALL_NFS
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = NIC
-mac = MAC
+vm_mac = HE_VM_MAC
 vm_fqdn = HE_VM_FQDN
 vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
@@ -57,6 +56,11 @@ def test_18667(firefox):
         RHEVM-18667
         Setup Hosted Engine with OVA(engine-appliance-rpm)
     """
+    # Get the nic from host_ip
+    cmd = "ip a s|grep %s" % host_ip
+    output = run(cmd)
+    he_nic = output.split()[-1]
+
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,
     'host_password': host_password}
@@ -68,10 +72,10 @@ def test_18667(firefox):
 
     install_dict = {
     'rhvm_appliance_path': rhvm_appliance_path,
-    'nic': nic,
-    'mac': mac}
+    'he_nic': he_nic}
 
     vm_dict = {
+    'vm_mac': vm_mac,
     'vm_fqdn': vm_fqdn,
     'vm_ip': vm_ip,
     'vm_password': vm_password,
@@ -84,3 +88,6 @@ def test_18667(firefox):
     except Exception as e:
         print e
         assert 0, "Failed to install Hosted Engine"
+
+    # Check the hosted engine is deployed
+    check_he_is_deployed(host_ip, host_user, host_password)

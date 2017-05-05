@@ -11,7 +11,6 @@ import test_scen
 from fabric.api import run, local, settings
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 
 class EmailAction(object):
@@ -45,19 +44,10 @@ class EmailAction(object):
             server.quit()
 
 
-def get_nic_from_ip(ip, user="root", password="redhat"):
-    with settings(
-            warn_only=True, host_string=user + '@' + ip, password=password):
-        cmd = "ip a s|grep %s" % ip
-        output = run(cmd)
-        nic = output.split()[-1]
-        return nic
-
-
 def modify_config_file(file, value_dict):
     # Modify test values in the config file
     for k, v in value_dict.items():
-        local("""sed -i 's/%s =.*/%s="%s"/' %s""" % (k, k, v, file))
+        local("""sed -i 's/%s =.*/%s = "%s"/' %s""" % (k, k, v, file))
 
 
 def format_result(file):
@@ -130,14 +120,9 @@ if __name__ == "__main__":
     if not os.path.exists(tmp_log_dir):
         os.makedirs(tmp_log_dir)
 
-    # Get the mapped device of the host_ip,
-    # which will be used for test_he_install.py
-    host_nic = get_nic_from_ip(host_ip)
-
     # Modify the variable value in the config file
     variable_dict = {
         "HOST_IP": host_ip,
-        "NIC": host_nic,
         "TEST_BUILD": test_build
     }
     modify_config_file(conf_file, variable_dict)

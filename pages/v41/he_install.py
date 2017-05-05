@@ -123,9 +123,9 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     nfs_path = nfs_dict['nfs_path']
 
     rhvm_appliance_path = install_dict['rhvm_appliance_path']
-    nic = install_dict['nic']
-    mac = install_dict['mac']
+    he_nic = install_dict['he_nic']
 
+    vm_mac = vm_dict['vm_mac']
     vm_fqdn = vm_dict['vm_fqdn']
     vm_ip = vm_dict['vm_ip']
     vm_password = vm_dict['vm_password']
@@ -149,7 +149,6 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
         password=host_password):
         cmd = "curl -o %s %s" % (local_rhvm_appliance, rhvm_appliance_link)
         output = run(cmd)
-
     if output.failed:
         raise RuntimeError("Failed to download the latest rhvm appliance")
 
@@ -211,7 +210,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
 
     list(tag_name("input"))[0].clear()   # select NIC
     time.sleep(2)
-    list(tag_name("input"))[0].send_keys(nic)
+    list(tag_name("input"))[0].send_keys(he_nic)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)
@@ -280,7 +279,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
 
     list(tag_name("input"))[0].clear()    # set unicast MAC
     time.sleep(2)
-    list(tag_name("input"))[0].send_keys(mac)
+    list(tag_name("input"))[0].send_keys(vm_mac)
     time.sleep(2)
     class_name("btn-default").click()
     time.sleep(2)

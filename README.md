@@ -34,13 +34,10 @@ git clone http://dguo@10.8.176.174/dguo/cockpit-auto.git
 ```bash
 pip install -r requirements
 ```
-3. Make a log directory under projects path
+3. Start httpd service on local where apache server is installed and configured
 ```bash
-cd cockpit-auto
-mkdir logs
+yum install httpd
+service httpd start
+chkconfig httpd on
 ```
-4. Start a HTTP service under log directory to show admins all the reports created during testing
-```bash
-python -m SimpleHTTPServer
-```
-5. Trigger cockpit test manually from [Auto testing platform](http://10.73.73.23/#/cockpit)
+4. Trigger cockpit test manually from [Auto testing platform](http://10.73.73.23/#/cockpit)

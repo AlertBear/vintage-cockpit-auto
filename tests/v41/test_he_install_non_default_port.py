@@ -14,8 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = HE_INSTALL_NFS
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = NIC
-mac = MAC
+vm_mac = HE_VM_MAC
 vm_fqdn = HE_VM_FQDN
 vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
@@ -93,6 +92,10 @@ def test_18667(firefox):
     run(cmd)
     time.sleep(5)
 
+    # Get the nic from host_ip
+    cmd = "ip a s|grep %s" % host_ip
+    output = run(cmd)
+    he_nic = output.split()[-1]
 
     host_dict = {
     'host_ip': host_ip,
@@ -107,10 +110,10 @@ def test_18667(firefox):
 
     install_dict = {
     'rhvm_appliance_path': rhvm_appliance_path,
-    'nic': nic,
-    'mac': mac}
+    'he_nic': he_nic}
 
     vm_dict = {
+    'vm_mac': vm_mac,
     'vm_fqdn': vm_fqdn,
     'vm_ip': vm_ip,
     'vm_password': vm_password,

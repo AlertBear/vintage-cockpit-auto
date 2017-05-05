@@ -1,5 +1,5 @@
 import pytest
-from pages.v41.he_install import he_install
+from pages.v41.he_install import *
 from fabric.api import env, run, settings
 from conf import *
 
@@ -14,8 +14,7 @@ nfs_ip = NFS_IP
 nfs_password = NFS_PASSWORD
 nfs_storage_path = HE_INSTALL_NFS
 rhvm_appliance_path = RHVM_APPLIANCE_PATH
-nic = NIC
-mac = MAC
+vm_mac = HE_VM_MAC
 vm_fqdn = HE_VM_FQDN
 vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
@@ -58,7 +57,10 @@ def test_18686(firefox):
         Re-deploy the HostedEngine after clean up the previous HostedEngine
     """
     # Fisrtly to check if there exists HE
-    pass
+    with settings(warn_only=True):
+        cmd = "hosted-engine --check-deployed"
+        result = run(cmd)
+    assert result.failed, "Not support this case since HE is not deployed on %s" % host_ip
 
     # Cleanup previous HE
     cmd = "vdsClient -s 0 list table | awk '{print $1}' | xargs vdsClient -s 0 destory"
@@ -76,6 +78,11 @@ def test_18686(firefox):
     cmd = "glusterfs volume start your_stg"
     run(cmd)
 
+    # Get the nic from host_ip
+    cmd = "ip a s|grep %s" % host_ip
+    output = run(cmd)
+    he_nic = output.split()[-1]
+
     # Deploy a new HE
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,
@@ -88,10 +95,10 @@ def test_18686(firefox):
 
     install_dict = {
     'rhvm_appliance_path': rhvm_appliance_path,
-    'nic': nic,
-    'mac': mac}
+    'he_nic': he_nic}
 
     vm_dict = {
+    'vm_mac': vm_mac,
     'vm_fqdn': vm_fqdn,
     'vm_ip': vm_ip,
     'vm_password': vm_password,
