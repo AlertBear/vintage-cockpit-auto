@@ -81,7 +81,7 @@ def upload_result_to_polarion(result):
     pass
 
 
-if __name__ == "__main__":
+def run01():
     # Parse variable from json file export by rhvh auto testing platform
     http_json = "/tmp/http.json"
     with open(http_json, 'r') as f:
@@ -189,3 +189,8 @@ if __name__ == "__main__":
     # Upload the result to polarion
     upload_result_to_polarion(result)
 
+if __name__ == "__main__":
+    server = SimpleXMLRPCServer(("0.0.0.0", 9090))
+    print "Listening on port 9090..."
+    server.register_function(run01, "run01")
+    server.serve_forever()

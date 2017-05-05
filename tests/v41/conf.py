@@ -36,7 +36,7 @@ EFI_HOST_PASSWORD = "redhat"
 # Config variable to be used by test_common_subscription.py
 #
 RHN_USER = "qa@redhat.com"
-RHN_PASSWORD = "CZvGMy7TwJpVKW9t "
+RHN_PASSWORD = "CZvGMy7TwJpVKW9t"
 ACTIVATION_KEY = "rhevh"
 ACTIVATION_ORG = "711497"
 SATELLITE_IP = "10.73.75.61"
