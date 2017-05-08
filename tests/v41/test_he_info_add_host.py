@@ -83,6 +83,7 @@ def test_18668(firefox):
         deploy_hosted_engine=True)
     time.sleep(120)
     '''
+    he_page = HePage(firefox)
     he_page.check_additonal_host(vm_fqdn, "cockpit-he2")
     he_page.remove_host_from_rhvm(vm_fqdn, "cockpit-he2")
 

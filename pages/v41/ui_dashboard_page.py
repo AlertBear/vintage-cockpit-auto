@@ -1,4 +1,5 @@
 import time
+import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 
 
@@ -13,14 +14,17 @@ class DashboardPage(PageObject):
 
     # Elements after click the "add server" button
     add_address_input = PageElement(id_="add-machine-address")
-    submit_btn = PageElement(class_name="btn-primary")
+    # add_btn = PageElement(class_name="btn_primary")
     cancel_btn = PageElement(class_name="btn-default")
 
     # Elements after click submit
-    connect_btn = PageElement(class_name="btn_primary")
+    # connect_btn = PageElement(class_name="btn_primary")
     user_input = PageElement(id_="login-custom-user")
     password_input = PageElement(id_="login-custom-password")
-    login_btn = PageElement(class_name="btn-primary")
+    # login_btn = PageElement(class_name="btn-primary")
+
+    # All buttons with class "btn-primary"
+    primary_btns = MultiPageElement(class_name="btn-primary")
 
     # Elements under severs
     servers = MultiPageElement(class_name="host-label")
@@ -93,17 +97,31 @@ class DashboardPage(PageObject):
 
             self.add_address_input.send_keys(another_host)
             time.sleep(2)
-            self.submit_btn.click()
+
+            # Find the submit btn by primary btns and click it
+            for each_btn in list(self.primary_btns):
+                if re.search('Add', each_btn.text):
+                    submit_btn = each_btn
+            submit_btn.click()
             time.sleep(1)
 
-            try:
-                self.connect_btn.click()
-            except Exception:
-                self.user_input.send_keys("root")
-                self.password_input.send_keys(another_password)
-                time.sleep(1)
-                self.login_btn.click(1)
-            finally:
-                time.sleep(5)
+            # Find the Connect btn by primary btn and click it
+            connect_btn = None
+            for each_btn in list(self.primary_btns):
+                if re.search('Connect', each_btn.text):
+                    connect_btn = each_btn
+            if connect_btn:
+                connect_btn.click()
 
-            assert list(self.servers) == 2, "Failed to add another host"
+            self.user_input.send_keys("root")
+            self.password_input.send_keys(another_password)
+            time.sleep(1)
+
+            # Find the login button from primary btn and click it
+            for each_btn in list(self.primary_btns):
+                if re.search('Log In', each_btn.text):
+                    login_btn = each_btn
+            login_btn.click()
+            time.sleep(5)
+
+            assert len(list(self.servers)) == 2, "Failed to add another host"

@@ -1,8 +1,8 @@
 #
 # The variable to be used by each case
 #
-TEST_BUILD = "rhvh-4.1-0.20170417.0"
-HOST_IP = "10.66.148.7"
+TEST_BUILD = "redhat-virtualization-host-4.1-20170421.0"
+HOST_IP = "10.66.9.52"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
 
@@ -41,7 +41,7 @@ HE_VM_IP = "10.66.148.102"
 HE_VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
 AUTO_ANSWER = "http://10.73.73.23:8000/run?download=true"
-SECOND_HOST = "10.66.8.140"
+SECOND_HOST = "10.66.9.52"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
 HE_BVNIC_MAPPER = {
