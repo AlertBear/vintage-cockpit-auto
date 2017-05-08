@@ -34,14 +34,14 @@ class SystemPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(SystemPage, self).__init__(*args, **kwargs)
         self.get("/system")
-        self.wait_until_element_visible(self.brand_log)
+        self.wait(period=5)
 
     def basic_check_elements_exists(self):
         assert self.brand_log, "brand-log not exist"
         time.sleep(2)
 
     def check_login_host(self, host_ip):
-        assert re.search(host_ip, self.machine_link),   \
+        assert re.search(host_ip, self.machine_link.text),   \
             "%s not login" % host_ip
 
     def configure_hostname(self):
@@ -52,10 +52,10 @@ class SystemPage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             self.hostname_btn.click()
             time.sleep(1)
-            self.pretty_hostname_input.send_keys("cockpit_auto")
+            self.pretty_hostname_input.send_keys("cockpitauto")
             self.real_hostname_input.clear()
             time.sleep(1)
-            self.real_hostname_input.send_keys("cockpit_auto.redhat.com")
+            self.real_hostname_input.send_keys("cockpitauto.redhat.com")
             time.sleep(1)
             self.set_hostname_apply_btn.click()
             time.sleep(1)
@@ -67,14 +67,14 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             assert re.search(
-                "cockpit_auto.redhat.com",
-                self.system_info_hostname_btn.text),    \
+                "cockpitauto.redhat.com",
+                self.hostname_btn.text),    \
                 "Configure hostname failed"
 
         with settings(warn_only=True):
             cmd = "hostname"
             output = run(cmd)
-            assert re.search("cockpit_auto.redhat.com", output),    \
+            assert re.search("cockpitauto.redhat.com", output),    \
                 "Configure hostname failed"
 
     def configure_timezone(self):
@@ -84,7 +84,8 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.systime_btn.click()
-            time.sleep(1)
+            time.sleep(3)
+
             self.timezone_input.clear()
             time.sleep(1)
             self.timezone_input.send_keys("America/Los_Angeles")

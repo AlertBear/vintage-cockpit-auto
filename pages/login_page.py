@@ -18,6 +18,9 @@ class LoginPage(PageObject):
     other_option = PageElement(id_="option-caret")
     server_input = PageElement(id_="server-field")
 
+    # After click the Login button
+    md5_input = PageElement(id_="conversation-input")
+
     def __init__(self, *args, **kwargs):
         super(LoginPage, self).__init__(*args, **kwargs)
         self.get("/")
@@ -47,11 +50,11 @@ class LoginPage(PageObject):
         self.username_input.send_keys("cockpit")
         self.password_input.send_keys("none")
         self.login_btn.click()
-        self.wait()
+        time.sleep(5)
 
         assert re.search(
             "Wrong user name or password",
-            self.login_error_message),    \
+            self.login_error_message.text),    \
             "No error message prompt with incorrect credential login"
 
     def check_allow_unknown_default(self):
@@ -61,7 +64,7 @@ class LoginPage(PageObject):
         """
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
-            output = run(cmd)
+            run(cmd)
             cmd = "service cockpit restart"
             run(cmd)
         self.username_input.send_keys("root")
@@ -70,12 +73,13 @@ class LoginPage(PageObject):
         self.other_option.click()
         self.server_input.send_keys("10.66.8.173")
         self.login_btn.click()
-        time.sleep(1)
+        time.sleep(5)
 
         assert re.search(
             "Refusing to connect. Host is unknown",
             self.login_error_message.text),     \
-            "No error message prompt with allownUnknow default"
+            "Wrong error message [%s] prompt with allownUnknow default" % \
+            self.login_error_message.text
 
     def check_allow_unknown_true(
         self,
@@ -95,7 +99,7 @@ allowUnknown=true
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
             run(cmd)
-            cmd = "echo %s >> /etc/cockpit/cockpit.conf" % (
+            cmd = "echo '%s' >> /etc/cockpit/cockpit.conf" % (
                 source % another_ip)
             run(cmd)
             cmd = "service cockpit restart"
@@ -106,7 +110,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        self.wait()
+        time.sleep(5)
         self.login_btn.click()
 
     def check_allow_unknown_true_wrong_account(
@@ -121,12 +125,11 @@ allowUnknown=true
 [SSH-Login]
 host=%s
 allowUnknown=true
-'''
+''' % another_ip
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
             run(cmd)
-            cmd = "echo %s >> /etc/cockpit/cockpit.conf" % (
-                source % another_ip)
+            cmd = "echo '%s' >> /etc/cockpit/cockpit.conf" % source
             run(cmd)
             cmd = "service cockpit restart"
             run(cmd)
@@ -136,12 +139,13 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        self.wait()
+        time.sleep(5)
 
         assert re.search(
             "Wrong user name or password",
             self.login_error_message.text),     \
-            "No error message prompt with allownUnknow true with wrong account"
+            "Wrong error message [%s] prompt with allownUnknow true with wrong account" % \
+            self.login_error_message.text
 
     def check_allow_unknown_true_remote_closed(
         self,
@@ -157,12 +161,11 @@ allowUnknown=true
 [SSH-Login]
 host=%s
 allowUnknown=true
-'''
+''' % another_ip
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
             run(cmd)
-            cmd = "echo %s >> /etc/cockpit/cockpit.conf" % (
-                source % another_ip)
+            cmd = "echo '%s' >> /etc/cockpit/cockpit.conf" % source
             run(cmd)
             cmd = "service cockpit restart"
             run(cmd)
@@ -172,12 +175,13 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        self.wait()
+        time.sleep(5)
 
         assert re.search(
             "Authentication Failed, Server closed connection",
             self.login_error_message.text),     \
-            "No error message prompt with allownUnknow true with remote closed"
+            "Wrong error message [%s] prompt with allownUnknow true with remote closed" % \
+            self.login_error_message.text
 
     def check_allow_unknown_true_wrong_address(self):
         """
@@ -187,14 +191,13 @@ allowUnknown=true
         # Modify "allowUnknown=True" in /etc/cockpit/cockpit.conf
         source = '''
 [SSH-Login]
-host=%s
+host=10.8.8.8
 allowUnknown=true
 '''
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
             run(cmd)
-            cmd = "echo %s >> /etc/cockpit/cockpit.conf" % (
-                source % "10.8.8.8")
+            cmd = "echo '%s' >> /etc/cockpit/cockpit.conf" % source
             run(cmd)
             cmd = "service cockpit restart"
             run(cmd)
@@ -204,14 +207,15 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys("10.8.8.8")
         self.login_btn.click()
-        self.wait()
+        time.sleep(30)
 
         assert re.search(
             "Unable to connect to that address",
             self.login_error_message.text),     \
-            "No error message prompt with allownUnknow true with wrong address"
+            "Wrong error message [%s] prompt with allownUnknow true with wrong address" % \
+            self.login_error_message.text
 
-    def check_allow_unknown_true_empty_password(
+    def check_allow_unknown_true_empty_username(
         self,
         another_ip,
         another_user,
@@ -225,12 +229,11 @@ allowUnknown=true
 [SSH-Login]
 host=%s
 allowUnknown=true
-'''
+''' % another_ip
         with settings(warn_only=True):
             cmd = "rm -f /etc/cockpit/cockpit.conf"
             run(cmd)
-            cmd = "echo %s >> /etc/cockpit/cockpit.conf" % (
-                source % another_ip)
+            cmd = "echo '%s' >> /etc/cockpit/cockpit.conf" % source
             run(cmd)
             cmd = "service cockpit restart"
             run(cmd)
@@ -240,9 +243,10 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        self.wait()
+        time.sleep(5)
 
         assert re.search(
-            "The server refused to authenticate",
+            "User name cannot be empty",
             self.login_error_message.text),     \
-            "No error message prompt with allownUnknow true with empty user"
+            "Wrong error message [%s] prompt with allownUnknow true with empty user" % \
+            self.login_error_message.text

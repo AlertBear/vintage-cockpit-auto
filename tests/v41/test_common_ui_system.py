@@ -58,12 +58,12 @@ def test_18379(firefox):
         Login into remote machine with "allowUnknown" is default in cockpit
     """
     login_page = LoginPage(firefox)
-    login_page.check_allow_unknow_default()
+    login_page.check_allow_unknown_default()
 
 
 def test_18381(firefox):
     """
-    RHEVM-18379
+    RHEVM-18381
         Wrong account to login into remote machine
         with "allowUnknow" is true in cockpit
     """
