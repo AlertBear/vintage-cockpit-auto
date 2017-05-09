@@ -161,7 +161,7 @@ if __name__ == "__main__":
     # Get local ip for email content
     with settings(warn_only=True):
         local_hostname = local("hostname --fqdn", capture=True)
-        local_ip = local("host %s | awk '{print $NF}'" % local_hostname)
+        local_ip = local("host %s | awk '{print $NF}'" % local_hostname, capture=True)
 
     email_text = "1. Please see the Test Report at http://%s/%s/%s" % (
         local_ip, test_build, now)
