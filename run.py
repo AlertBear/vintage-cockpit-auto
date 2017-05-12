@@ -61,10 +61,73 @@ def format_result(file):
 
     for k, v in ret.items():
         format_k = k.split('::')[1].split('_')[1]
-        if format_k == "login":
+        if not re.search('\d+', format_k):
             continue
         format_ret.update({'RHEVM-' + format_k: v})
     return json.dumps(format_ret)
+
+
+def format_result_to_jfile(raw_jfile, test_build, test_profile):
+    # Load the result from json file
+    with open(file) as f:
+        r = json.load(f)
+
+    raw_cases_result = {}
+    fail_cases_result = {}
+    pass_cases_result = {}
+    total_cases_result = {}
+    final_result = {}
+
+    for case in r['report']['tests']:
+        raw_cases_result.update({case['name']: case['outcome']})
+
+    for k, v in raw_cases_result.items():
+        format_k = k.split('::')[1].split('_')[1]
+        if not re.search('\d+', format_k):
+            continue
+        if v == "passed":
+            pass_cases_result.update({'RHEVM-' + format_k: v})
+        elif v == "failed":
+            fail_cases_result.update({'RHEVM-' + format_k: v})
+        total_cases_result.update({'RHEVM-' + format_k: v})
+
+    profile_cases = {test_profile: total_cases_result}
+
+    pass_count = len(pass_cases_result.keys())
+    fail_count = len(fail_cases_result.keys())
+    total_count = len(total_cases_result.keys())
+    sum_dict = {
+            "build": test_build,
+            "error": "",
+            "errorlist": [],
+            "failed": fail_count,
+            "passed": pass_count,
+            "total": total_count
+        }
+    final_result.update({test_build: profile_cases})
+    final_result.update({"sum": sum_dict})
+
+    '''
+    # After all, the final result looks like below format
+    final_result = {
+        test_build: {
+            test_profile: {
+
+            },
+        },
+        "sum": {
+            "build": test_build,
+            "error": "",
+            "errorlist": "",
+            "failed": "",
+            "passed": "",
+            "total": ""
+        }
+    }
+    '''
+    # After format, put it back to raw json file
+    with open(raw_jfile, 'w') as f:
+        json.dump(final_result, f, indent=2)
 
 
 def upload_result_to_polarion(result):
@@ -76,13 +139,19 @@ if __name__ == "__main__":
     http_json = "/tmp/http.json"
     with open(http_json, 'r') as f:
         r = json.load(f)
-    profiles = r["test_profile"]
     host_ip = r["host_ip"]
     test_build = r["test_build"]
+    profiles = r["test_profile"]
     test_cases = []
+    '''
+    # Currently only support to only test the firsty profile
     for profile in profiles:
         for c in getattr(test_scen, profile)["CASES"]:
             test_cases.append(c)
+    '''
+    profile = r["test_profile"][0]
+    for c in getattr(test_scen, profile)["CASES"]:
+        test_cases.append(c)
 
     # Wait for the host is ready
     i = 0
@@ -128,19 +197,19 @@ if __name__ == "__main__":
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    result_json = tmp_log_dir + "/result-" + profiles_str + ".json"
-    result_html = tmp_log_dir + "/result-" + profiles_str + ".html"
+    tmp_result_jfile = tmp_log_dir + "/result-" + profiles_str + ".json"
+    tmp_result_hfile = tmp_log_dir + "/result-" + profiles_str + ".html"
 
     pytest_args = ['-s', '-v']
     for file in test_files:
         pytest_args.append(file)
-    pytest_args.append("--json={}".format(result_json))
-    pytest_args.append("--html={}".format(result_html))
+    pytest_args.append("--json={}".format(tmp_result_jfile))
+    pytest_args.append("--html={}".format(tmp_result_hfile))
 
     pytest.main(pytest_args)
 
-    # After execute the tests, loading the json from json file
-    result = format_result(result_json)
+    # After execute the tests, format the result into human-readable
+    format_result_to_jfile(tmp_result_jfile, test_build, profile)
 
     # Save the screenshot during tests to tmp_log_dir
     has_screenshot = os.path.exists("/tmp/cockpit-screenshot")
@@ -170,7 +239,3 @@ if __name__ == "__main__":
     email_attachment = []
     email.send_email(email_from, email_to, email_subject, email_text,
                      email_attachment)
-
-    # Upload the result to polarion
-    upload_result_to_polarion(result)
-

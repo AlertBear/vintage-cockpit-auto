@@ -161,7 +161,7 @@ def test_he_create_vm(firefox):
     """
     # Add nfs storage to Default DC on Hosted Engine,
     # which is used for creating vm
-    he_rhvm = RhevmAction(he_vm_fqdn)
+    he_rhvm = RhevmAction(vm_fqdn)
     he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
 
     # Create new vm without installing guest os under Default DC
