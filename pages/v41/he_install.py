@@ -57,7 +57,6 @@ def get_latest_rhvm_appliance(appliance_path):
 
     latest_rhvm_appliance_link = None
     for link in mp.links:
-        print link
         if re.search(latest_rhvm_appliance_name, link):
             latest_rhvm_appliance_link = link
 
@@ -356,7 +355,7 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
     # Reboot the host
     with settings(
         warn_only=True,
-        host_string=host_user + '@' + vm_ip,
+        host_string=host_user + '@' + host_ip,
         password=host_password):
         run("hosted-engine --vm-poweroff", quiet=True)
         time.sleep(30)

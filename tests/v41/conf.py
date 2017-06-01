@@ -1,7 +1,7 @@
 #
 # The variable to be used by each case
 #
-TEST_BUILD = "redhat-virtualization-host-4.1-20170421.0"
+TEST_BUILD = "redhat-virtualization-host-4.1-20170522.0"
 HOST_IP = "10.66.148.7"
 HOST_USER = "root"
 HOST_PASSWORD = "redhat"
