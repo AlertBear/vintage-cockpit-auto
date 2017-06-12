@@ -52,7 +52,7 @@ def modify_config_file(file, value_dict):
 
 def format_result(file):
     # Parse the result from json file
-    with open(file) as f:
+    with open(file, 'r') as f:
         r = json.load(f)
     ret = {}
     format_ret = {}
@@ -69,7 +69,7 @@ def format_result(file):
 
 def format_result_to_jfile(raw_jfile, test_build, test_profile):
     # Load the result from json file
-    with open(file) as f:
+    with open(raw_jfile, 'r') as f:
         r = json.load(f)
 
     raw_cases_result = {}
