@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     # Get config files by rhvh version
     abspath = os.path.abspath(os.path.dirname(__file__))
-    conf_file = os.path.join(abspath, "constants")
+    conf_file = os.path.join(abspath, "constants.py")
 
     # Test cases files which will be appended to the 'pytest' command line
     test_files = []
