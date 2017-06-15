@@ -57,17 +57,6 @@ def test_login(firefox):
     login_page.login_with_credential(host_user, host_password)
 
 
-'''
-def test_18533(firefox):
-    """
-    RHEVM-18533
-        Check the running Virtual Machines quantity in virtualization dashboard
-    """
-    node_status_page = NodeStatusPage(firefox)
-    node_status_page.check_virtual_machine()
-'''
-
-
 def test_18534(firefox):
     """
     RHEVM-18534
@@ -94,18 +83,6 @@ def test_18536(firefox):
     node_status_page = NodeStatusPage(firefox)
     test_layer = test_build + '+1'
     node_status_page.check_node_info(test_layer)
-
-
-'''
-def test_18537(firefox):
-    """
-    RHEVM-18537
-        Check node rollback in virtualization dashboard
-    """
-    node_status_page = NodeStatusPage(firefox)
-    test_layer = test_build + '+1'
-    node_status_page.check_node_rollback(test_layer)
-'''
 
 
 def test_18540(firefox):

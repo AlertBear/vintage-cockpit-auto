@@ -24,7 +24,7 @@ class NodeStatusPage(PageObject):
     # page_links: link text after Network info, System log, storage, SSH host key
     page_links = MultiPageElement(link_text="View")
 
-    # accordion_header_btn: like "Thin storage","basic storage","Mount points" button    
+    # accordion_header_btn: like "Thin storage","basic storage","Mount points" button
     accordion_header_btn = MultiPageElement(class_name="accordion-header")
     # close_btn : close button,like "X"
     close_btn = MultiPageElement(class_name="close")
@@ -80,7 +80,6 @@ class NodeStatusPage(PageObject):
         """
         raise NotImplementedError
 
-
     def check_node_status(self):
         """
         Purpose:
@@ -121,7 +120,7 @@ class NodeStatusPage(PageObject):
                 else:
                     assert ok_number == 11, "Node health status is error"
             close_btn_list = list(self.close_btn)
-            for j in close_btn_list[0:]:    
+            for j in close_btn_list[0:]:
                 j.click()
 
     def check_node_info(self, test_layer):
@@ -177,24 +176,6 @@ class NodeStatusPage(PageObject):
             close_btn_list = list(self.close_btn)
             for j in close_btn_list[0:]:
                 j.click()
-
-    def check_node_rollback(self, test_layer):
-        """
-        Purpose:
-            Check node rollback in virtualization dashboard
-        """
-        self.wait()
-        with self.switch_to_frame(self.frame_right_name):
-            self.rollback_btn.click()
-            time.sleep(3)
-            available_layer_txt_list = list(self.available_layer_txt)
-
-            assert available_layer_txt_list[0].text == test_layer, \
-                "available layer not correct"
-
-            # Check rollback button
-            # Just assume it is a new freshed rhvh, will implement later
-            raise NotImplementedError
 
     def check_node_status_fc(self, test_layer, is_registerd=True):
         """

@@ -1,5 +1,20 @@
 import json
 
+
+#
+# Debug tier
+#
+v41_debug_tier = {
+    "TAG": ["RHVH41"],
+    "CONFIG":
+    "tests/v41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_CASES": [],
+    "CASES": [
+        "tests/v41/test_dashboard_ui.py",
+    ]
+}
+
 #
 # RHVH4.1 test scenario contains multiple cases
 #

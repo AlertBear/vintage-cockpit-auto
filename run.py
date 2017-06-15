@@ -136,20 +136,14 @@ def upload_result_to_polarion(result):
 
 if __name__ == "__main__":
     # Parse variable from json file export by rhvh auto testing platform
-    http_json = "/tmp/http.json"
+    http_json = "/tmp/request.json"
     with open(http_json, 'r') as f:
         r = json.load(f)
     host_ip = r["host_ip"]
     test_build = r["test_build"]
-    profiles = r["test_profile"]
+    profile = r["test_profile"]
+
     test_cases = []
-    '''
-    # Currently only support to only test the firsty profile
-    for profile in profiles:
-        for c in getattr(test_scen, profile)["CASES"]:
-            test_cases.append(c)
-    '''
-    profile = r["test_profile"][0]
     for c in getattr(test_scen, profile)["CASES"]:
         test_cases.append(c)
 
@@ -170,10 +164,7 @@ if __name__ == "__main__":
 
     # Get config files by rhvh version
     abspath = os.path.abspath(os.path.dirname(__file__))
-    if re.search("v41", test_cases[0]):
-        conf_file = os.path.join(abspath, "tests/v41/conf.py")
-    elif re.search("v40", test_cases[0]):
-        conf_file = os.path.join(abspath, "tests/v40/conf.py")
+    conf_file = os.path.join(abspath, "constants")
 
     # Test cases files which will be appended to the 'pytest' command line
     test_files = []
@@ -183,7 +174,6 @@ if __name__ == "__main__":
 
     # Make a dir for storing all the test logs
     now = time.strftime("%Y%m%d%H%M%S")
-    profiles_str = "-".join(profiles)
     tmp_log_dir = "/tmp/cockpit-auto.logs/" + \
                   test_build + '/' + now
     if not os.path.exists(tmp_log_dir):
@@ -197,8 +187,8 @@ if __name__ == "__main__":
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    tmp_result_jfile = tmp_log_dir + "/result-" + profiles_str + ".json"
-    tmp_result_hfile = tmp_log_dir + "/result-" + profiles_str + ".html"
+    tmp_result_jfile = tmp_log_dir + "/result-" + profile + ".json"
+    tmp_result_hfile = tmp_log_dir + "/result-" + profile + ".html"
 
     pytest_args = ['-s', '-v']
     for file in test_files:
@@ -223,7 +213,7 @@ if __name__ == "__main__":
     shutil.move(tmp_log_dir, http_logs_dir)
 
     # Send email to administrator
-    email_subject = "Test Report For Cockpit-ovirt-%s(%s)" % (profiles_str, test_build)
+    email_subject = "Test Report For Cockpit-ovirt-%s(%s)" % (profile, test_build)
     email_from = "dguo@redhat.com"
     email_to = ["dguo@redhat.com"]
 
