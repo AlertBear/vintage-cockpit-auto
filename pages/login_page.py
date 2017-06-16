@@ -1,4 +1,3 @@
-import time
 import re
 from utils.page_objects import PageObject, PageElement
 from fabric.api import run, settings
@@ -34,14 +33,14 @@ class LoginPage(PageObject):
 
     def login_with_credential(self, username, password):
         self.username_input.clear()
-        time.sleep(0.5)
+        self.wait(0.5)
         self.username_input.send_keys(username)
-        time.sleep(0.5)
+        self.wait(0.5)
 
         self.password_input.clear()
-        time.sleep(0.5)
+        self.wait(0.5)
         self.password_input.send_keys(password)
-        time.sleep(0.5)
+        self.wait(0.5)
 
         self.login_btn.click()
         self.wait()
@@ -50,7 +49,7 @@ class LoginPage(PageObject):
         self.username_input.send_keys("cockpit")
         self.password_input.send_keys("none")
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
 
         assert re.search(
             "Wrong user name or password",
@@ -73,7 +72,7 @@ class LoginPage(PageObject):
         self.other_option.click()
         self.server_input.send_keys("10.66.8.173")
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
 
         assert re.search(
             "Refusing to connect. Host is unknown",
@@ -110,7 +109,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
         self.login_btn.click()
 
     def check_allow_unknown_true_wrong_account(
@@ -139,7 +138,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
 
         assert re.search(
             "Wrong user name or password",
@@ -175,7 +174,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
 
         assert re.search(
             "Authentication Failed, Server closed connection",
@@ -207,7 +206,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys("10.8.8.8")
         self.login_btn.click()
-        time.sleep(30)
+        self.wait(30)
 
         assert re.search(
             "Unable to connect to that address",
@@ -243,7 +242,7 @@ allowUnknown=true
         self.other_option.click()
         self.server_input.send_keys(another_ip)
         self.login_btn.click()
-        time.sleep(5)
+        self.wait(5)
 
         assert re.search(
             "User name cannot be empty",

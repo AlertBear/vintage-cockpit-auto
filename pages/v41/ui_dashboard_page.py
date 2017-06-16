@@ -1,4 +1,3 @@
-import time
 import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 
@@ -35,7 +34,7 @@ class DashboardPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(DashboardPage, self).__init__(*args, **kwargs)
         self.get("/dashboard")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -53,7 +52,7 @@ class DashboardPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.cpu_link.click()
-            time.sleep(120)
+            self.wait(120)
             self.save_screenshot("cpu_graph.png")
 
     def check_memory(self):
@@ -63,7 +62,7 @@ class DashboardPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.memory_link.click()
-            time.sleep(120)
+            self.wait(120)
             self.save_screenshot("memory_graph.png")
 
     def check_network(self):
@@ -73,7 +72,7 @@ class DashboardPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.network_link.click()
-            time.sleep(120)
+            self.wait(120)
             self.save_screenshot("network_graph.png")
 
     def check_disk_io(self):
@@ -83,7 +82,7 @@ class DashboardPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.disk_link.click()
-            time.sleep(120)
+            self.wait(120)
             self.save_screenshot("disk_io_graph.png")
 
     def check_server_can_be_added(self, another_host, another_password):
@@ -93,17 +92,17 @@ class DashboardPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.add_btn.click()
-            time.sleep(2)
+            self.wait(2)
 
             self.add_address_input.send_keys(another_host)
-            time.sleep(2)
+            self.wait(2)
 
             # Find the submit btn by primary btns and click it
             for each_btn in list(self.primary_btns):
                 if re.search('Add', each_btn.text):
                     submit_btn = each_btn
             submit_btn.click()
-            time.sleep(1)
+            self.wait(1)
 
             # Find the Connect btn by primary btn and click it
             connect_btn = None
@@ -115,13 +114,13 @@ class DashboardPage(PageObject):
 
             self.user_input.send_keys("root")
             self.password_input.send_keys(another_password)
-            time.sleep(1)
+            self.wait(1)
 
             # Find the login button from primary btn and click it
             for each_btn in list(self.primary_btns):
                 if re.search('Log In', each_btn.text):
                     login_btn = each_btn
             login_btn.click()
-            time.sleep(5)
+            self.wait(5)
 
             assert len(list(self.servers)) == 2, "Failed to add another host"

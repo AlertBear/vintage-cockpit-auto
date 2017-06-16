@@ -4,6 +4,7 @@ from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import run, get, env
 from StringIO import StringIO
 
+
 class SubscriptionsPage(PageObject):
     """Subscription-manager for host to register to RHSM/Satellite server"""
 
@@ -35,7 +36,7 @@ class SubscriptionsPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(SubscriptionsPage, self).__init__(*args, **kwargs)
         self.get("/subscriptions")
-        self.wait(period=10)
+        self.wait(10)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -60,15 +61,15 @@ class SubscriptionsPage(PageObject):
             self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.login_input.send_keys(rhn_user)
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.passwd_input.send_keys(rhn_password)
-            self.wait(period=0.5)
+            self.wait(0.5)
 
             submit_btn = list(self.btns)[3]
             submit_btn.click()
-            self.wait(period=50)
+            self.wait(60)
 
     def check_register_rhsm_key_org(self, activation_key, activation_org):
         """
@@ -80,15 +81,15 @@ class SubscriptionsPage(PageObject):
             self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.key_input.send_keys(activation_key)
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.org_input.send_keys(activation_org)
-            self.wait(period=0.5)
+            self.wait(0.5)
 
             submit_btn = list(self.btns)[3]
             submit_btn.click()
-            self.wait(period=40)
+            self.wait(60)
 
     def check_register_satellite(self, satellite_ip, satellite_user, satellite_password):
         """
@@ -101,15 +102,15 @@ class SubscriptionsPage(PageObject):
             self._clean_all()
             self.url_select_btn.click()
             self.url_custom_item.click()
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.url_input.send_keys(satellite_ip + "/rhsm")
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.login_input.send_keys(satellite_user)
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.passwd_input.send_keys(satellite_password)
-            self.wait(period=0.5)
+            self.wait(0.5)
             self.submit_btn.click()
-            self.wait(period=40)
+            self.wait(60)
 
     def check_password_encrypted(self, rhn_password):
         """
@@ -126,7 +127,7 @@ class SubscriptionsPage(PageObject):
     def check_subscription_result(self):
         with self.switch_to_frame(self.frame_right_name):
             self.installed_product_btn.click()
-            self.wait(period=1)
+            self.wait(1)
             product_name = list(self.spans)[0]
             register_status = list(self.spans)[4]
             print product_name.text, register_status.text
@@ -138,17 +139,17 @@ class SubscriptionsPage(PageObject):
     def unregister_subsciption(self):
         cmd = 'subscription-manager unregister'
         subscripted = run(cmd)
-        self.wait(period=5)
+        self.wait(5)
         if subscripted != "System has been unregistered":
-            self.wait(period=5)
+            self.wait(5)
 
     def ca_install(self, ca_path):
         cmd_download_ca = "curl -O -k " + ca_path
         run(cmd_download_ca)
-        self.wait(period=5)
+        self.wait(5)
         cmd_install_ca = "rpm -Uvh " + os.path.basename(ca_path)
         run(cmd_install_ca)
-        self.wait(period=10)
+        self.wait(10)
 
     def add_domain_name(self, ip, hostname):
         append_txt = ip + '  ' + hostname

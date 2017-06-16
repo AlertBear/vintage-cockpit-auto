@@ -1,4 +1,3 @@
-import time
 from utils.helpers import RhevmAction
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import run
@@ -48,7 +47,7 @@ class NodeStatusPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(NodeStatusPage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -66,12 +65,12 @@ class NodeStatusPage(PageObject):
     def add_host_to_rhvm(self, rhvm_fqdn, host_ip, host_name, host_password):
         rhvm_action = RhevmAction(rhvm_fqdn)
         rhvm_action.add_new_host(host_ip, host_name, host_password)
-        time.sleep(120)
+        self.wait(120)
 
     def remove_host_from_rhvm(self, rhvm_fqdn, host_name):
         rhvm_action = RhevmAction(rhvm_fqdn)
         rhvm_action.remove_host(host_name)
-        time.sleep(10)
+        self.wait(10)
 
     def check_virtual_machine(self):
         """
@@ -109,7 +108,7 @@ class NodeStatusPage(PageObject):
             accordion_header_btn_list = list(self.accordion_header_btn)
             for i in accordion_header_btn_list[0:3]:
                 i.click()
-            time.sleep(10)
+            self.wait(10)
             ok_number = len(list(self.ok_icons))
 
             if is_registerd:
@@ -134,7 +133,7 @@ class NodeStatusPage(PageObject):
             accordion_header_btn_list = list(self.accordion_header_btn)
             for i in accordion_header_btn_list:
                 i.click()
-            time.sleep(3)
+            self.wait(3)
 
             # Current layer should be identical with the argument
             entry_txt_list = list(self.entry_txts)
@@ -161,7 +160,7 @@ class NodeStatusPage(PageObject):
             accordion_header_btn_list = list(self.accordion_header_btn)
             for i in accordion_header_btn_list:
                 i.click()
-            time.sleep(3)
+            self.wait(3)
 
             # Current layer should be identical with the argument
             entry_txt_list = list(self.entry_txts)
@@ -214,7 +213,7 @@ class NodeStatusPage(PageObject):
             page_links_list = list(self.page_links)
             system_logs_link = page_links_list[0]
             system_logs_link.click()
-            time.sleep(3)
+            self.wait(3)
 
     def check_system_log(self):
         """
@@ -226,7 +225,7 @@ class NodeStatusPage(PageObject):
             page_links_list = list(self.page_links)
             system_logs_link = page_links_list[1]
             system_logs_link.click()
-            time.sleep(3)
+            self.wait(3)
 
     def check_storage(self):
         """
@@ -238,7 +237,7 @@ class NodeStatusPage(PageObject):
             page_links_list = list(self.page_links)
             storage_link = page_links_list[2]
             storage_link.click()
-            time.sleep(3)
+            self.wait(3)
 
     def check_ssh_key(self):
         """
@@ -250,7 +249,7 @@ class NodeStatusPage(PageObject):
             page_links_list = list(self.page_links)
             storage_link = page_links_list[3]
             storage_link.click()
-            time.sleep(3)
+            self.wait(3)
 
     def check_list_vms(self):
         """

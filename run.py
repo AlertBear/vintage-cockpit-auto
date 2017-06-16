@@ -107,31 +107,9 @@ def format_result_to_jfile(raw_jfile, test_build, test_profile):
     final_result.update({test_build: profile_cases})
     final_result.update({"sum": sum_dict})
 
-    '''
-    # After all, the final result looks like below format
-    final_result = {
-        test_build: {
-            test_profile: {
-
-            },
-        },
-        "sum": {
-            "build": test_build,
-            "error": "",
-            "errorlist": "",
-            "failed": "",
-            "passed": "",
-            "total": ""
-        }
-    }
-    '''
     # After format, put it back to raw json file
     with open(raw_jfile, 'w') as f:
         json.dump(final_result, f, indent=2)
-
-
-def upload_result_to_polarion(result):
-    pass
 
 
 if __name__ == "__main__":

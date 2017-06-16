@@ -18,7 +18,7 @@ class DiagnosticPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(DiagnosticPage, self).__init__(*args, **kwargs)
         self.get("/sosreport")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):

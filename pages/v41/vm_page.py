@@ -1,5 +1,4 @@
 import re
-import time
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 from utils.helpers import RhevmAction
 from selenium.common.exceptions import NoAlertPresentException
@@ -66,7 +65,6 @@ class VirtualMachinesPage(PageObject):
     app_fifth_row_second_column = PageElement(
         xpath=".//*[@id='vm-detail-content']/div[2]/table/tbody/tr/td/table/tbody/tr[5]/td[4]")
 
-
     # VDSM related elements
     vdsm_service_management_link = PageElement(
         link_text="VDSM Service Management")
@@ -88,7 +86,7 @@ class VirtualMachinesPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(VirtualMachinesPage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard#/management")
-        self.wait(period=10)
+        self.wait(10)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -104,7 +102,7 @@ class VirtualMachinesPage(PageObject):
     def check_running_vms_unregister(self):
         """
         Purpose:
-            Check running VMs (Unregister to RHEVM) 
+            Check running VMs (Unregister to RHEVM)
             status in virtual machines page
         """
         with self.switch_to_frame(self.frame_right_name):
@@ -128,7 +126,7 @@ class VirtualMachinesPage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             self.vms_in_cluster_btn.click()
-            self.wait(period=1)
+            self.wait(1)
             try:
                 assert self.w.switch_to_alert()
             except NoAlertPresentException as e:
@@ -210,7 +208,7 @@ class VirtualMachinesPage(PageObject):
 
             # Click to screenshot the detail of common VM
             list(self.vm_hostname_links)[common_vm_sequence_num].click()
-            time.sleep(2)
+            self.wait(2)
             self.save_screenshot("/tmp/common_vm_detail.png")
 
     def check_vms_lifecycle(self):
@@ -258,7 +256,7 @@ class VirtualMachinesPage(PageObject):
             self._edit_vdsm_conf("#some_text")
             assert self.vdsm_conf_textarea.get_attribute('value').endswith("some_text"),    \
                 "Edit vdsm.conf textarea failed"
-            self.wait(period=1)
+            self.wait(1)
             self._vdsm_conf_confirm(self.vdsm_reload_btn)
             self._vdsm_conf_confirm(self.vdsm_save_btn)
             if not self._check_vdsm_conf_host():
@@ -302,7 +300,7 @@ class VirtualMachinesPage(PageObject):
             Check dialogue in vdsm page
         """
         button.click()
-        self.wait(period=1)
+        self.wait(1)
         if button.text == 'Save':
             assert re.search("Save to vdsm.conf", self.vdsm_config_dialog_title.get_attribute('innerHTML')),    \
                 "Dialogue is not save to vdsm.conf"
@@ -317,26 +315,26 @@ class VirtualMachinesPage(PageObject):
         assert self.vdsm_config_dialog_cancel, "Cancel button is missing in the dialogue"
 
         if self.vdsm_config_dialog_cancel.click():
-            self.wait(period=1)
+            self.wait(1)
             print "The function of cancel button in vdsm.conf dialogue is invalid"
-            self.wait(period=1)
+            self.wait(1)
         else:
-            self.wait(period=1)
+            self.wait(1)
         button.click()
-        self.wait(period=1)
+        self.wait(1)
         if self.vdsm_config_dialog_ok.click():
-            self.wait(period=1)
+            self.wait(1)
             print "The function of cancel button in vdsm.conf dialogue is invalid"
-            self.wait(period=1)
+            self.wait(1)
         else:
-            self.wait(period=1)
+            self.wait(1)
             if button.text == 'Save':
                 assert re.search("Saved", self.vdsm_config_dialog_saved.text), \
                 "Save to vdsm.conf failed"
             elif button.text == 'Reload':
                 assert re.search("Loaded", self.vdsm_config_dialog_saved.text), \
                 "Load to vdsm.conf failed"
-            self.wait(period=5)
+            self.wait(5)
             assert re.search("", self.vdsm_config_dialog_saved.text)
 
     def _vdsm_conf_confirm(self, button):
@@ -345,9 +343,9 @@ class VirtualMachinesPage(PageObject):
             Confirm dialogue
         """
         button.click()
-        self.wait(period=1)
+        self.wait(1)
         self.vdsm_config_dialog_ok.click()
-        self.wait(period=2)
+        self.wait(2)
 
     def _check_vdsm_conf_host(self):
         """
@@ -371,22 +369,22 @@ class VirtualMachinesPage(PageObject):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
             # Click the engine login link
             self.engine_login_link.click()
-            time.sleep(1)
+            self.wait(1)
 
             # Input engine login password
             self.engine_login_passwd_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.engine_login_passwd_input.send_keys(he_password)
 
             # Input the HE url
             he_url = "https://" + he + "/ovirt-engine"
             self.engine_login_url_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.engine_login_url_input.send_keys(he_url)
 
             # Submit to login HE
             self.engine_login_submit_btn.click()
-            time.sleep(5)
+            self.wait(5)
 
             assert re.search("Logout from Engine", self.engine_login_link.text),    \
                 "Failed to login Engine"
@@ -405,7 +403,7 @@ class VirtualMachinesPage(PageObject):
 
             # Click the engine login link
             self.engine_login_link.click()
-            time.sleep(1)
+            self.wait(1)
 
             assert re.search("Login to Engine", self.engine_login_link.text),  \
                 "Failed to logout from Engine"
@@ -427,13 +425,13 @@ class VirtualMachinesPage(PageObject):
             print self.refresh_link.text
             if re.search("Refresh: auto", self.refresh_link.text):
                     self.refresh_link.click()
-                    time.sleep(2)
+                    self.wait(2)
                     print self.refresh_link.text
                     assert re.search("Refresh: off", self.refresh_link.text),   \
                         "Refresh click not switch to off"
             else:
                 self.refresh_link.click()
-                time.sleep(2)
+                self.wait(2)
                 print self.refresh_link.text
                 assert re.search("Refresh: auto", self.refresh_link.text),    \
                     "Refresh click not switch to auto"
@@ -444,6 +442,6 @@ class VirtualMachinesPage(PageObject):
             Logout from cockpit
         """
         self.content_username_txt.click()
-        time.sleep(0.5)
+        self.wait(0.5)
         self.logout_link.click()
-        time.sleep(0.5)
+        self.wait(0.5)

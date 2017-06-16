@@ -108,49 +108,21 @@ def format_result_to_jfile(raw_jfile, test_build, test_profile):
     final_result.update({test_build: profile_cases})
     final_result.update({"sum": sum_dict})
 
-    '''
-    # After all, the final result looks like below format
-    final_result = {
-        test_build: {
-            test_profile: {
-
-            },
-        },
-        "sum": {
-            "build": test_build,
-            "error": "",
-            "errorlist": "",
-            "failed": "",
-            "passed": "",
-            "total": ""
-        }
-    }
-    '''
     # After format, put it back to raw json file
     with open(raw_jfile, 'w') as f:
         json.dump(final_result, f, indent=2)
 
 
-def upload_result_to_polarion(result):
-    pass
-
-
 def run01():
     # Parse variable from json file export by rhvh auto testing platform
-    http_json = "/tmp/http.json"
+    http_json = "/tmp/request.json"
     with open(http_json, 'r') as f:
         r = json.load(f)
     host_ip = r["host_ip"]
     test_build = r["test_build"]
-    profiles = r["test_profile"]
+    profile = r["test_profile"]
+
     test_cases = []
-    '''
-    # Currently only support to only test the firsty profile
-    for profile in profiles:
-        for c in getattr(test_scen, profile)["CASES"]:
-            test_cases.append(c)
-    '''
-    profile = r["test_profile"][0]
     for c in getattr(test_scen, profile)["CASES"]:
         test_cases.append(c)
 
@@ -171,10 +143,7 @@ def run01():
 
     # Get config files by rhvh version
     abspath = os.path.abspath(os.path.dirname(__file__))
-    if re.search("v41", test_cases[0]):
-        conf_file = os.path.join(abspath, "tests/v41/conf.py")
-    elif re.search("v40", test_cases[0]):
-        conf_file = os.path.join(abspath, "tests/v40/conf.py")
+    conf_file = os.path.join(abspath, "constants.py")
 
     # Test cases files which will be appended to the 'pytest' command line
     test_files = []
@@ -184,7 +153,6 @@ def run01():
 
     # Make a dir for storing all the test logs
     now = time.strftime("%Y%m%d%H%M%S")
-    profiles_str = "-".join(profiles)
     tmp_log_dir = "/tmp/cockpit-auto.logs/" + \
                   test_build + '/' + now
     if not os.path.exists(tmp_log_dir):
@@ -198,9 +166,8 @@ def run01():
     modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
-    # Execute to do the tests
-    tmp_result_jfile = tmp_log_dir + "/result-" + profiles_str + ".json"
-    tmp_result_hfile = tmp_log_dir + "/result-" + profiles_str + ".html"
+    tmp_result_jfile = tmp_log_dir + "/result-" + profile + ".json"
+    tmp_result_hfile = tmp_log_dir + "/result-" + profile + ".html"
 
     pytest_args = ['-s', '-v']
     for file in test_files:
@@ -210,7 +177,7 @@ def run01():
 
     pytest.main(pytest_args)
 
-    # After execute the tests, loading the json from json file
+    # After execute the tests, format the result into human-readable
     format_result_to_jfile(tmp_result_jfile, test_build, profile)
 
     # Save the screenshot during tests to tmp_log_dir
@@ -225,14 +192,14 @@ def run01():
     shutil.move(tmp_log_dir, http_logs_dir)
 
     # Send email to administrator
-    email_subject = "Test Report For Cockpit-ovirt-%s(%s)" % (profiles_str, test_build)
+    email_subject = "Test Report For Cockpit-ovirt-%s(%s)" % (profile, test_build)
     email_from = "dguo@redhat.com"
     email_to = ["dguo@redhat.com"]
 
     # Get local ip for email content
     with settings(warn_only=True):
         local_hostname = local("hostname --fqdn", capture=True)
-        local_ip = local("host %s | awk '{print $NF}'" % local_hostname)
+        local_ip = local("host %s | awk '{print $NF}'" % local_hostname, capture=True)
 
     email_text = "1. Please see the Test Report at http://%s/%s/%s" % (
         local_ip, test_build, now)

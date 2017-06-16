@@ -1,4 +1,3 @@
-import time
 import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import settings, run
@@ -34,11 +33,11 @@ class SystemPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(SystemPage, self).__init__(*args, **kwargs)
         self.get("/system")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         assert self.brand_log, "brand-log not exist"
-        time.sleep(2)
+        self.wait(2)
 
     def check_login_host(self, host_ip):
         assert re.search(host_ip, self.machine_link.text),   \
@@ -51,14 +50,14 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.hostname_btn.click()
-            time.sleep(1)
+            self.wait(1)
             self.pretty_hostname_input.send_keys("cockpitauto")
             self.real_hostname_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.real_hostname_input.send_keys("cockpitauto.redhat.com")
-            time.sleep(1)
+            self.wait(1)
             self.set_hostname_apply_btn.click()
-            time.sleep(1)
+            self.wait(1)
 
     def check_configure_hostname(self):
         """
@@ -84,12 +83,12 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.systime_btn.click()
-            time.sleep(3)
+            self.wait(3)
 
             self.timezone_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.timezone_input.send_keys("America/Los_Angeles")
-            time.sleep(1)
+            self.wait(1)
             self.set_time_apply_btn.click()
 
     def check_configure_timezone(self):
@@ -110,7 +109,7 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.systime_btn.click()
-            time.sleep(1)
+            self.wait(1)
 
             # To do
             pass
@@ -131,12 +130,12 @@ class SystemPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.performance_profile_btn.click()
-            time.sleep(1)
+            self.wait(1)
 
             list(self.performance_profiles)[1].click()
-            time.sleep(0.5)
+            self.wait(0.5)
             self.performance_profile_btn.click()
-            time.sleep(1)
+            self.wait(1)
 
     def check_change_performance_profile(self):
         """

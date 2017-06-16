@@ -1,4 +1,3 @@
-import time
 from utils.page_objects import PageObject, PageElement
 
 
@@ -30,7 +29,7 @@ class LogPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(LogPage, self).__init__(*args, **kwargs)
         self.get("/system/logs")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -48,19 +47,19 @@ class LogPage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             self.errors_btn.click()
             self.save_screenshot("recent_error_logs.png")
-            time.sleep(3)
+            self.wait(3)
 
             self.warnnings_btn.click()
             self.save_screenshot("recent_warnnings_logs.png")
-            time.sleep(3)
+            self.wait(3)
 
             self.notices_btn.click()
             self.save_screenshot("recent_notices_logs.png")
-            time.sleep(3)
+            self.wait(3)
 
             self.all_btn.click()
             self.save_screenshot("recent_all_logs.png")
-            time.sleep(3)
+            self.wait(3)
 
     def check_current_boot_logs(self):
         """
@@ -69,23 +68,23 @@ class LogPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.current_day_menu.click()
-            time.sleep(3)
+            self.wait(3)
             self.current_boot_btn.click()
-            time.sleep(5)
+            self.wait(5)
             self.errors_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("current_boot_error_logs.png")
 
             self.warnnings_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("current_boot_warnnings_logs.png")
 
             self.notices_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("current_boot_notices_logs.png")
 
             self.all_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("current_boot_all_logs.png")
 
     def check_last_24hours_logs(self):
@@ -95,24 +94,24 @@ class LogPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.current_day_menu.click()
-            time.sleep(3)
+            self.wait(3)
             self.last_24hours_btn.click()
-            time.sleep(5)
+            self.wait(5)
 
             self.errors_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_24_hours_error_logs.png")
 
             self.warnnings_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_24_hours_warnnings_logs.png")
 
             self.notices_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_24_hours_notices_logs.png")
 
             self.all_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_24_hours_all_logs.png")
 
     def check_last_7days_logs(self):
@@ -122,22 +121,22 @@ class LogPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.current_day_menu.click()
-            time.sleep(3)
+            self.wait(3)
             self.last_7days_btn.click()
-            time.sleep(5)
+            self.wait(5)
 
             self.errors_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_7days_error_logs.png")
 
             self.warnnings_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_7days_warnnings_logs.png")
 
             self.notices_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_7days_notices_logs.png")
 
             self.all_btn.click()
-            time.sleep(3)
+            self.wait(3)
             self.save_screenshot("last_7days_all_logs.png")

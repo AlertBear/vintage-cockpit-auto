@@ -1,4 +1,3 @@
-import time
 import re
 from fabric.api import settings, local, run, sudo
 from utils.page_objects import PageObject, PageElement, MultiPageElement
@@ -31,7 +30,7 @@ class AccountPage(PageObject):
     def __init__(self, *args, **kwargs):
         super(AccountPage, self).__init__(*args, **kwargs)
         self.get("/users")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         with self.switch_to_frame(self.frame_right_name):
@@ -45,26 +44,26 @@ class AccountPage(PageObject):
         """
         with self.switch_to_frame(self.frame_right_name):
             self.accounts_create_btn.click()
-            time.sleep(1)
+            self.wait(1)
             self.real_name_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.real_name_input.send_keys("cockpit")
-            time.sleep(3)
+            self.wait(3)
 
             self.user_name_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.user_name_input.send_keys("cockpit")
-            time.sleep(3)
+            self.wait(3)
 
             self.password_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.password_input.send_keys("cockpitauto")
-            time.sleep(3)
+            self.wait(3)
 
             self.confirm_input.clear()
-            time.sleep(1)
+            self.wait(1)
             self.confirm_input.send_keys("cockpitauto")
-            time.sleep(3)
+            self.wait(3)
 
             self.create_btn.click()
 
@@ -101,11 +100,11 @@ class AccountPage(PageObject):
                 each_account.click()
                 if re.search("cockpit", self.account_username.text):
                     self.account_delete.click()
-                    time.sleep(1)
+                    self.wait(1)
                     self.delete_files_checkbox.click()
-                    time.sleep(1)
+                    self.wait(1)
                     self.delete_apply_btn.click()
-                    time.sleep(1)
+                    self.wait(1)
                     break
                 assert not re.search(
                     "cockpit", self.account_username.text),     \

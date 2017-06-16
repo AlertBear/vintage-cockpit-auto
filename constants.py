@@ -16,8 +16,8 @@ RHVM_FQDN = "rhvm41-vdsm-auto.lab.eng.pek2.redhat.com"
 #
 # Config variable to be used by Subscription cases
 #
-RHN_USER = "qa@redhat.com"
-RHN_PASSWORD = "CZvGMy7TwJpVKW9t"
+RHN_USER = "QualityAssurance"
+RHN_PASSWORD = "VHVFhPS5TEG8dud9"
 ACTIVATION_KEY = "rhevh"
 ACTIVATION_ORG = "711497"
 SATELLITE_IP = "10.73.75.61"

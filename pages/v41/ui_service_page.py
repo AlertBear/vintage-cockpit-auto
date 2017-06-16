@@ -1,7 +1,7 @@
-import time
 import re
 from utils.page_objects import PageObject, PageElement, MultiPageElement
 from fabric.api import run, settings
+
 
 class ServicePage(PageObject):
     targets_btn = PageElement(
@@ -41,7 +41,7 @@ class ServicePage(PageObject):
     def __init__(self, *args, **kwargs):
         super(ServicePage, self).__init__(*args, **kwargs)
         self.get("/system/services")
-        self.wait(period=5)
+        self.wait(5)
 
     def basic_check_elements_exists(self):
         assert self.targets_btn, "targets button not exists"
@@ -61,12 +61,12 @@ class ServicePage(PageObject):
                     break
 
             list(self.test_services_description)[running_seq].click()
-            time.sleep(1)
+            self.wait(1)
 
             # Get the running service name and click disable
             service_name = self.service_title_name.text
             self.service_enable_disable_action.click()
-            time.sleep(1)
+            self.wait(1)
             return service_name
 
     def check_service_is_disabled(self, service_name):

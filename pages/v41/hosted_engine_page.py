@@ -1,4 +1,3 @@
-import time
 import re
 from utils.helpers import RhevmAction
 from utils.page_objects import PageObject, PageElement, MultiPageElement
@@ -27,7 +26,7 @@ class HePage(PageObject):
     def __init__(self, *args, **kwargs):
         super(HePage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard#/he")
-        self.wait(period=10)
+        self.wait(10)
 
     def _query_host_is_registerd(self, rhvm_fqdn, host_name):
         rhvm_action = RhevmAction(rhvm_fqdn)
@@ -37,12 +36,12 @@ class HePage(PageObject):
     def add_host_to_rhvm(self, rhvm_fqdn, host_ip, host_name, host_password):
         rhvm_action = RhevmAction(rhvm_fqdn)
         rhvm_action.add_new_host(host_ip, host_name, host_password)
-        time.sleep(120)
+        self.wait(120)
 
     def remove_host_from_rhvm(self, rhvm_fqdn, host_name):
         rhvm_action = RhevmAction(rhvm_fqdn)
         rhvm_action.remove_host(host_name)
-        time.sleep(10)
+        self.wait(10)
 
     def check_additonal_host(
         self,
@@ -108,7 +107,7 @@ class HePage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             put_host_local_maintenace_btn = list(self.btns)[0]
             put_host_local_maintenace_btn.click()
-            time.sleep(60)
+            self.wait(60)
 
     def check_host_in_local_maintenance(self):
         """
@@ -140,7 +139,7 @@ class HePage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             remove_host_local_maintenace_btn = list(self.btns)[1]
             remove_host_local_maintenace_btn.click()
-            time.sleep(60)
+            self.wait(60)
 
     def put_cluster_to_global_maintenance(self):
         """
@@ -150,7 +149,7 @@ class HePage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             put_host_local_maintenace_btn = list(self.btns)[2]
             put_host_local_maintenace_btn.click()
-            time.sleep(10)
+            self.wait(10)
 
     def check_cluster_in_global_maintenance(self):
         """
