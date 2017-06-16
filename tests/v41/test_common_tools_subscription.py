@@ -1,5 +1,5 @@
-import pytest
 import time
+import pytest
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.tools_subscriptions_page import SubscriptionsPage
@@ -74,7 +74,6 @@ def test_18412(firefox):
     subscriptions_page.check_register_rhsm(rhn_user, rhn_password)
     time.sleep(5)
     subscriptions_page.check_subscription_result()
-    # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
 
 
@@ -89,7 +88,6 @@ def test_18413(firefox):
         activation_org)
     time.sleep(5)
     subscriptions_page.check_subscription_result()
-    # TODO: need to verify RHN sit
     subscriptions_page.unregister_subsciption()
 
 
