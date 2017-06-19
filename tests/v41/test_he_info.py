@@ -5,7 +5,7 @@ from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.hosted_engine_page import HePage
 from fabric.api import env, run, settings
-from utils.helpers import RhevmAction
+from fabric.operations import reboot
 from conf import *
 
 
@@ -17,12 +17,17 @@ ROOT_URI = "https://" + host_ip + ":9090"
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-vm_fqdn = HE_VM_FQDN
-vm_ip = HE_VM_IP
-vm_password = HE_VM_PASSWORD
+he_vm_fqdn = HE_VM_FQDN
+he_vm_ip = HE_VM_IP
+he_vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
 he_data_nfs = HE_DATA_NFS
 second_vm_fqdn = SECOND_VM_FQDN
+
+# Reboot the host before test
+with settings(warn_only=True):
+    reboot(wait=600)
+time.sleep(300)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -78,9 +83,6 @@ def test_18670(firefox):
     RHEVM-18670
         Check the vm still up after reboot node
     """
-    # To do: Reboot RHVH
-    pass
-
     he_page = HePage(firefox)
 
     # Check engine status
@@ -95,9 +97,6 @@ def test_18671(firefox):
     RHEVM-18671
         Reboot RHVH after finished configure hosted engine
     """
-    # To do: Reboot RHVH
-    pass
-
     he_page = HePage(firefox)
 
     # Check engine status
@@ -150,20 +149,6 @@ def test_18685(firefox):
     with settings(warn_only=True):
         output_password = run(cmd)
 
+    output_password = output_password.split(':')[-1]
     assert not re.search(engine_password, output_password),     \
         "Hosted engine password is saved in the logs as clear text"
-
-
-def test_he_create_vm(firefox):
-    """
-    Purpose:
-        Create a vm under HE host, which for tests/rhvh41/test_vm_resgisterd.py
-    """
-    # Add nfs storage to Default DC on Hosted Engine,
-    # which is used for creating vm
-    he_rhvm = RhevmAction(vm_fqdn)
-    he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
-
-    # Create new vm without installing guest os under Default DC
-    he_rhvm.create_vm(second_vm_fqdn)
-    time.sleep(120)

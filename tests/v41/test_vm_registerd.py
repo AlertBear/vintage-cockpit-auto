@@ -5,6 +5,7 @@ from pages.login_page import LoginPage
 from pages.v41.vm_page import VirtualMachinesPage
 from pages.v41.dashboard_nodestatus_page import NodeStatusPage
 from fabric.api import run, env, settings
+from utils.helpers import RhevmAction
 from conf import *
 
 host_ip = HOST_IP
@@ -20,6 +21,7 @@ he_vm_fqdn = HE_VM_FQDN
 he_vm_ip = HE_VM_IP
 he_vm_password = HE_VM_PASSWORD
 he_engine_password = ENGINE_PASSWORD
+he_data_nfs = HE_DATA_NFS
 second_vm_fqdn = SECOND_VM_FQDN
 
 
@@ -60,6 +62,21 @@ def test_login(firefox):
     login_page = LoginPage(firefox)
     login_page.basic_check_elements_exists()
     login_page.login_with_credential(host_user, host_password)
+
+
+def test_he_create_vm(firefox):
+    """
+    Purpose:
+        Create a vm under HE host, which for tests/rhvh41/test_vm_resgisterd.py
+    """
+    # Add nfs storage to Default DC on Hosted Engine,
+    # which is used for creating vm
+    he_rhvm = RhevmAction(he_vm_fqdn)
+    he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
+
+    # Create new vm without installing guest os under Default DC
+    he_rhvm.create_vm(second_vm_fqdn)
+    time.sleep(120)
 
 
 def test_18805(firefox):
