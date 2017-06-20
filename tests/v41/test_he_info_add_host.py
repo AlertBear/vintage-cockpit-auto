@@ -1,4 +1,5 @@
 import pytest
+import time
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.v41.hosted_engine_page import HePage
@@ -17,12 +18,48 @@ ROOT_URI = "https://" + host_ip + ":9090"
 env.host_string = host_user + '@' + host_ip
 env.password = host_password
 
-vm_fqdn = HE_VM_FQDN
-vm_ip = HE_VM_IP
-vm_password = HE_VM_PASSWORD
-second_nfs_path = HE_DATA_NFS  # Be added to hosted engine
+he_vm_fqdn = HE_VM_FQDN
+he_vm_ip = HE_VM_IP
+he_vm_password = HE_VM_PASSWORD
+he_rhvm = RhevmAction(he_vm_fqdn, "admin", "password")
+
+sd_name = "heauto-sd"
+storage_type = "nfs"
+storage_addr = NFS_IP
+storage_pass = NFS_PASSWORD
+storage_path = HE_DATA_NFS
+
 second_host_ip = SECOND_HOST       # Second host to run hosted engine
 second_password = SECOND_PASSWORD
+
+
+def check_sd_is_attached(sd_name):
+    if he_rhvm.list_storage_domain(sd_name):
+        return True
+
+if not check_sd_is_attached(sd_name):
+    with settings(warn_only=True):
+        host_name = run("hostname")
+
+    # Clean the nfs path
+    cmd = "rm -rf %s/*" % storage_path
+    with settings(
+        warn_only=True,
+        host_string='root@' + storage_addr,
+        password=storage_pass):
+        run(cmd)
+
+    # Add nfs storage to Default DC on Hosted Engine,
+    # which is used for creating vm
+    he_rhvm.create_plain_storage_domain(
+        sd_name=sd_name,
+        sd_type='data',
+        storage_type=storage_type,
+        storage_addr=storage_addr,
+        storage_path=storage_path,
+        host=host_name)
+
+    he_rhvm.attach_sd_to_datacenter(sd_name=sd_name, dc_name='Default')
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -69,22 +106,29 @@ def test_18668(firefox):
     RHEVM-18668
         Setup additional host
     """
-    '''
-    # Add another nfs storage to default DC
-    he_rhvm = RhevmAction(vm_fqdn)
-    he_rhvm.attach_storage_to_datacenter(second_nfs_path, 'Default')
-
     # Add another host to default DC where also can be running HE
-    he_rhvm.add_new_host(
-        second_host_ip,
-        "cockpit-he2",
-        second_password,
+    second_host_name = "cockpit-he2"
+    he_rhvm.create_new_host(
+        ip=second_host_ip,
+        host_name=second_host_name,
+        password=second_password,
+        cluster_name='Default',
         deploy_hosted_engine=True)
-    time.sleep(120)
-    '''
-    he_page = HePage(firefox)
-    he_page.check_additonal_host(vm_fqdn, "cockpit-he2")
-    he_page.remove_host_from_rhvm(vm_fqdn, "cockpit-he2")
+    time.sleep(60)
+
+    i = 0
+    while True:
+        if i > 60:
+            assert 0, "Timeout waitting for host is up"
+        host_status = he_rhvm.list_host(second_host_name)['status']
+        if host_status == 'up':
+            break
+        elif host_status == 'install_failed':
+            assert 0, "Host is not up as current status is: %s" % host_status
+        elif host_status == 'non_operational':
+            assert 0, "Host is not up as current status is: %s" % host_status
+        time.sleep(10)
+        i += 1
 
 
 def test_18678(firefox):
@@ -127,14 +171,3 @@ def test_18680(firefox):
 
     # Check the cluster is in global maintenance
     he_page.check_cluster_in_global_maintenance()
-
-
-'''
-def test_18681(firefox):
-    """
-    RHEVM-18681
-        Migrate HE
-    """
-    # To Do
-    pass
-'''

@@ -16,7 +16,7 @@ class HePage(PageObject):
 
     vm_state_txts = MultiPageElement(
         xpath=".//*[@class='list-view-pf-additional-info']/div/div")
-    list_group_item_txts = MultiPageElement(class_name= "list-group-item-text")
+    list_group_item_txts = MultiPageElement(class_name="list-group-item-text")
 
     global_maintenance_div = PageElement(xpath=".//*[@class='panel-body']/div")
 
@@ -27,34 +27,6 @@ class HePage(PageObject):
         super(HePage, self).__init__(*args, **kwargs)
         self.get("/ovirt-dashboard#/he")
         self.wait(10)
-
-    def _query_host_is_registerd(self, rhvm_fqdn, host_name):
-        rhvm_action = RhevmAction(rhvm_fqdn)
-        result = rhvm_action.query_host_id_by_name(host_name)
-        return result
-
-    def add_host_to_rhvm(self, rhvm_fqdn, host_ip, host_name, host_password):
-        rhvm_action = RhevmAction(rhvm_fqdn)
-        rhvm_action.add_new_host(host_ip, host_name, host_password)
-        self.wait(120)
-
-    def remove_host_from_rhvm(self, rhvm_fqdn, host_name):
-        rhvm_action = RhevmAction(rhvm_fqdn)
-        rhvm_action.remove_host(host_name)
-        self.wait(10)
-
-    def check_additonal_host(
-        self,
-        rhvm_fqdn,
-        host_ip,
-        host_name,
-        host_password):
-        """
-        Purpose:
-            Check another host can be added to HE
-        """
-        r = self._query_host_is_registerd(rhvm_fqdn, host_name)
-        assert r, "The host was not added to HE"
 
     def check_three_buttons(self):
         """
@@ -157,9 +129,7 @@ class HePage(PageObject):
             Check whether the cluster is in global maintenance
         """
         with self.switch_to_frame(self.frame_right_name):
-            try:
-                self.global_maintenance_div.is_displayed()
-            except:
+            if not self.global_maintenance_div.find(True):
                 assert 0, "The cluster is not in global maintenance"
 
     def check_vm_migrated(self):

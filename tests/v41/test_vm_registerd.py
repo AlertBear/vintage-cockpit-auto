@@ -31,11 +31,6 @@ storage_pass = NFS_PASSWORD
 storage_path = HE_DATA_NFS
 
 
-# Get the host name added to the hosted engine
-with settings(warn_only=True):
-    host_name = run("hostname")
-
-
 def check_sd_is_attached(sd_name):
     if he_rhvm.list_storage_domain(sd_name):
         return True
@@ -47,6 +42,10 @@ def check_new_vm_exists(vm_name):
 
 
 if not check_sd_is_attached(sd_name):
+    # Get the host name added to the hosted engine
+    with settings(warn_only=True):
+        host_name = run("hostname")
+
     # Clean the nfs path
     cmd = "rm -rf %s/*" % storage_path
     with settings(

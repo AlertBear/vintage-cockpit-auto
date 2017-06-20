@@ -245,7 +245,7 @@ class RhevmAction:
     # Host related functions
     # https://rhvm41-vlan50-1.lab.eng.pek2.redhat.com/ovirt-engine/apidoc/#services-hosts
     ############################################
-    def create_new_host(self, ip, host_name, password, cluster_name='Default'):
+    def create_new_host(self, ip, host_name, password, cluster_name='Default', deploy_hosted_engine=False):
         api_url = self.api_url.format(rhevm_fqdn=self.rhevm_fqdn, item="hosts")
 
         new_host_post_body = '''
@@ -261,8 +261,9 @@ class RhevmAction:
         body = new_host_post_body.format(
             host_name=host_name, ip=ip, password=password, cluster_name=cluster_name)
 
+        params = {'deploy_hosted_engine': deploy_hosted_engine}
         r = self.req.post(
-            api_url, data=body, headers=self.headers, verify=self.rhevm_cert)
+            api_url, data=body, headers=self.headers, verify=self.rhevm_cert, params=params)
 
         if r.status_code != 201:
             raise RuntimeError("Failed to create host "

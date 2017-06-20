@@ -20,11 +20,11 @@ RHN_USER = "QualityAssurance"
 RHN_PASSWORD = "VHVFhPS5TEG8dud9"
 ACTIVATION_KEY = "rhevh"
 ACTIVATION_ORG = "711497"
-SATELLITE_IP = "10.73.75.61"
+SATELLITE_IP = "10.73.75.177"
 SATELLITE_HOSTNAME = "satellite62.lab.eng.pek2.redhat.com"
 SATELLITE_USER = "admin"
 SATELLITE_PASSWORD = "redhat"
-CA_PATH = "https://10.73.75.61/pub/katello-ca-consumer-satellite62.lab.eng.pek2.redhat.com-1.0-1.noarch.rpm"
+CA_PATH = "https://10.73.75.177/pub/katello-ca-consumer-satellite62.lab.eng.pek2.redhat.com-1.0-1.noarch.rpm"
 
 
 #
@@ -44,28 +44,3 @@ AUTO_ANSWER = "http://10.73.73.23:8000/run?download=true"
 SECOND_HOST = "10.66.148.22"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
-HE_BVNIC_MAPPER = {
-    "10.66.148.7": {
-        # Bond/VLAN/BV is identical with the network
-        # configured during ks installation
-        "HOSTNAME": "dell-op790-01.lab.eng.pek2.redhat.com",
-        "BOND_NIC": "bond0",
-        "VLAN_NIC": "p3p1.20",
-        "BV_NIC": "bond0.20"},
-
-    "10.73.73.17": {
-        # Bond/VLAN/BV is identical with the network
-        # configured during ks installation
-        "HOSTNAME": "dell-per515-01.lab.eng.pek2.redhat.com",
-        "BOND_NIC": "bond0",
-        "VLAN_NIC": "p3p2.50",
-        "BV_NIC": "bond0.50"},
-
-    "10.73.75.126": {
-        # Bond/VLAN/BV is identical with the network
-        # configured during ks installation
-        "HOSTNAME": "dell-per515-01.lab.eng.pek2.redhat.com",
-        "BOND_NIC": "bond0",
-        "VLAN_NIC": "p3p2.50",
-        "BV_NIC": "bond0.50"}
-}

@@ -20,7 +20,6 @@ vm_ip = HE_VM_IP
 vm_password = HE_VM_PASSWORD
 engine_password = ENGINE_PASSWORD
 auto_answer = AUTO_ANSWER
-he_bvnic_mapper = HE_BVNIC_MAPPER
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -57,19 +56,20 @@ def test_18677(firefox):
         RHEVM-18677
         Setup hosted engine through ova with bond+vlan as network
     """
-    # Get the nic from he_bvnic_mapper
-    if host_ip not in he_bvnic_mapper.keys():
-        assert 0, "This system is not configured " \
-                  "with a bond or not record in our configuration"
-    he_nic = he_bvnic_mapper[host_ip]['BV_NIC']
-
-    # Test the nic is existing and has an ip address
-    cmd = "ip a s|grep %s|grep inet" % he_nic
+    # Get the bond device
     with settings(warn_only=True):
-        res = run(cmd)
-    if res.failed:
-        assert 0, "No %s on %s or not configured with ip" % (
-            he_nic, host_ip)
+        cmd = "ls /etc/sysconfig/network-scripts | egrep 'ifcfg-bond[0-9]\.' | awk -F '-' '{print $2}'"
+        ret = run(cmd)
+    if ret.failed:
+        assert 0, "Not support this case since no vlan over bond device found"
+    he_nic = ret
+
+    # get ip addr
+    with settings(warn_only=True):
+        cmd = "ip -f inet addr show %s|grep inet|awk '{print $2}'|awk -F'/' '{print $1}'" % he_nic
+        ret = run(cmd)
+    if ret.failed:
+        assert 0, "Not support this case since vlan over bond has no ip address configured"
 
     host_dict = {'host_ip': host_ip,
     'host_user': host_user,

@@ -1,6 +1,4 @@
 import json
-
-
 #
 # Debug tier
 #
@@ -48,6 +46,88 @@ v41_rhvh_tier2 = {
         "tests/v41/test_common_tools.py"
     ]
 }
+
+
+#
+# RHVH4.1 special machine test scenarios
+#
+
+v41_rhvh_dashboard_uefi = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": [],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_dashboard_ui_efi.py"]
+}
+
+
+v41_rhvh_dashboard_fc = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": ["dell-per510-01.lab.eng.pek2.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_dashboard_ui_fc.py"],
+}
+
+v41_rhvh_he_install_bond = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_he_install_bond.py"]
+}
+
+v41_rhvh_he_install_bv = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_he_install_bv.py"]
+}
+
+v41_rhvh_he_install_vlan = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": [
+        "dell-per510-01.lab.eng.pek2.redhat.com",
+        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_he_install_vlan.py"]
+}
+
+v41_rhvh_he_install_non_default_port = {
+    "TAG": ["RHVH41"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": ["tests/v41/test_he_install_non_default_port.py"]
+}
+
+v41_rhvh_he_install_redeploy = {
+    "TAG": ["RHVH41"],
+    "CONFIG":
+    "tests/v41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES":
+    ["tests/v41/test_he_install.py",
+     "tests/v41/test_he_install_redeploy.py"]
+}
+
+v41_rhvh_he_info_add_host = {
+    "TAG": ["RHVH41", "ANOTHER_HOST"],
+    "CONFIG": "tests/v41/conf.py",
+    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
+    "DEPEND_SCEN": [],
+    "CASES": [
+        "tests/v41/test_he_install.py",
+        "tests/v41/test_he_info_add_host.py"]
+}
+
 
 #
 # RHEL73 version 4.1 test scenario
@@ -141,94 +221,6 @@ v41_fedora_tier2 = {
         "tests/v41/test_common_tools.py"
     ]
 }
-
-#
-# RHVH4.1 special machine test scenarios
-#
-'''
-###
-No machine currently
-###
-v41_rhvh_dashboard_uefi = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": [],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_dashboard_ui_efi.py"]
-}
-'''
-
-v41_rhvh_dashboard_fc = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-per510-01.lab.eng.pek2.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_dashboard_ui_fc.py"],
-}
-
-v41_rhvh_he_install_bond = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-per510-01.lab.eng.pek2.redhat.com",
-        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_he_install_bond.py"]
-}
-
-v41_rhvh_he_install_bv = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-per510-01.lab.eng.pek2.redhat.com",
-        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_he_install_bv.py"]
-}
-
-v41_rhvh_he_install_vlan = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": [
-        "dell-per510-01.lab.eng.pek2.redhat.com",
-        "dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_he_install_vlan.py"]
-}
-
-v41_rhvh_he_install_non_default_port = {
-    "TAG": ["RHVH41"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": ["tests/v41/test_he_install_non_default_port.py"]
-}
-
-v41_rhvh_he_install_redeploy = {
-    "TAG": ["RHVH41"],
-    "CONFIG":
-    "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES":
-    ["tests/v41/test_he_install.py",
-     "tests/v41/test_he_install_redeploy.py"]
-}
-
-'''
-#
-# Currently not consider about this case
-#
-v41_rhvh_he_info_add_host = {
-    "TAG": ["RHVH41", "ANOTHER_HOST"],
-    "CONFIG": "tests/v41/conf.py",
-    "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
-    "DEPEND_SCEN": [],
-    "CASES": [
-        "tests/v41/test_he_install.py",
-        "tests/v41/test_he_info_add_host.py"]
-}
-'''
 
 
 if __name__ == '__main__':

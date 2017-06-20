@@ -19,7 +19,6 @@
 | dell-op790-01.qe.lab.eng.nay.redhat.com | `d4:be:d9:95:61:ca`  | 10.66.148.7 | em1 | RHVH BOND VLAN | *YES* |
 | hp-z620-05.qe.lab.eng.nay.redhat.com | `2c:44:fd:3a:d7:d7`  | 10.66.149.62 | eno1 | RHEL | *YES* |
 | hp-z620-04.qe.lab.eng.nay.redhat.com | `2c:44:fd:3a:d7:b6`  | 10.66.148.24 | enp1s0 | CENTOS | *YES* |
-| hp-z620-02.qe.lab.eng.nay.redhat.com | `64:31:50:19:b9:70`  | 10.66.148.22 | enp1s0 | FEDORA | *YES* |
 | dell-per510-01.lab.eng.pek2.redhat.com |   |  |  | BOND VLAN FC | *NO* |
 | dell-pet105-02.qe.lab.eng.nay.redhat.com | `00:22:19:2d:4b:a3`  | 10.66.148.10 | enp2s0 | TEST RUN | *YES* |
 
@@ -34,10 +33,16 @@ git clone http://dguo@10.8.176.174/dguo/cockpit-auto.git
 ```bash
 pip install -r requirements
 ```
-3. Start httpd service on local where apache server is installed and configured
+3. To trigger manually, copy the request.json.example to /tmp/request.json and modify the corresponding value
 ```bash
-yum install httpd
-service httpd start
-chkconfig httpd on
+{
+    "host_ip": "10.66.148.7",
+    "test_build": "redhat-virtualization-host-4.1-20170616.0",
+    "test_profile": "v41_debug_tier"
+}
 ```
-4. Trigger cockpit test manually from [Auto testing platform](http://10.73.73.23/#/cockpit)
+4. Run the executable file run.py
+```bash
+python run.py
+```
+5. To trigger automatically, please use the [rhvh auto testing platform](http://10.73.73.23/#/cockpit)
