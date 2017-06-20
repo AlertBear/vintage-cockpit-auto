@@ -53,10 +53,18 @@ HE_BVNIC_MAPPER = {
         "VLAN_NIC": "p3p1.20",
         "BV_NIC": "bond0.20"},
 
-    "10.73.75.x": {
+    "10.73.73.17": {
         # Bond/VLAN/BV is identical with the network
         # configured during ks installation
-        "HOSTNAME": "dell-per510-01.lab.eng.pek2.redhat.com",
+        "HOSTNAME": "dell-per515-01.lab.eng.pek2.redhat.com",
+        "BOND_NIC": "bond0",
+        "VLAN_NIC": "p3p2.50",
+        "BV_NIC": "bond0.50"},
+
+    "10.73.75.126": {
+        # Bond/VLAN/BV is identical with the network
+        # configured during ks installation
+        "HOSTNAME": "dell-per515-01.lab.eng.pek2.redhat.com",
         "BOND_NIC": "bond0",
         "VLAN_NIC": "p3p2.50",
         "BV_NIC": "bond0.50"}

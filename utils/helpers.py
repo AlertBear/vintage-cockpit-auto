@@ -436,7 +436,7 @@ class RhevmAction:
     # VM related functions
     # https://rhvm41-vlan50-1.lab.eng.pek2.redhat.com/ovirt-engine/apidoc/#services-vms
     ##########################################
-    def create_vm(self, vm_name, tpl_name="Blank", cluster="default"):
+    def create_vm(self, vm_name, tpl_name="Blank", cluster="Default"):
         api_url_base = self.api_url.format(
             rhevm_fqdn=self.rhevm_fqdn, item="vms")
 

@@ -108,7 +108,7 @@ class VirtualMachinesPage(PageObject):
         with self.switch_to_frame(self.frame_right_name):
             self.w.switch_to_frame(self.w.find_element_by_tag_name("iframe"))
 
-            assert re.search("Virtual Machines",self.virtual_machines_title.text),  \
+            assert re.search("Virtual Machines", self.virtual_machines_title.text),  \
                 "Running VMs page title is wrong"
             assert self.total_vms_text.text == "0", "Total VMs number is displayed wrong"
 

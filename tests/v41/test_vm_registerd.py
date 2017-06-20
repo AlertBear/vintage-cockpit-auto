@@ -21,8 +21,76 @@ he_vm_fqdn = HE_VM_FQDN
 he_vm_ip = HE_VM_IP
 he_vm_password = HE_VM_PASSWORD
 he_engine_password = ENGINE_PASSWORD
-he_data_nfs = HE_DATA_NFS
 second_vm_fqdn = SECOND_VM_FQDN
+he_rhvm = RhevmAction(he_vm_fqdn, "admin", "password")
+
+sd_name = "heauto-sd"
+storage_type = "nfs"
+storage_addr = NFS_IP
+storage_pass = NFS_PASSWORD
+storage_path = HE_DATA_NFS
+
+
+# Get the host name added to the hosted engine
+with settings(warn_only=True):
+    host_name = run("hostname")
+
+
+def check_sd_is_attached(sd_name):
+    if he_rhvm.list_storage_domain(sd_name):
+        return True
+
+
+def check_new_vm_exists(vm_name):
+    if he_rhvm.list_vm(vm_name):
+        return True
+
+
+if not check_sd_is_attached(sd_name):
+    # Clean the nfs path
+    cmd = "rm -rf %s/*" % storage_path
+    with settings(
+        warn_only=True,
+        host_string='root@' + storage_addr,
+        password=storage_pass):
+        run(cmd)
+
+    # Add nfs storage to Default DC on Hosted Engine,
+    # which is used for creating vm
+    he_rhvm.create_plain_storage_domain(
+        sd_name=sd_name,
+        sd_type='data',
+        storage_type=storage_type,
+        storage_addr=storage_addr,
+        storage_path=storage_path,
+        host=host_name)
+
+    he_rhvm.attach_sd_to_datacenter(sd_name=sd_name, dc_name='Default')
+
+
+if not check_new_vm_exists(second_vm_fqdn):
+    # Create new vm without installing guest os under Default DC
+    he_rhvm.create_vm(vm_name=second_vm_fqdn, cluster="Default")
+    time.sleep(30)
+
+    # Create a disk for vm
+    disk_name = "hevm_disk"
+    disk_size = "30589934592"
+    he_rhvm.create_vm_image_disk(second_vm_fqdn, sd_name, disk_name, disk_size)
+    time.sleep(60)
+
+    # Startup the vm
+    he_rhvm.operate_vm(vm_name=second_vm_fqdn, operation="start")
+    time.sleep(60)
+    i = 0
+    while True:
+        if i > 30:
+            assert 0, "Vm not up after creation"
+        vm_status = he_rhvm.list_vm(second_vm_fqdn)['status']
+        if vm_status == "up":
+            break
+        time.sleep(10)
+        i += 1
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -64,21 +132,6 @@ def test_login(firefox):
     login_page.login_with_credential(host_user, host_password)
 
 
-def test_he_create_vm(firefox):
-    """
-    Purpose:
-        Create a vm under HE host, which for tests/rhvh41/test_vm_resgisterd.py
-    """
-    # Add nfs storage to Default DC on Hosted Engine,
-    # which is used for creating vm
-    he_rhvm = RhevmAction(he_vm_fqdn)
-    he_rhvm.attach_storage_to_datacenter(he_data_nfs, 'Default')
-
-    # Create new vm without installing guest os under Default DC
-    he_rhvm.create_vm(second_vm_fqdn)
-    time.sleep(120)
-
-
 def test_18805(firefox):
     """
     RHEVM-18805
@@ -114,15 +167,6 @@ def test_18809(firefox):
     vm_page.check_vm_login_to_engine(he_vm_fqdn, he_engine_password)
     time.sleep(2)
     vm_page.check_vm_logout_from_engine()
-
-
-def test_18810(firefox):
-    """
-    RHEVM-18810
-        Check Host to Maintenance in virtual machines page
-        It needs to create another vm, not HE
-    """
-    pass
 
 
 def test_18811(firefox):
