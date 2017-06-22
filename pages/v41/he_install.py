@@ -60,8 +60,9 @@ def get_latest_rhvm_appliance(appliance_path):
         if re.search(latest_rhvm_appliance_name, link):
             latest_rhvm_appliance_link = link
 
-    latest_rhvm_appliance_link += appliance_path
-    return latest_rhvm_appliance_link
+    latest_rhvm_appliance = appliance_path + latest_rhvm_appliance_link
+
+    return latest_rhvm_appliance
 
 
 def download_auto_answer(auto_answer):
@@ -98,7 +99,7 @@ class HandleVNCSetup:
         self.cli = api.connect(self.host_ip, password=self.vnc_password)
 
     def _set_vnc_pass(self):
-        with settings(warn_only=True, host_string= self.host_user + '@' + self.host_ip, password=self.host_password):
+        with settings(warn_only=True, host_string=self.host_user + '@' + self.host_ip, password=self.host_password):
             run('hosted-engine --add-console-password --password=%s' % self.vnc_password, quiet=True)
 
     def vnc_vm_login(self, vm_password):
@@ -346,10 +347,10 @@ def he_install(host_dict, nfs_dict, install_dict, vm_dict):
         put("/tmp/he_vm_run", "/root/run")
         run("chmod 755 /root/run")
         run("/root/run -i")
-    time.sleep(40)
+    time.sleep(60)
 
     class_name("btn-default").click()
-    time.sleep(500)
+    time.sleep(600)
 
     # Reboot the host
     with settings(

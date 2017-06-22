@@ -48,7 +48,7 @@ SECOND_VM_FQDN = "cockpit-vm"
 # The machine and the corresponding ip
 #
 SYS_IP_MAP = {
-    "hp-z620-05.qe.lab.eng.nay.redhat.com": "10.66.149.62",
+    "hp-z620-05.qe.lab.eng.nay.redhat.com": "10.66.150.175",
     "hp-z620-04.qe.lab.eng.nay.redhat.com": "10.66.148.24",
     "dell-op790-01.qe.lab.eng.nay.redhat.com": "10.66.148.7",
     "dell-pet105-02.qe.lab.eng.nay.redhat.com": "10.66.148.10"
