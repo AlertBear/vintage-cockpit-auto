@@ -60,8 +60,7 @@ def get_latest_rhvm_appliance(appliance_path):
         if re.search(latest_rhvm_appliance_name, link):
             latest_rhvm_appliance_link = link
 
-    latest_rhvm_appliance_link = appliance_path + latest_rhvm_appliance_link
-
+    latest_rhvm_appliance_link += appliance_path
     return latest_rhvm_appliance_link
 
 
@@ -375,6 +374,13 @@ def check_he_is_deployed(host_ip, host_user, host_password):
         host_string=host_user + '@' + host_ip,
         password=host_password):
         cmd = "hosted-engine --check-deployed"
-        result = run(cmd)
+        ret = run(cmd)
+        assert ret.succeeded, "HE is not deployed on %s" % host_ip
 
-        assert result.succeeded, "HE is not deployed on %s" % host_ip
+        cmd = "find /var/log -type f |grep ovirt-hosted-engine-setup-.*.log"
+        ret = run(cmd)
+        assert ret.succeeded, "No hosted engine setup log found"
+
+        cmd = "grep 'Hosted Engine successfully deployed' %s" % ret
+        ret = run(cmd)
+        assert ret.succeeded, "Not found the successfully message in the setup log %s" % ret

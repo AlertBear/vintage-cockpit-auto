@@ -11,6 +11,7 @@ import test_scen
 from fabric.api import run, local, settings
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from constants import SYS_IP_MAP
 
 
 class EmailAction(object):
@@ -44,13 +45,48 @@ class EmailAction(object):
             server.quit()
 
 
-def modify_config_file(file, value_dict):
+def _get_host_ip(test_host):
+    if re.search('^[0-9]{1,3}\..*', test_host):
+        # This is an ip address
+        host_ip = test_host
+    else:
+        # This is a host name
+        ips = SYS_IP_MAP[test_host]
+        host_ip = ips[0]
+
+    # Wait for the host is ready
+    i = 0
+    while True:
+        if i > 60:
+            raise RuntimeError("ERROR: Host is not ready for testing")
+        with settings(
+            warn_only=True, host_string='root@' + host_ip, password='redhat'):
+            output = run("hostname")
+        if output.failed:
+            time.sleep(10)
+            i += 1
+            continue
+        break
+
+    return host_ip
+
+
+def _modify_config_file(conf_file, value_dict):
     # Modify test values in the config file
     for k, v in value_dict.items():
-        local("""sed -i 's/%s =.*/%s = "%s"/' %s""" % (k, k, v, file))
+        with settings(warn_only=True):
+            cmd = "grep '^%s=' %s" % (k, conf_file)
+            ret = local(cmd, capture=True)
+        if ret.succeeded:
+            cmd = "sed -i '/^{key}/c {key}=\"{value}\"' {file}".format(
+                key=k, value=v, file=conf_file)
+        else:
+            cmd = "sed -i '$a {key}=\"{value}\"' {file}".format(
+                key=k, value=v, file=conf_file)
+        local(cmd)
 
 
-def format_result(file):
+def _format_result(file):
     # Parse the result from json file
     with open(file, 'r') as f:
         r = json.load(f)
@@ -67,7 +103,7 @@ def format_result(file):
     return json.dumps(format_ret)
 
 
-def format_result_to_jfile(raw_jfile, test_build, test_profile):
+def _format_result_to_jfile(raw_jfile, test_build, test_profile):
     # Load the result from json file
     with open(raw_jfile, 'r') as f:
         r = json.load(f)
@@ -112,37 +148,36 @@ def format_result_to_jfile(raw_jfile, test_build, test_profile):
         json.dump(final_result, f, indent=2)
 
 
-if __name__ == "__main__":
+def run_test():
     # Parse variable from json file export by rhvh auto testing platform
     http_json = "/tmp/request.json"
     with open(http_json, 'r') as f:
         r = json.load(f)
-    host_ip = r["host_ip"]
+    test_host = r["test_host"]
     test_build = r["test_build"]
-    profile = r["test_profile"]
+    profile = r["test_scenario"]
 
     test_cases = []
     for c in getattr(test_scen, profile)["CASES"]:
         test_cases.append(c)
 
-    # Wait for the host is ready
-    i = 0
-    while True:
-        if i > 60:
-            print "ERROR: Host is not ready for testing"
-            sys.exit(1)
-        with settings(
-            warn_only=True, host_string='root@' + host_ip, password='redhat'):
-            output = run("hostname")
-        if output.failed:
-            time.sleep(10)
-            i += 1
-            continue
-        break
+    # Get the host ip address from the test host
+    try:
+        host_ip = _get_host_ip(test_host)
+    except RuntimeError as e:
+        print e
+        sys.exit(1)
 
     # Get config files by rhvh version
     abspath = os.path.abspath(os.path.dirname(__file__))
-    conf_file = os.path.join(abspath, "constants.py")
+    if re.search("^v41", profile):
+        test_ver = "v41"
+    elif re.search("^v40", profile):
+        test_ver = "v40"
+    else:
+        print "Not support currently"
+        sys.exit(1)
+    conf_file = os.path.join(abspath, "tests", test_ver, "conf.py")
 
     # Test cases files which will be appended to the 'pytest' command line
     test_files = []
@@ -162,7 +197,7 @@ if __name__ == "__main__":
         "HOST_IP": host_ip,
         "TEST_BUILD": test_build
     }
-    modify_config_file(conf_file, variable_dict)
+    _modify_config_file(conf_file, variable_dict)
 
     # Execute to do the tests
     tmp_result_jfile = tmp_log_dir + "/result-" + profile + ".json"
@@ -177,7 +212,7 @@ if __name__ == "__main__":
     pytest.main(pytest_args)
 
     # After execute the tests, format the result into human-readable
-    format_result_to_jfile(tmp_result_jfile, test_build, profile)
+    _format_result_to_jfile(tmp_result_jfile, test_build, profile)
 
     # Save the screenshot during tests to tmp_log_dir
     has_screenshot = os.path.exists("/tmp/cockpit-screenshot")
@@ -207,3 +242,7 @@ if __name__ == "__main__":
     email_attachment = []
     email.send_email(email_from, email_to, email_subject, email_text,
                      email_attachment)
+
+
+if __name__ == "__main__":
+    run_test()

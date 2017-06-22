@@ -9,7 +9,7 @@ v41_debug_tier = {
     "DEPEND_MACHINE": ["dell-op790-01.qe.lab.eng.nay.redhat.com"],
     "DEPEND_CASES": [],
     "CASES": [
-        "tests/v41/test_dashboard_ui.py",
+        "tests/v41/test_dashboard_nodectl.py",
     ]
 }
 

@@ -19,7 +19,6 @@
 | dell-op790-01.qe.lab.eng.nay.redhat.com | `d4:be:d9:95:61:ca`  | 10.66.148.7 | em1 | RHVH BOND VLAN | *YES* |
 | hp-z620-05.qe.lab.eng.nay.redhat.com | `2c:44:fd:3a:d7:d7`  | 10.66.149.62 | eno1 | RHEL | *YES* |
 | hp-z620-04.qe.lab.eng.nay.redhat.com | `2c:44:fd:3a:d7:b6`  | 10.66.148.24 | enp1s0 | CENTOS | *YES* |
-| dell-per510-01.lab.eng.pek2.redhat.com |   |  |  | BOND VLAN FC | *NO* |
 | dell-pet105-02.qe.lab.eng.nay.redhat.com | `00:22:19:2d:4b:a3`  | 10.66.148.10 | enp2s0 | TEST RUN | *YES* |
 
 
@@ -35,10 +34,15 @@ pip install -r requirements
 ```
 3. To trigger manually, copy the request.json.example to /tmp/request.json and modify the corresponding value
 ```bash
+#
+# test_host: The host where to be test, can be written as ip or hostname
+# test_build: The rhvh test build
+# test_scenario: The test scenario in the test_scen.py file
+#
 {
-    "host_ip": "10.66.148.7",
+    "test_host": "10.66.148.7",
     "test_build": "redhat-virtualization-host-4.1-20170616.0",
-    "test_profile": "v41_debug_tier"
+    "test_scenario": "v41_debug_tier"
 }
 ```
 4. Run the executable file run.py
