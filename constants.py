@@ -39,7 +39,7 @@ HE_VM_IP = "10.66.148.102"
 HE_VM_PASSWORD = "redhat"
 ENGINE_PASSWORD = "password"
 AUTO_ANSWER = "http://10.73.73.23:8000/run?download=true"
-SECOND_HOST = "10.66.148.22"
+SECOND_HOST = "10.66.150.175"
 SECOND_PASSWORD = "redhat"
 SECOND_VM_FQDN = "cockpit-vm"
 
